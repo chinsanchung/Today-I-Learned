@@ -12,9 +12,9 @@
 ## 관련 용어 정리
 - 이벤트를 연결한다
 
-'''javascript
+```javascript
 window.onload = function () {};
-'''
+```
 
   + 'window' 객체의 'onload' 속성에 함수 자료형을 할당하는 것을 "이벤트를 연결한다"고 합니다.
   + 'load'는 '이벤트 이름' 또는 '이벤트 타입'이라고 하며, 'onload'를 '이벤트 속성'이라고 합니다.
@@ -26,7 +26,7 @@ window.onload = function () {};
 ### 고전 이벤트 모델
 - 자바스크립트에서 문서 객체의 '이벤트 속성'으로 이벤트를 연결하는 방법입니다.
 
-'''javascript
+```javascript
 window.onload = function () {
   //변수를 선언
   let header = document.getElementById('header');
@@ -39,25 +39,25 @@ window.onload = function () {
     header.onclick = null;
   };
 };
-'''
+```
 
 ### 이벤트 발생 객체
 - 이벤트 리스너 안에 this 키워드를 사용하면 이벤트가 발생한 객체를 찾을 수 있습니다.
 
-'''javascript
+```javascript
 window.onload = function () {
   document.getElementById('header').onclick = function () {
     alert(this);
   };
 };
-'''
+```
 
   + 코드를 실행하고 onclick 이벤트를 실행하면 경고창에 [object HTMLHeadingElement]가 출력됩니다. 이벤트가 발생한 객체입니다.
 
 ### 이벤트 강제 실행
 - 메소드를 호출하는 것처럼 이벤트 속성을 호출하면 이벤트가 강제로 실행됩니다.
 
-'''javascript
+```javascript
 <script>
   //문서 객체를 가져옴
   let buttonA = document.getElementById('button-a');
@@ -82,13 +82,13 @@ window.onload = function () {
   <h1>Button A - <span id="counter-a">0</span></h1>
   <h1>Button B - <span id="counter-b">0</span></h1>
 </body>
-'''
+```
 
 ### 디폴트 이벤트 제거
 - '디폴트 이벤트'는 이미 이벤트 리스너가 있는 일부 HTML 태그를 뜻합니다.
 - '디폴트 이벤트'는 입력 양식에 많이 사용됩니다. 예를 들어 가입 양식을 다 작성하고 제출하는 것이 디폴트 이벤트인데, 만약 양식을 다 작성하지 않았다면 그 양식을 제출해서는 안되기 때문에 이벤트 제거를 사용합니다.
 
-'''javascript
+```javascript
 window.onload = function () {
   //이벤트를 연결
   document.getElementById('my-form').onsubmit = function () {
@@ -105,7 +105,7 @@ window.onload = function () {
     }
   };
 };
-'''
+```
 
   + 이벤트 리스너에서 false를 리턴하면 디폴트 이벤트를 제거됩니다.
 
@@ -119,10 +119,10 @@ window.onload = function () {
 ### 인터넷 익스플로러 이벤트 모델
 - 두 가지 메소드로 이벤트를 연결, 제거할 수 있습니다.
 
-'''javascript
+```javascript
 attachEvent(eventProperty, eventListner);
 detachEvent(eventProperty, eventListner);
-'''
+```
 
 - attachEvent는 익스플로러에서만 실행되므로 다른 브라우저에선 에러가 발생합니다.
 - DOM Level 0 모델과 다르게 여러 번 이벤트를 추가할 수 있습니다.
@@ -131,20 +131,20 @@ detachEvent(eventProperty, eventListner);
 ### 표준 이벤트 모델
 - DOM Level 2 이벤트 모델로 한 번에 여러 가지의 이벤트 리스너를 추가할 수 있습니다.
 - 연걸할 때 다음과 같은 메소드를 사용합니다.
-'''javascript
+```javascript
 addEventListner(eventName, handler, useCapture)
 removeEventListner(eventName, handler)
-'''
+```
   + 매개변수 useCapture는 입력하지 않으면 자동으로 false를 입력합니다.
   + 클릭 이벤트 연결하기.
   
-  '''javascript
+  ```javascript
   window.onload = function () {
     let header = document.getElementById('my-header');
     header.addEventListner('click', function () {
       this.innerHTML += '+';
       });
   };
-  '''
+  ```
   
 - 표준 이벤트 모델은 이벤트 리스너 안에서 'this키워드'가 이벤트 발생 객체를 의미합니다.
