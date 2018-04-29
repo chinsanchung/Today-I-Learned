@@ -55,4 +55,3 @@ $(document).ready(function () {
   </body>
 </html>
 ```
-  + 출력하면 <h1>태그의 각 item에 다른 css가 적용됩니다.
