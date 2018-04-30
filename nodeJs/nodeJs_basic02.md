@@ -259,7 +259,7 @@ app.put('/products/:id', function (request, response) {
       message: '데이터를 수정했습니다.',
       data: items[id]
     });
-  } esle {
+  } else {
     //오류: 요소가 없을 때
     response.send({
       error: '존재하지 않는 데이터입니다.'
