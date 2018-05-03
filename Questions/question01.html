@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  <title>Document</title>
+  <script type="text/javascript">
+  //입력 글자에서 '안녕'이 있는지 여부를 검사하기
+    //버튼 클릭시의 이벤트
+    function getResult () {
+      //input에서 가져옴
+      let a = document.result.elements[0].value;
+      //input의 값에 특정 글자가 있는지 확인
+      let result = a.indexOf("안녕");
+      //그 글자가 있으면 확인창, 없으면 없다고 창을 띄움
+      if (result == 0) {
+        alert('안녕 글자가 있습니다.');
+      } else {
+        alert('안녕 글자가 없습니다.')
+      }
+    }
+  </script>
+</head>
+<body>
+  <form name="result">
+    <input type="text" name="input" />
+    <input type="button" value="output" onclick="getResult();" />
+  </form>
+</body>
+</html>
