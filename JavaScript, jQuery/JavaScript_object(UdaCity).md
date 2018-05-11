@@ -88,3 +88,42 @@ console.log(shortNames); //결과 : ['David']
 ```
   + names 배열을 호출, 첫 번쨰 값 David 를 name에 저장 후 length 로 구한 후 조건과 비교했고 통과됐습니다.
   + Richard, Veronika 는 name 에 저장되고 length 로 구했지만 조건을 만족하지 않아 탈락됩니다.
+
+## scope
+- 자바 스크립트의 변수는 전통적으로 블록 범위가 아닌 함수의 범위에서 정의됩니다. 함수를 입력하면 범위가 변경되므로 해당 함수 내부에서 정의 된 변수는 해당 함수 외부에서 사용할 수 없습니다.
+  + 블록 내부에 정의 된 변수가있는 경우 (예 : if 문 내에서) 해당 변수는 해당 블록 외부에서 사용할 수 있습니다
+- ES6 구문은 'let' 및 'const' 키워드를 사용하여 변수를 선언하는 동안 추가 범위를 허용합니다. 이 키워드는 자바 스크립트에서 블록 범위 변수를 선언하는 데 사용되며 대체로 'var' 를 대신합니다.
+- 'scope chain' : 함수를 호출할 떄 함수 interpreter 는 항상 child 함수에서부터 지역 변수를 찾습니다. 만약에 없다면 부모 함수, 부모 함수도 없다면 전역 환경에서 검색합니다. 있다면 값을 검색하고, 마지막에도 없다면 변수는 undefined 로 출력합니다.
+```javascript
+const myName = 'Andrew';
+// Global variable
+
+function introduceMyself() {
+
+  const you = 'student';
+
+//myName 은 전역 변수라서 사용 가능하고, you 는 부모 함수인 introduceMyself 의 지역변수 you 이므로 사용이 가능합니다.
+  //you 를 인수로 삼지 않아도 부모 함수이기에 사용할 수 있습니다.
+  function introduce() {
+    console.log(`Hello, ${you}, I'm ${myName}!`);
+  }
+
+  return introduce();
+}
+```
+- 'variable shadowing' : 만약 범위 내에서 이름만 같고 내용이 다른 변수가 있다면 지역 변수는 전역 변수를 일시적으로 'shadowing' 합니다.
+  +  다른 맥락에서 변수 간에 이름이 중복되는 경우 모두 내부에서 외부 범위로 scope chain 을 이동하여 해결됩니다. 따라서 동일한 이름을 가진 모든 지역 변수가 더 넓은 범위의 변수보다 우선 적용됩니다.
+```javascript
+const symbol = '¥';
+
+function displayPrice(price) {
+  const symbol = '$';
+  console.log(symbol + price);
+}
+//결과는 $80 입니다. 내부에서 선언된 지역변수 symbol 이 전역변수 symbol 을 shadowing 했습니다.
+displayPrice('80');
+```
+
+## closures
+
+## immediately-invoked function
