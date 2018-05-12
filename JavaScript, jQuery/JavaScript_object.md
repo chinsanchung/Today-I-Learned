@@ -50,7 +50,7 @@ iden();
   + window 객체는 웹 페이지의 정보들에 접근할 수 있습니다. (URL, 수직 스크롤, 새 페이지 열기 등등)
 - window 객체는 가장 높은 레벨(global)이어서 전역 레벨(함수 외부) 에서 만들어진 모든 변수 선언은 자동으로 윈도우 객체의 속성이 됩니다.
 - 'var' 로 변수를 선언할 때에만 window 객체에 추가됩니다. ES6 의 'let', 'const' 로 함수 외부에서 선언하면 그 변수는 window 객체에 추가되지 않습니다.
-- global 함수는 window 객체에 메소르로서 접근할 수 있습니다.
+- global 함수는 window 객체에 메소드로서 접근할 수 있습니다.
 ```javascript
 //global 함수 선언
 function learnSomethingNew() {
@@ -123,7 +123,9 @@ pets.['sleep'](); //return : zzz
 //표기법..pets 의 color 프로퍼티를 가져옵니다.
 const petColor = 'color';
 /*
-따옴표가 생략 된 경우에도 JavaScript 객체의 모든 속성 키는 문자열입니다. 점 표기법을 사용하면 JavaScript 인터프리터(번역기)는 값이 'petColor'인 pets 내에서 키를 찾습니다. 객체에 정의 된 키가 없기 때문에 표현식은 정의되지 않은 값을 반환합니다.
+따옴표가 생략 된 경우에도 JavaScript 객체의 모든 속성 키는 문자열입니다.
+점 표기법을 사용하면 JavaScript 인터프리터(번역기)는 값이 'petColor'인 pets 내에서 키를 찾습니다.
+객체에 정의 된 키가 없기 때문에 표현식은 정의되지 않은 값을 반환합니다.
 */
 ```
 
@@ -177,7 +179,7 @@ const printer = {
 ```
 ## 객체의 메소드
 - 'Object.keys()' : 객체의 키만을 추출해서 배열 형태로 출력합니다. (배열의 요소는 string 입니다.)
-- 'Object.values()' : 객체의 속성만을 추출해서 벼열 형태로 출력합니다.
+- 'Object.values()' : 객체의 속성만을 추출해서 배열 형태로 출력합니다.
 ```javascript
 const book = {
   name : 'aaa',
