@@ -125,5 +125,84 @@ displayPrice('80');
 ```
 
 ## closures
+- 'closures' : scope 에 대한 연결을 유지하는 함수의 프로세스입니다. 외부의 환경과 선언된 함수와의 연관성을 다룹니다.
+  + 모든 함수는 closures 를 하나씩 가지고 있습니다. scope chain 에 따라 모든 함수는 결국 전역 범위에서 닫히기 때문입니다.
+  + 그러나 함수 안에 내부 함수가 있을 경우 'closures' 는 큰 힘을 발휘합니다.
+- 'closures' 와 'scope' 는 굉장히 밀접한 관계를 가지고 있습니다.
+```javascript
+function remember(number) {
+//내부 함수가 number 를 return 함으로써 number 를 닫습니다. 부모 함수 remember 는 내부 함수와의 관계를 return 합니다.
+//닫든다는 캡쳐한다와 같은 뜻입니다.
+    return function() {
+        return number;
+    }
+}
+
+const returnedFunction = remember(5);
+
+//예제 2.
+const myName = 'Andrew';
+
+function introduceMyself() {
+  const you = 'student';
+//introduce 함수는 클로저를 생성해 부모 범위의 you 와 전역 범위의 myName 에 접근할 수 있습니다.
+  //여기서 introduce 함수는 변수 you 밖에서 닫혔지만, 함수가 닫히더라도 introduce 함수는 you 변수에 접근할 수 있습니다.
+  function introduce() {
+    console.log(`Hello, ${you}, I'm ${myName}!`);
+  }
+
+  return introduce();
+}
+
+introduceMyself();
+//결과: 'Hello, student, I'm Andrew!' introduceMyself 함수를 선언할 시, introduce 함수는 여전히 you 변수와 관계를 맺고 있습니다.
+```
+- 클로저 는 비공개(private) 상태로 클로저 외부에서 내부 변수를 조작하지 못하게 만듭니다.
+```javascript
+function myCounter() {
+  let count = 0;
+//return 된 함수가 부모의 지역 변수 count 에 접근함으로써 private scope 를 생성했습니다.
+  return function () {
+    count += 1;
+    return count;
+  };
+}
+
+let counter = myCounter();
+//클로저는 counter.count; 나 count; 등으로 클로저 밖에서 부모 변수 count 를 조작할 수 없게 보호합니다.
+```
+
+### garbage collection
+- 자바스크립트는 데이터를 더 이상 참조할 수 없는 경우 garbage 로 수집되어 나중에 폐기합니다. 하지만 클로저로 내부 함수가 부모의 변수를 사용하는 경우 계속 참조할 수 있는 한 데이터는 유지됩니다.
+
 
 ## immediately-invoked function
+### 함수 선언과 함수 표현
+- 함수 선언 : 선언할 변수는 필요없습니다. 단순한 선언이며 함수 자신의 값을 return 하지 않습니다.
+```javascript
+function returnHello() {
+  return 'Hello!';
+}
+```
+- 함수 표현 : 함수 표현은 값을 return 합니다. 익명 함수와 선언적 함수가 있습니다.
+
+### immediately-invoked function (IIFE)
+- 이 함수는 정의된 후 즉시 호출됩니다. 괄호로 함수를 묶고 다시 뒤에 () 를 붙여 사용합니다.
+```javascript
+(function sayHi(){
+    alert('Hi there!');
+  }
+)();
+//괄호 () 를 안쪽에 넣어서 선언할 수도 있습니다. 둘 중 어떤 것을 사용할지는 자유입니다.
+(function sayHi(){
+    alert('Hi there!');
+  }());
+```
+- 인수를 뒤의 괄호에 붙여 함수를 실행하는데 사용할 수 있습니다.
+```javascript
+(function (name){
+    alert(`Hi, ${name}`);
+  }
+)('Andrew');
+```
+- IIFE 는 비공개 범위(private scope) 를 사용할 수 있습니다. 함수에 내부 함수를 만든 경우 클로저와 마찬가지로 함수 밖에서 접근할 수 없는 범위를 유지하고, garbage scope 에 버리지 않게 만듭니다. 또한 변수 간 이름의 충돌도 막습니다.
