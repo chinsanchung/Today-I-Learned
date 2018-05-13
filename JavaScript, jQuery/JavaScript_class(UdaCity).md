@@ -177,6 +177,7 @@ const dog = {
 };
 //함수 내부의 메소드를 메소드 스타일로 호출했습니다. dog.growOneYear
   //growOneYear 메소드의 this를 dog 객체로 지정합니다.
+  //여기서의 myGrow 는 bind로 만든 새로운 객체 myGrow 입니다.
 const myGrow = dog.growOneYear.bind(dog);
 //myGrow 를 invokeTwice 에 pass 합니다.
 invokeTwice(myGrow);
