@@ -78,6 +78,7 @@ function funFunction() {
 ## 스스로 this 설정하기
 ### call, apply 메소드
 - 두 메소드는 함수 자체를 직접적으로 호출될 수 있습니다. 따라서 전달하는 함수는 지정된 this 값과 인수를 불러내게 됩니다.
+#### call 메소드
 - 'call()' : 함수에 직접 호출되는 메소드입니다. 메소드를 호출하기 위해 'call()' 을 쓰면 객체에서 메소드를 빌려 다른 객체에 사용할 수 있습니다.
   + 인수들을 쉼표로 구분해 개별적으로 전달합니다.
 ```javascript
@@ -106,6 +107,7 @@ mockingbird.describe.call(pride);
 ```
   + 'call()' 가 mockingbird.describe 에 호출됩니다. 그 다음 pride 값을 'call()' 에 전달합니다. describe 메소드는 title 속성에 접근해야 하는데 'call()' 가 pride 로 값을 결정했으므로 describe 의 this.title 에 접근할 수 있습니다.
   + 'call()' 은 전달된 첫 번째 인수의 범위에서 함수를 호출하려는 경우 효과적입니다.
+#### apply 메소드
 - 'apply()' : 'call()' 과 같이, 'apply()' 는 함수를 호출하고 또 특정 this 값과 연관된 함수에서 호출됩니다.
   + 하지만 인수를 하나씩 전달하지 않고 'apply()' 는 배열으로 함수의 인수를 사용합니다.
 ```javascript
@@ -176,7 +178,7 @@ const dog = {
 };
 //함수 내부의 메소드를 메소드 스타일로 호출했습니다. dog.growOneYear
   //growOneYear 메소드의 this를 dog 객체로 지정합니다.
-  //여기서의 myGrow 는 bind로 만든 새로운 객체 myGrow 입니다.
+  //여기서의 myGrow 는 bind로 만든 새로운 함수인 객체 myGrow 입니다.
 const myGrow = dog.growOneYear.bind(dog);
 //myGrow 를 invokeTwice 에 pass 합니다.
 invokeTwice(myGrow);
