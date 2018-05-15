@@ -132,7 +132,7 @@ displayPrice('80');
 ```javascript
 function remember(number) {
 //내부 함수가 number 를 return 함으로써 number 를 닫습니다. 부모 함수 remember 는 내부 함수와의 관계를 return 합니다.
-//닫든다는 캡쳐한다와 같은 뜻입니다.
+//닫는다는 캡쳐한다와 같은 뜻입니다.
     return function() {
         return number;
     }
