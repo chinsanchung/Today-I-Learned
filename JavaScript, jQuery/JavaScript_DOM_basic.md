@@ -35,7 +35,7 @@ document.getElementsByClassName('pre');
 - 'Node' : 실제 nodes 들의 프로퍼티와 메소드 정보를 가진 설계도 혹은 인터페이스 입니다. (인터페이스 = 설계도, 프로퍼티 = 데이터, 메소드 = functionality(기능))
 - 'nodes' : 설계도로 만든 실제 객체들을 말합니다.
 
-### element 인터페이스
+### Element 인터페이스
 - 'Element 인터페이스' : elements 들을 만드는 설계도입니다. 프로퍼티와 메소드들을 가지고 있습니다. 중요한 점은 이것은 Node 인터페이스의 자손이라는 것입니다.
   + Element 인터페이스는 Node 인터페이스의 모든 프로퍼티와 메소드를 상속받았습니다. 즉 Element 인터페이스에서 생성된 모든 element 는 Node 인터페이스의 하위 element 이기도 합니다.
 - Element 인터페이스에는 document 객체와 동일한 작업을 수행하는 고유한 '.getElementsByClassName()' 가 있습니다.
