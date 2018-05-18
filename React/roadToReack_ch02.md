@@ -167,6 +167,76 @@ class App extends Component {
       </div>
     );
   }
-
 }
 ```
+- 'onClick()' 을 사용해 뷰에서 액션을 트리거하면, 함수 또는 클래스 메소드가 컴포넌트 상태를 수정합니다. 그 후 'render()' 메소드가 재실행되어 최종적인 뷰가 업데이트됩니다.
+
+## 클래스 메소드 바인딩
+- 클래스 메소드에서 this 에 접근할 수 있으려면 클래스 메소드를 this 에 바인딩해야 합니다.
+  + 'render()' 안에서도 바인딩 할 수 있지만, 'render()' 메소드가 실행될 때마다 바인딩하기 때문에 컴포넌트가 업데이트 될 때마다 실행되어 성능에 영향을 줍니다.
+  + 그래서 생성자에서 클래스 메소드를 바인딩해서 컴포넌트가 인스턴스화 될 때에 처음 한 번만 바인딩하는 편이 좋습니다.
+```javascript
+class bindingComponent extends Component {
+  cunstructor() {
+    super();
+    //클래스 바인딩을 사용합니다.
+    this.onClickMe = this.onClickMe.bind(this);
+  }
+  
+  onClickMe() {
+    console.log(this);
+  }
+  
+  render() {
+    return (
+      <button
+        onClick={this.onClickMe}
+        type="button"
+       >
+        Click Me
+      </button>
+    );
+  }
+}
+```
+- 생성자에서 클래스 메소드의 할 일을 정의할 수 있습니다. 다만 이 방법은 생성자에게 혼란을 줄 수 있어서 권장하지 않습니다.
+ + 클래스 메소드의 로직은 생성자 외부에서 정의하는 것이 좋습니다.
+ + 화살표 함수를 사용하면 클래스 메소드를 생성자 내부에 바인딩하지 않고 자동으로 바인딩해줍니다.
+```javascript
+//생성자 외부에서 클래스 메소드 정의
+class bindingsComponent extends Component {
+  constructor() {
+    super();
+    
+    this.doSomthing = this.doSomething.bind(this);
+    this.doSomethingElse = this.doSomethingElse.bind(this);
+  }
+  doSomething() {  }
+  doSomethingElse() {  }
+}
+
+//화살표 함수
+class bindingsComponent extends Component {
+  onClickMe = () => {
+    console.log(this);
+  }
+  render() {
+    return (
+      <button
+        onClick={this.onClickMe}
+        type="button"
+      >
+        Click Me
+      </button>
+    );
+  }
+}
+```
+- 화살표 함수를 추천하기는 하지만 공식 문서는 생성자 내부에 클래스 메소드를 바인딩할 것을 제안합니다.
+
+## 제어되는 컴포넌트
+- '<input>, <textarea>, <select>' 같은 폼 element 는 HTML 로 자신의 상태를 유지합니다. 이들은 외부에서 그 값이 변경되면 내부 값도 수정됩니다.
+ + 이러한 컴포넌트를 리액트에서는 *제어되지 않는 컴포넌트* 라고 부릅니다.
+ + 리액트는 제어되지 않는 컴포넌트를 *제어되는 컴포넌트* 로 만들어야 합니다.
+
+
