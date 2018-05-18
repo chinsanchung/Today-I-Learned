@@ -2,7 +2,7 @@
 ## 변수 선언
 - JavaScript 는 Java 와 다르게 변수를 지정하는데 있어서 느슨한 면이 있습니다.
   + Java 는 정수냐, 문자열이냐, 불리언이냐 등 각각 다른 형태로 변수를 선언해야 합니다.
-  + 반면 JavaScript 는 자료형의 형태를 밖에서 선언하는 것이 아니라 내부적으로 알아서 타입을 변환해줍니다.('Type Coercion')
+  + 반면 JavaScript 는 자료형의 형태를 밖에서 선언하는 것이 아니라 내부적으로 알아서 타입을 변환해줍니다.(`Type Coercion`)
 ```javascript
 1 == '1' //true
 1 == true //true
@@ -28,7 +28,7 @@ console.log(d); //문자열 22 ('2' + '2')
   + '!' : 논리 부정 연산자입니다.
 
 ### 동등 연산자(Equal operator)
-- 'Equal operator' 는 일반 연산자 '==' 와 Strict Equal operator 인 '===' 두 종류로 나뉩니다.
+- `Equal operator` 는 일반 연산자 '==' 와 Strict Equal operator 인 '===' 두 종류로 나뉩니다.
 - JavaScript 는 느슨한 선언을 하기에 '==' 으로 선언할 경우 내부적으로 타입을 변환합니다.
 ```javascript
 1 == '1' //true
@@ -47,8 +47,8 @@ console.log(d); //문자열 22 ('2' + '2')
 
 ## escape
 - 종류
- + '\\'	: 역 슬래시 (backslash)
- + '\"' : 큰따옴표 (double quote)
- + '\'' : 작은따옴표 (single quote)
- + '\n'	: 줄바꿈 (newline)
- + '\t' :	탭 (tab)
+ + `\\`	: 역 슬래시 (backslash)
+ + `\"` : 큰따옴표 (double quote)
+ + `\'` : 작은따옴표 (single quote)
+ + `\n`	: 줄바꿈 (newline)
+ + `\t` :	탭 (tab)
