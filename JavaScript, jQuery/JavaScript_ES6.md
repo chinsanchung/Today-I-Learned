@@ -1,9 +1,9 @@
 # JavaScript ES6
 ## const
-- 'const' : 상수 constant는 값을 변경할 수 없는 상수입니다. 변수는 같은 이름으로 중복하면 뒤의 것을 덮어서 쓰지만 상수는 바꿀 수 없습니다.
+- `const` : 상수 constant는 값을 변경할 수 없는 상수입니다. 변수는 같은 이름으로 중복하면 뒤의 것을 덮어서 쓰지만 상수는 바꿀 수 없습니다.
 
 ## let
-- 'let' 키워드를 사용해 변수 영역을 코드 블록 안으로 한정시킬 수 있습니다.
+- `let` 키워드를 사용해 변수 영역을 코드 블록 안으로 한정시킬 수 있습니다.
 ```javascript
 var div, container = document.getElementById('container')
 for (let i = 0; i < 5; i++) {
@@ -14,7 +14,7 @@ for (let i = 0; i < 5; i++) {
   container.appendChild(div);
 };
 ```
-  + i를 let으로 선언해 i의 영역을 블록으로 제한합니다.
+  + i를 `let` 으로 선언해 i의 영역을 블록으로 제한합니다.
 
 ## 템플릿 문자열
 - 문자열 연결 대신 템플릿 문자열을 사용할 수 있습니다.
@@ -25,7 +25,7 @@ console.log(lastNmae + ", " + firstName + " " + middleName);
 //템플릿 문자열
 console.log('${lastNmae}, ${firstName}, ${middleName}');
 ```
-  + 템플릿 문자열의 ${} 에는 값을 만들어 내는 자바스크립트 식이라면 어느 것이든 들어갑니다.
+  + 템플릿 문자열의 `${}` 에는 값을 만들어 내는 자바스크립트 식이라면 어느 것이든 들어갑니다.
 - 템플릿 문자열은 공백을 유지합니다. 아래처럼 코드가 깨질 염려 없이 여러 줄로 된 문자열을 만들 수 있습니다.
 ```javascript
 ${firstName},
@@ -35,7 +35,7 @@ order detail :
   ${qty} * $${price} = $${qty*price} play : ${event}
 From ${ticketAgent}
 ```
-  + 문자열 안의 공백 문자를 + 없이 처리하기 떄문에 정렬된 HTML을 코드에 넣을 수 있습니다. (자바스크립트는 HTML 문자열을 모든 문자열을 +로 연결해 한 줄로 처리해야 했습니다.)
+  + 문자열 안의 공백 문자를 + 없이 처리하기 떄문에 정렬된 HTML 을 코드에 넣을 수 있습니다. (자바스크립트는 HTML 문자열을 모든 문자열을 +로 연결해 한 줄로 처리해야 했습니다.)
 ```
 document.body.innerHTML = '
   <section>
@@ -69,7 +69,7 @@ function logActivity (p = defaultPerson) {
 ```
 
 ## 화살표 함수
-- 화살표 함수로 function 키워드 없이 함수를 만들고 return을 쓰지 않아도 식을 계산한 값을 자동으로 반환합니다.
+- 화살표 함수로 function 키워드 없이 함수를 만들고 return 을 쓰지 않아도 식을 계산한 값을 자동으로 반환합니다.
 ```javascript
 //일반적인 함수
 let lordify = function (firstname) {
@@ -108,7 +108,7 @@ let lordify = (firstName, land) => {
   return '${firstName} of ${land}'
 }
 ```
-- 화살표 함수는 this를 새로 바인딩(묶음)하지 않습니다.
+- 화살표 함수는 `this` 를 새로 바인딩(묶음)하지 않습니다.
 ```javascript
 //기본 함수
 let gangwon = {
@@ -122,8 +122,8 @@ let gangwon = {
 };
 gangwon.print();
 ```
-  + 출력 시 오류가 발생합니다. this.resorts의 join메소드를 호출하려 했기 때문입니다.(this가 window 객체라 resorts가 undefined 상태입니다.)
-  + 화살표 함수를 사용하면 this의 영역이 제대로 유지됩니다. (resorts 배열 5개가 출력됩니다.)
+  + 출력 시 오류가 발생합니다. `this.resorts` 의 join 메소드를 호출하려 했기 때문입니다.(this 가 window 객체라 resorts 가 undefined 상태입니다.)
+  + 화살표 함수를 사용하면 `this` 의 영역이 제대로 유지됩니다. (resorts 배열 5개가 출력됩니다.)
 ```javascript
 let gangwon = {
   resorts : ["용평", "평창", "강촌", "강릉", "홍천"],
@@ -137,7 +137,7 @@ gangwon.print();
 ```
 
 ## ES6 트랜스파일링
-- 모든 웹 브라우저에서 ES6을 지원하지는 않습니다. 하지만 브라우저에서 ES6 코드를 실행하기 전에 ES5로 컴파일하면 그 브라우저에서도 ES6 코드가 실행됩니다. 이를 '트랜스파일링' 이라 합니다.
+- 모든 웹 브라우저에서 ES6을 지원하지는 않습니다. 하지만 브라우저에서 ES6 코드를 실행하기 전에 ES5로 컴파일하면 그 브라우저에서도 ES6 코드가 실행됩니다. 이를 `트랜스파일링` 이라 합니다.
 ```javascript
 //이전 코드
 const add = (x = 5, y = 10) => console.log(x + y);
