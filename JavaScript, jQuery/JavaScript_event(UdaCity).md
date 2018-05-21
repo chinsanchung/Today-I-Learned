@@ -174,7 +174,10 @@ myCustomDiv.addEventListener('click', respondToTheClick);
 ```HTML
 <body>
   <article id="content">
-  <p>Brownie lollipop <span>carrot cake</span> gummies lemon drops sweet roll dessert tiramisu. Pudding muffin <span>cotton candy</span> croissant fruitcake tootsie roll. Jelly jujubes brownie. Marshmallow jujubes topping sugar plum jelly jujubes chocolate.</p>
+  <p>Brownie lollipop <span>carrot cake</span> 
+ gummies lemon drops sweet roll dessert tiramisu. Pudding muffin
+ <span>cotton candy</span> croissant fruitcake tootsie roll. Jelly jujubes brownie.
+ Marshmallow jujubes topping sugar plum jelly jujubes chocolate.</p>
 </article>
 <script>
  //기존의 방식으로는 전부 다 적용됩니다.
@@ -193,3 +196,58 @@ myCustomDiv.addEventListener('click', respondToTheClick);
 - 모든 element 는 Node 인터페이스로브터 프로퍼티를 상속하기에 Node 인터페이스 중 하나인 `.nodeName` 도 상속합니다.
  + 이 프로퍼티를 사용해서 타겟 element 가 필요한 그 element 인지를 검증합니다.
  + `.nodeName` 프로퍼티는 대문자 문자열로 return 합니다. 소문자로 작성해서는 검증할 수 없습니다.
+
+## DOM 에서의 자바스크립트 위치 설정
+```HTML
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script>
+    document.querySelector('footer').style.backgroundColor = 'green';
+  </script>
+</head>
+<body>
+  <footer>aaa</footer>
+  <!-- script 를 여기로 옮긴다면 스타일이 적용됩니다. 
+  <script>
+    document.querySelector('footer').style.backgroundColor = 'green';
+  </script>
+  -->
+</body>
+</html>
+```
+- head 위에서 선언하면 footer 의 스타일은 바뀌지 않습니다. head 쪽에서 만든 DOM 에는 아직 footer element 가 없기 때문에 querySelector() 에서 오류가 발생합니다. 그래서 DOM element 가 아닌 null 을 return 합니다.
+ + 하단부에서 자바스크립트 코드를 삽입하면 모든 DOM elements 가 존재하게 됩니다.
+### DOMContentLoaded 이벤트
+- DOM 을 완전히 불러온다면 `DOMContentLoaded` 이벤트를 시작합니다.
+```javascript
+document.addEventListner('DOMContentLoaded', function () {});
+```
+- `DOMContentLoaded` 이벤트를 사용한다면 head 쪽에서 자바스크립트 코드를 짜더라도 아무런 문제가 없게 됩니다.
+```HTML
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script>
+    document.addEventListner('DOMContentLoaded', function () {
+     document.querySelector('footer').style.backgroundColor = 'green';
+    });
+  </script>
+</head>
+<body>
+  <footer>aaa</footer>
+</body>
+</html>
+```
+ + 이벤트 리스너를 `DOMContentLoaded` 이벤트로 설정하면 스타일링 코드가 바로 실행되지 않고, DOM 이 구성이 된 다음에야 코드가 실행되도록 만들어줍니다.
+- 과거 개발자들은 `load` 이벤트를 사용해왔습니다.(예 : document.onload()) 일반적으로는 최근 등장한 `DOMContentLoaded` 이벤트를 쓰는게 나은 선택입니다.
+ + 그리고 닫는 body 태그 바로 위에서 코드를 작성하는 것이 더 좋습니다.
+- head 에서 작성한 자바스크립트 코드는 body 의 코드보다 빨리 실행됩니다. 따라서 가능한 빨리 실행해야 하는 자바스크립트 코드가 있다면 head 에서 `DOMContentLoaded` 이벤트를 사용하면 됩니다.
