@@ -87,7 +87,9 @@ class App extends Component {
 
   render() {
     const { searchTerm, result } = this.state;
-    //축약 표기법입니다. (result === null) = (!result), (list.length === 0) = (!list.length), (string !== '') = (string) 입니다.
+/*축약 표기법입니다. 
+(result === null) = (!result), (list.length === 0) = (!list.length), (string !== '') = (string) 입니다.
+*/
     if (!result) { return null; }
 
     return (
