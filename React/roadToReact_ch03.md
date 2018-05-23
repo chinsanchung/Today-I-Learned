@@ -76,7 +76,8 @@ class App extends Component {
 //버튼을 클릭하면 result 객체에서 해당 item 이 제거된 리스트가 업데이트되고, 다른 프로퍼티는 그대로 유지됩니다.
   onDismiss(id) {
     const isNotId = item => item.objectID !== id;
-    //filter 를 쓰는 이유는 리액트가 불변 데이터 구조 원칙을 따라 객체나 상태를 바로 변경할 수 잆어서입니다. 동일한 객체롤 새로 만들어 데이터 형태를 유지합니다.
+/* filter 를 쓰는 이유는 리액트가 불변 데이터 구조 원칙을 따라 객체나 상태를 바로 변경할 수 잆어서입니다. 
+동일한 객체롤 새로 만들어 데이터 형태를 유지합니다. */
     const updatedHits = this.state.result.hits.filter(isNotId);
     this.setState({
       //ES6 전개 연산자인 ... 을 활용합니다. (아래의 형태가 객체 스프레드 연산자입니다. 이것은 Object.assign() 메소드를 대체합니다.)
@@ -91,11 +92,22 @@ class App extends Component {
 
     return (
       <div className="page">
-        <Table
-          list={result.hits}
-          pattern={searchTerm}
-          onDismiss={this.onDismiss}
-        />
+        <div className="interactions">
+          <Search
+            value={searchTerm}
+            onChange={this.onSearchChange}
+          >
+            Search
+        </div>
+/*조건부 rendering 에 result 에 의존하는 Table 컴포넌트를 포함합니다. 
+조건이 참이면 && 논리 연산지의 뒷부분이 출력됩니다. 거짓이면 리액트는 표현식을 무시하고 건너뜁니다. */
+        { result &&
+          <Table
+            list={result.hits}
+            pattern={searchTerm}
+            onDismiss={this.onDismiss}
+          />
+        }
       </div>
     );
   }
@@ -104,11 +116,12 @@ class App extends Component {
   + 컴포넌트는 생성자에서 초기화된 후 rendering 됩니다. 현재 내부 상태 result 는 null 이므로 if 문에 따라 아무것도 표시하지 않습니다.
   + 그 후 componentDidMount() 메소드가 실행돼 해커뉴스 API 요청에 따라 비동기로 데이터를 가져옵니다. 그리고 나서 업데이트 생명주기가 시작됩니다.
   + render() 메소드가 다시 실행되는데 이번에는 result 값이 있어서 리스트가 표시됩니다. 그리고 App 컴포넌트와 Table 컴포넌트가 rendering 됩니다.
-- 객체 스프레드 연산자 : 배열 스프레드 연산자도 있는데 같은 형식으로 쓰면 됩니다.
+- `객체 스프레드 연산자` : 배열 스프레드 연산자도 있는데 같은 형식으로 쓰면 됩니다.
 ```javascript
 const userNames = { firstname: 'Robin', lastname: 'Wieruch' };
 const age = 28;
 //userNames 와 age 를 합친 새로운 객체입니다.
 const user = { ...userNames, age }; //결과 : { firstname: 'Robin', lastname: 'Wieruch', age: 28 }
 ```
-
+- `조건부 rendering` : 하나 또는 여러 컴포넌트와 element 의 rendering 여부를 결정합니다. (예 : if-else 문)
+  + App 컴포넌트는 초기에 아무것도 rendering 되지 않다가 result 값이 업데이트 되면 다시 rendering 하게 됩니다.
