@@ -10,7 +10,7 @@
 - `EventTarget` 인터페이스는 프포퍼티 없이 세 가지 메소드만 존재합니다. `.addEventListner()`, `removeEventListner()`, `.dispatchEvent()`
 
 ### addEventListner 메소드
-- `.addEventListner()` 메소드는 이벤트를 수신(listen) 하고 응답할 수 있습니다. 
+- `.addEventListner()` 메소드는 이벤트를 수신(listen) 하고 응답할 수 있습니다.
   + listen for an event, listen to an event, hook into an event, respond to an event 는 모두 같은 뜻입니다.
 - 이벤트 리스너는 세가지가 필요합니다.
  + 이벤트 타겟(줄여서 타겟), 어떤 타입의 이벤트를 수신할 것인지(줄여서 타입), 이벤트가 발생했을 때 수행할 함수(줄여서 리스너)
@@ -54,7 +54,7 @@ a.myFunction === b.myFunction //false
 document.addEventListner('click', function myEventListeningFunction() {
   console.log('howdy');
  });
- 
+
  document.removeEventListner('click', function myEventListneingFunction() {
   console.log('howdy');
  });
@@ -70,7 +70,7 @@ document.addEventListner('click', function myEventListeningFunction() {
    <div class="container">
     <p>  
 <!-- 버튼 클릭시 1단계 Capturing. html부터 아래로 내려가서 버튼에 도달하면 2단계 at target-->
-      <button>dd</button> 
+      <button>dd</button>
     </p>
    </div>
  </body>
@@ -100,7 +100,7 @@ document.addEventListener('click', function (event) {  // ← the `event` parame
 const links = document.querySelector('a');
 const thirdLink = links[2];
 
-thirdLink.addEvnetListner('click', function (eventtt) {
+thirdLink.addEvnetListner('click', function (even) {
  even.preventDefault();
  console.log("Look, ma! We didn't navigate to a new page!");
 });
@@ -119,7 +119,7 @@ function respondToTheClick() {
 for (let i = 1; i < 200; i++) {
  const newElement = document.createElement('p');
  newElement.textContent = 'This is paragraph num' + i;
- 
+
  newElement.addEventlistner('click', respondToTheClick);
  //div 의 밑인 p 에 넣습니다.
  myCustomDiv.appendChild(newElement);
@@ -138,7 +138,7 @@ function respondToTheClick() {
 for (let i = 1; i <= 200; i++) {
  const newElement = document.createElement('p');
  newElement.textContent = 'This is paragraph number ' + i;
- 
+
  myCustomDiv.appendChild(newElement);
 }
 //이벤트리스너를 div 에 입력합니다.
@@ -174,7 +174,7 @@ myCustomDiv.addEventListener('click', respondToTheClick);
 ```HTML
 <body>
   <article id="content">
-  <p>Brownie lollipop <span>carrot cake</span> 
+  <p>Brownie lollipop <span>carrot cake</span>
  gummies lemon drops sweet roll dessert tiramisu. Pudding muffin
  <span>cotton candy</span> croissant fruitcake tootsie roll. Jelly jujubes brownie.
  Marshmallow jujubes topping sugar plum jelly jujubes chocolate.</p>
@@ -212,7 +212,7 @@ myCustomDiv.addEventListener('click', respondToTheClick);
 </head>
 <body>
   <footer>aaa</footer>
-  <!-- script 를 여기로 옮긴다면 스타일이 적용됩니다. 
+  <!-- script 를 여기로 옮긴다면 스타일이 적용됩니다.
   <script>
     document.querySelector('footer').style.backgroundColor = 'green';
   </script>
