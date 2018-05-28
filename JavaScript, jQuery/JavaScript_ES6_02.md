@@ -63,7 +63,7 @@ console.log(funHike);
 var name = "tallac";
 var elevation = 9777
 var print = function () {
-  console.log('${this.name} 산의 높이는 ${this.elevation} 입니다.');
+  console.log(`${this.name} 산의 높이는 ${this.elevation} 입니다.`);
 }
 var funHike = {name, elevation, print};
 //결과 : 탈락 산의 높이는 9777 입니다.
@@ -77,7 +77,7 @@ var ski = {
   name: name,
   powderYell: function () {
     var yell = this.sound.toUpperCase();
-    console.log('${yell} ${yell} ${yell}');
+    console.log(`${yell} ${yell} ${yell}`);
   }
 }
 
@@ -85,7 +85,7 @@ var ski = {
 var ski = {
   name: name,
   powerYell: this.sound.toUpperCase();
-  console.log('${yell} ${yell} ${yell}');
+  console.log(`${yell} ${yell} ${yell}`);
 }
 ```
 
