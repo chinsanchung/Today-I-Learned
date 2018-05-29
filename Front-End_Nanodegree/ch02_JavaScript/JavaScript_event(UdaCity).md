@@ -7,10 +7,11 @@
 - 사슬의 최상위이기 때문에 다른 인터페이스에서 프로퍼티나 메소드를 상속하지 않습니다.
  + 모든 다른 인터페이스는 `EventTarget` 으로부터 상속받아 그것의 프로퍼티와 메소드들을 가지게 됩니다. (문서 객체, paragraph element, 비디오 element 등은 `EventTarget` 입니다.)
  + element 인터페이스는 `EventTarget` 인터페이스를 상속합니다. 그리고 문서 객체는 문서 인터페이스에서 나오며, 문서 인터페이스는 `EventTarget` 인터페이스를 상속합니다.
-- `EventTarget` 인터페이스는 프포퍼티 없이 세 가지 메소드만 존재합니다. `.addEventListner()`, `removeEventListner()`, `.dispatchEvent()`
+- `EventTarget` 인터페이스는 프포퍼티 없이 세 가지 메소드만 존재합니다. `.addEventListener()`, `removeEventListner()`, `.dispatchEvent()`
 
 ### addEventListner 메소드
-- `.addEventListner()` 메소드는 이벤트를 수신(listen) 하고 응답할 수 있습니다.
+### addEventListener 메소드
+- `.addEventListener()` 메소드는 이벤트를 수신(listen) 하고 응답할 수 있습니다.
   + listen for an event, listen to an event, hook into an event, respond to an event 는 모두 같은 뜻입니다.
 - 이벤트 리스너는 세가지가 필요합니다.
  + 이벤트 타겟(줄여서 타겟), 어떤 타입의 이벤트를 수신할 것인지(줄여서 타입), 이벤트가 발생했을 때 수행할 함수(줄여서 리스너)
@@ -20,12 +21,13 @@
 ```javascript
 const mainHeading = document.querySelector('h1');
 //타겟은 h1, 이벤트 타입은 click, 리스너는 콘솔창에 띄우는 함수입니다.
-mainHeading.addEventListner('click', function () {
+mainHeading.addEventListener('click', function () {
   console.log('The heading was clicked');
 });
 ```
 - 최신 버젼에서는 세번째 매개변수로 동작 방식을 구성하는 객체를 지원합니다. 하지만 아직 널리 지원되지는 않습니다.
 - 다양한 이벤트들이 있으니 문서에서 검색해 사용하는 것이 좋습니다. https://developer.mozilla.org/en-US/docs/Web/Events
+- 참고로 이벤트 타겟에 `getElementsByClassName` 을 넣으면 addEvnetListner 함수를 인식하지 못합니다. `getElementsByTagName` 도 마찬가지입니다.
 
 ## 이벤트 리스너 삭제
 - `.removeEventListener()` 메소드로 이벤트 리스너 를 삭제할 수 있습니다.
@@ -42,16 +44,16 @@ var b = {
 };
 a.myFunction === b.myFunction //false
 ```
-- `.removeEventListener()` 메소드는 `.addEventListner()` 메소드에서 전달한 리스너와 동일한 리스너(함수)를 전달해야 하기에 그 객체가 동등한지를 따져야 합니다.
+- `.removeEventListener()` 메소드는 `.addEventListener()` 메소드에서 전달한 리스너와 동일한 리스너(함수)를 전달해야 하기에 그 객체가 동등한지를 따져야 합니다.
 
 ### removeEventListner
 - 이벤트 타겟, 이벤트의 타입, 삭제할 함수인 리스너 를 필요로 합니다.
 ```HTML
 <event-target>.removeEventListener(<type of event to listen for>, <function-to-remove>);
 ```
- + 여기서 리스너 함수는 `.addEventListner()` 메소드에서 사용한 것과 같은 함수여야만 합니다.
+ + 여기서 리스너 함수는 `.addEventListener()` 메소드에서 사용한 것과 같은 함수여야만 합니다.
 ```javascript
-document.addEventListner('click', function myEventListeningFunction() {
+document.addEventListener('click', function myEventListeningFunction() {
   console.log('howdy');
  });
 
@@ -80,14 +82,14 @@ document.addEventListner('click', function myEventListeningFunction() {
  + 하지만 많은 아이템이 있는 목록일 경우에는 이벤트 핸들러 하나가 모두를 커버한다면 문제가 발생합니다. 버블링으로 아래서부터 하나씩 실행되어 부모에 이르기까지 버블링을 계속 유지하게 됩니다.
  + 하지만 캡쳐링을 이용하면 부모는 자식에게 도달하기 전에 이벤트를 가로챌 수 있습니다.
 
-### addEventListner() 로 알아보기
-- `.addEventListner()` 메소드는 이벤트 타입과 리스너 두 인수만 있는것같지만 실은 하나 더 있습니다.
- + 바로 불리언인 useCapture 인수입니다. 기본적으로 두 인수만 사용한다면 `.addEventListner()` 는 호출 즉시 `capturing` 단계로 가지 않고 버블링 단계를 사용합니다.
+### addEventListener() 로 알아보기
+- `.addEventListener()` 메소드는 이벤트 타입과 리스너 두 인수만 있는것같지만 실은 하나 더 있습니다.
+ + 바로 불리언인 useCapture 인수입니다. 기본적으로 두 인수만 사용한다면 `.addEventListener()` 는 호출 즉시 `capturing` 단계로 가지 않고 버블링 단계를 사용합니다.
 - 세번째 인수는 `capturing` 단계에 대한 불리언입니다. true 면 이벤트 리스너가 `capturing` 단계에서 실행됩니다. false 면 실행되지 않고 기본값인 버블 단계로 실행됩니다.
 
 ### 이벤트 객체
 - 이벤트가 발생하면 브라우저에는 이벤트 객체가 포함됩니다.
- + `.addEventListner()` 메소드의 리스너 함수는 지정한 타입의 이벤트가 발생할 때 이벤트 인터페이스를 구현하는 객체를 알리는 내용을 수신합니다.
+ + `.addEventListener()` 메소드의 리스너 함수는 지정한 타입의 이벤트가 발생할 때 이벤트 인터페이스를 구현하는 객체를 알리는 내용을 수신합니다.
 ```javascript
 //이벤트 객체를 저장할 파라미터를 만들었습니다. 리스너 함수가 호출되면 이벤트 데이터를 저장할 수 있게 됩니다.
 document.addEventListener('click', function (event) {  // ← the `event` parameter is new!
@@ -120,7 +122,7 @@ for (let i = 1; i < 200; i++) {
  const newElement = document.createElement('p');
  newElement.textContent = 'This is paragraph num' + i;
 
- newElement.addEventlistner('click', respondToTheClick);
+ newElement.addEventListener('click', respondToTheClick);
  //div 의 밑인 p 에 넣습니다.
  myCustomDiv.appendChild(newElement);
 }
@@ -142,7 +144,7 @@ for (let i = 1; i <= 200; i++) {
  myCustomDiv.appendChild(newElement);
 }
 //이벤트리스너를 div 에 입력합니다.
-myCustomDiv.addEventListner('click', respondToTheClick);
+myCustomDiv.addEventListener('click', respondToTheClick);
 
 document.body.appendChild(myCustomDiv);
 ```
@@ -185,7 +187,7 @@ myCustomDiv.addEventListener('click', respondToTheClick);
     console.log('A span was clicked with text ' + evt.target.textContent);
 });
  //특정 Node 에만 이벤트를 적용시킵니다. span 을 클릭한다면 실행, 아니면 실행하지 않습니다.
- document.querySelector('#content').addEventListner('click', function (evt) {
+ document.querySelector('#content').addEventListener('click', function (evt) {
   if (evt.target.nodeName === 'SPAN') {
    console.log('a span was clicked with text ' + evt.target.textContent);
   }
@@ -225,7 +227,7 @@ myCustomDiv.addEventListener('click', respondToTheClick);
 ### DOMContentLoaded 이벤트
 - DOM 을 완전히 불러온다면 `DOMContentLoaded` 이벤트를 시작합니다.
 ```javascript
-document.addEventListner('DOMContentLoaded', function () {});
+document.addEventListener('DOMContentLoaded', function () {});
 ```
 - `DOMContentLoaded` 이벤트를 사용한다면 head 쪽에서 자바스크립트 코드를 짜더라도 아무런 문제가 없게 됩니다.
 ```HTML
@@ -237,7 +239,7 @@ document.addEventListner('DOMContentLoaded', function () {});
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
   <script>
-    document.addEventListner('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
      document.querySelector('footer').style.backgroundColor = 'green';
     });
   </script>
