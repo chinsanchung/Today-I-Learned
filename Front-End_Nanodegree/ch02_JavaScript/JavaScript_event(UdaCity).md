@@ -9,7 +9,6 @@
  + element 인터페이스는 `EventTarget` 인터페이스를 상속합니다. 그리고 문서 객체는 문서 인터페이스에서 나오며, 문서 인터페이스는 `EventTarget` 인터페이스를 상속합니다.
 - `EventTarget` 인터페이스는 프포퍼티 없이 세 가지 메소드만 존재합니다. `.addEventListener()`, `removeEventListner()`, `.dispatchEvent()`
 
-### addEventListner 메소드
 ### addEventListener 메소드
 - `.addEventListener()` 메소드는 이벤트를 수신(listen) 하고 응답할 수 있습니다.
   + listen for an event, listen to an event, hook into an event, respond to an event 는 모두 같은 뜻입니다.
