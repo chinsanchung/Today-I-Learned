@@ -110,7 +110,7 @@ thirdLink.addEvnetListner('click', function (even) {
 ## 반복문에 이벤트를 효과적으로 적용시키기
 - 기본적인 형태로 for 반복문 안에 이벤트 핸들러를 위치시킨다면 반복하는 갯수만큼의 이벤트 리스너가 만들어집니다.
  + 이벤트 리스너 함수를 생성자 함수로 만든다면 반복문으로 함수가 만들어지더라도 같은 함수가 됩니다. 그리고 함수를 외부에서 선언하는 방법도 좋습니다.
-```javasciprt
+```javascript
 const myCustomDiv = document.createElement('div');
 
 function respondToTheClick() {
@@ -129,7 +129,7 @@ for (let i = 1; i < 200; i++) {
 document.body.appendChild(myCustomDiv);
 ```
  + 이 방법은 함수는 하나지만 이벤트 리스너는 여러 개가 됩니다. 만약 <p> 가 아닌 <div> 에 이벤트 리스너를 배치한다면 하나의 이벤트 리스너에 하나의 리스너 함수로 줄일 수 있습니다.
-```javasciprt
+```javascript
 const myCustomDiv = document.createElement('div');
 
 function respondToTheClick() {

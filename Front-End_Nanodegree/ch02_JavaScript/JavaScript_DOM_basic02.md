@@ -88,6 +88,22 @@ const htmlTextToAdd = '<h2>ocean</h2>';
 //afterend 위치에 htmlTextToAdd 변수인 <h2>ocean</h2> 를 실행합니다.
 mainHeader.insertAdjacentHTML('afterend', htmlTextToAdd);
 ```
+- 참고로 배열 형태로 저장된 DOM element 들을 출력할 때는 아래의 형식을 따라야 합니다.
+```javascript
+//<li class=cards> aaa </li> 가 여러개 있다고 가정합니다.
+const cards = document.getElementsByClassName('card');
+
+let newDeck = '';
+function randomDeck () {
+  for (const card of cards) {
+    //이 방식으로 하면 newDeck 은 그저 [Object ~~]라는 문자열 * cards.length 가 됩니다.
+    newDeck += `${card}`;
+    //이 방식이 정답입니다.
+    deck.insertAdjacentHTML('beforeend', card);
+  }
+}
+//여기서 newDeck 은 [object]
+```
 
 ## 페이지 콘텐츠 삭제하기
 ### 자식 element 삭제하기
