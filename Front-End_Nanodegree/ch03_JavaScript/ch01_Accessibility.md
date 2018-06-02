@@ -21,8 +21,33 @@
 - HTML 의 input, button, select 는 implicitly focusable 입니다.
   + 이들에게는 기본적으로 `Tab Order` 와 키보드 이벤트 핸들링이 탑재되어 있습니다.
 - 이미지, 글자들은 implicitly focusable 이 아닙니다. 따라서 `Tab Order` 를 쓸 수 없습니다.
-
-
+- `Tabindex` : 이 attribute 는 `<div tabindex="0">aa</div>` 형식으로 사용합니다.
+  + `tabindex="-1"` 은 자연적인 tab order 가 아니고, `focues()` 메소드를 이용해서 임의로 포커스를 맞출 수 있습니다.
+```javascript
+document.querySelector('#modal').focus();
+```
+  + `tabindex="0"` 는 자연스런 tab order 입니다. 이것 역시 `focus()` 메소드로 포커스를 맞출 수 있습니다.
+```HTML
+<!-- 이것 하나만으로는 tab 키로 포커스를 잡지 못합니다. -->
+<div id="dropdown">Settings</div>
+<!-- 이렇게 tabindex 를 줘야 포커스를 할 수 있습니다. -->
+<div id="dropdown" tabindex="0">Settings</div>
+```
+  + `tabindex="0 이상"` : 자연스러운 tab order 입니다. tab 순서의 앞쪽으로 점프합니다. 이 방식은 anti-pattern 이기에 권장되지 않습니다. 스크린 리더 사용자에게 혼란을 줄 수 있어서입니다. 만약 어떤 것을 tab order 보다 앞에 두고 싶다면 DOM 을 그 위로 위치시키는게 더 좋습니다.
+- `skip links` : tab order 를 주지 않는 방법입니다.
+```HTML
+<style>
+/* top 을 -40 으로 해서 안보이도록 만듭니다. */
+.skip-link { position: absolute; top: -40px; left: 0; background: #BF1722; color: white; padding: 8px; z-index: 100; }
+/* 가상의 클래스입니다. 해당 element 가 포커스를 받으면 발생합니다. */
+.skip-link:focus{ top: 0; }
+</style>
+<a href="#maincontent" class="skip-link">aaa</a>
+<nav>~~</nav>
+<!-- a 태그와 main 태그는 연결됐습니다. 만약 오래된 브라우저에서 포커스를 주고 싶지 않다면
+main 안에 tabindex="-1" 을 줍니다.-->
+<main id="maincontent">~~</main>
+```
 - `keyboard trap` : 선택이 끝났는데도 계속 해당 위치에 남아있는 것을 말합니다. (예 : select 태그에서 다음 태그로 넘어가지 않는 경우, 모달 창이 떴는데도 모달 창 밖에서 tab 키가 먹히는 경우)
 ```HTML
 <!-- 해결책 -->
