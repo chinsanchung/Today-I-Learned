@@ -1,5 +1,5 @@
 # Accessibility (Udacity)
-- Accessibility(접근가능성)은 유저가 웹 사이트에 쉽게 접근하고 사용가능하도록 만들어주는 목적입니다.
+- Accessibility(접근가능성)은 유저가 웹 사이트에 쉽게 접근하고 사용가능하도록 만들어주는 목적입니다. 줄임말로 `Ally` 라고 합니다.
   + 사이트의 콘텐츠를 누구나 접근할 수 있게 만들어야 합니다.
   + 페이지의 기능들은 누구나 조작할 수 있어야 합니다.
 - 인지(시각, 청각) 문제, 신체의 불편 등의 문제가 있어도 웹 콘텐츠에 접근하도록 도와야 합니다.
@@ -141,3 +141,52 @@ function closeModal() {
   focusedElementBeforeModal.focus()
 }
 ```
+# Semantics
+- Role, Name, Value
+- Accessiblity Tree : screen reader 가 바라보는 Accessiblity 나무는 아래와 같습니다.
+  + main -> form -> radio button / edit text / combo box / button
+  + 중점은 HTML 에서 screen reader 가 읽을 부분만을 추출해서 만든 게 Accessiblity tree 입니다.
+- DOM 은 브라우저나 다양한 플랫폼에서 인식할 수 있는 standard native HTML elements 를 사용합니다. (link, button 등) 이들을 활용해서 접근가능성을 높일 수 있습니다.
+- 텍스트가 아닌 내용이라도 대안으로라도 텍스트로 제공해야 합니다.
+- label 에는 visible label 과 text alternative 가 있습니다.
+  + visible label : 모든 사용자가 element 의 의미에 연결할 수 있습니다. (예 : 라디오 버튼)
+  + text alternative : visual label 이 필요없을 때에만 사용됩니다. (예 : 이미지) text alternative 는 페이지 상에는 나타나진 않습니다.
+```HTML
+<!-- alt 에 설명을 적으면 screen reader 가 읽어줍니다. -->
+<img alt="Rabbit is eating a carrot" src="rabbit.jpg">
+```
+  + visible, non-visible label 을 사용하려면 다음의 사항을 준수하면 됩니다. 'Form 버튼은 descriptive value 가 있습니다.' 'Form 인풋(체크박스 등)은 텍스트 label과 연결해야 합니다.'
+```HTML
+<input type="checkbox" checked name="jLetter">Receive
+<!-- 위의 방식은 좋지 않은 방식입니다. 해결하려면 -->
+<label><input type="checkbox" checked name="jLetter">Receive</label>
+<!-- 또는 input 에 id 를 주고 연결합니다. 이러면 라벨을 체크해서 체크박스를 움직일 수 있습니다. -->
+<input type="checkbox" checked name="jLetter" id="letter">
+<label for="letter">Receive</label>
+```
+# Navigating by Headings
+- screen reader 에 있어서 헤더의 존재는 매우 중요합니다. 헤더로 목적지를 정하고 출발해야 하기 때문입니다.
+  + 'reading and navigation order(determined by code order) is logical and intuitive(직관적인)'
+  + 전체 문서 구조에서 개인적인 콘텐츠 섹션은 적절한 위치에 헤더를 사용해서 디자인해야 합니다.
+  + 모든 헤더를 페이지에 보여줄 필요는 없습니다. 몇몇은 off screen 으로 사용합니다.
+- link Text
+  + 패턴 1 : `<a href="#internal">Now I'm in a link</a>` 올바르게 경로를 설정했습니다.
+  + 패턴 2 : 다른 태그로 클릭 이벤트를 설정하기보다는 버튼을 만듭니다.
+```HTML
+<!-- 권장되지 않습니다. -->
+<a href="#" onclick="do()">do<a>
+<!-- 버튼으로 설정합시다. -->
+<button class="link" onclick="do()">do</button>
+```HTML
+  + 패턴 3 :
+```HTML
+<a href="/">
+  <img src="logo.jpg">
+</a>
+<!-- 아래의 방식으로 접근성을 높입니다. -->
+<a href="/">
+  <img src="logo.jpg" alt="Udacity">
+</a>
+```
+- Landmarks : HTML5 에서는 Landmarks 를 지원합니다. [Udacity Landmarks](https://youtu.be/bww3IaktlRY)
+  + header(->nav) - main(->section -> article / aside) - footer
