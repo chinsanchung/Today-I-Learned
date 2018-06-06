@@ -1,0 +1,156 @@
+# 자바스크립트 함수 (Udacity)
+## 화살표 함수
+- ES6 에서부터 생긴 함수입니다. function 하고 return 없이 작성합니다.
+```javascript
+const upperizedNames = ['a', 'b', 'c'].map(function(name) {
+  return name.toUpperCase();
+});
+// 화살표 함수
+const upperizedNames = ['a', 'b', 'c'].map( name => name.toUpperCase() );
+```
+- 기존 함수는 함수 선언식 또는 함수 표현식이 될 수 있지만, 화살표 함수는 언제나 함수 표현식입니다. 함수 표현식은 변수에 저장, 함수의 인수로 전달, 객체의 프로퍼티에 저장이라는 과정이 포함됩니다.
+  + 참고로 화살표 함수가 변수로 저장되는 경우 이렇게 됩니다.
+```javascript
+const greet = name => `Hello ${name}.`;
+// 이 화살표 함수는 이렇게 불러냅니다.
+greet('Jin');  //결과 : Hello jin.
+```
+- 파라미터가 두 개 이상일 경우 괄호를 써서 묶어야 합니다. 또한 아무런 파라미터가 없을 때도 괄호를 사용합니다.
+```javascript
+const sayHi = () => console.log('Hello Udacity Student!');
+sayHi(); // 결과 : Hello Udacity Student!
+
+const orderIceCream = (flavor, cone) => console.log(`Here's your ${flavor} ice cream in a ${cone} cone.`);
+orderIceCream('chocolate', 'peanut'); // 결과 : Here's your chocolate ice cream in a peanut  cone.
+```
+- 위에서의 단 하나만 함수로 표현한 방식을 `간결한 본문 구문(consice body syntax)` 라고 부릅니다.
+  + 함수의 몸을 감싸는 중괄호가 없고, 표현식을 자동으로 return 합니다.
+- 화살표 함수의 본문에 한 줄 이상의 코드가 필요할 경우 `블록 본문 구문(block body syntax)` 를 사용할 수 있습니다.
+  + 블록 본문 구문은 중괄호를 사용합니다. 그리고 return 할 때는 return 문을 써야 합니다.
+```javascript
+const upperizedNames = ['a', 'b', 'c'].map( name => {
+  name = name.toUpperCase();
+  return `${name} has ${name.length} characters in their name`;
+});
+```
+- 화살표 함수의 주의점 : this 키워드는 기존 함수와는 전혀 다르게 사용합니다. 또한 화살표 함수는 선언으로 쓰지 못합니다.
+
+## this 와 기존의 함수
+- 기존의 함수에서의 this 는 어떻게 그 함수(혹은 메소드)가 호출된건지에 따릅니다.
+1. 새로운 객체
+```javascript
+const mySundae = new Sundae('chocolate', ['peanut', 'cherry']);
+```
+- 여기서의 Sundae 생성자 함수 내부의 this 값은 새로운 객체입니다. new 키워드로 호출됐기 때문입니다.
+2. 특정 객체
+```javascript
+// 함수가 call 이나 apply 로 선언됐다면
+const result = obj1.printName.call(obj2);
+```
+- printName() 내부의 값은 obj2 를 참조합니다. call() 의 첫 파라미터는 this 가 참조하는 값을 명시적으로 설정하기 때문입니다.
+3. context 객체
+```javascript
+// 함수가 객체의 메소드라면
+const redTrain = new Train('red');
+redTrain.increaseSpeed(25);
+```
+- increaseSpeed() 안의 this 값은 redTrain 을 참조합니다.
+4. 전역 객체나 undefined
+```javascript
+// 함수가 아무런 context 없이 불렸다면
+teleport();
+```
+- teleport() 안의 this 값은 전역 객체 혹은 정의되지 않은 값입니다.
+
+## this 와 화살표 함수
+- 화살표 함수의 this 값은 함수의 주변 context 를 기반으로 합니다. (화살표 내부 함수의 this 값 = 함수 외부의 this 값)
+```javascript
+// 기존 함수에서의 this 값
+function IceCream() {
+  this.scoops = 0;
+}
+
+IceCream.prototype.addScoop = function () {
+  setTimeout(function() {
+    this.scoops++; // 함수 내부에 있는 this 를 참조합니다.
+    console.log('scoop added.');
+  }, 500);
+};
+
+const dessert = new IceCream();
+dessert.addScoop(); //결과 : scoop added.
+/* 여기서의 setTimeout 은 call(), apply(), context 객체, 그리고 new 없이 호출됐습니다.
+그래서 새로운 scoops 변수가 만들어졌고 그 기본값은 undefined 입니다.
+ */
+console.log(dessert.scoops); //결과 : 0
+console.log(scoops); //결과 : NaN
+```
+- 이번에는 클로저를 사용해봅니다.
+```javascript
+function IceCream() {
+  this.scoops = 0;
+}
+
+IceCream.prototype.addScoop = function () {
+  //this 를 cone 변수로 정합니다.
+  const cone = this;
+  setTimeout(function () {
+    cone.scoops++; //이번에는 cone 변수를 참조합니다.
+    console.log('scoop added.');
+  }, 0.5);
+};
+
+const dessert = new IceCream();
+dessert.addScoop();
+/* 함수가 호출될 때 cone 변수를 참조합니다. setTimeout 함수 밖에서의 this 값을 사용하기에
+결과는 올바르게 1이 출력됩니다. */
+console.log(dessert.scoops); //결과 : 1
+
+//위 함수를 화살표 함수로 변경합니다.
+IceCream.prototype.addScoop = function () {
+  setTimeout(() => {
+    this.scoops++;
+    console.log('scoop added.');
+  }, 0.5);
+};
+/* 함수가 호출될 때 addScoop() 안의 this 값은 dessert 를 참조합니다.
+화살표 함수는 setTimeout() 에 전달되기 떄문에 주변의 context 를 활용하여 this 가 내부에서 참조하는 것을 판별합니다.
+따라서 this 는 화살표 함수 밖의 dessert 를 나타내므로 화살표 함수 내부의 값은 dessert 입니다.
+*/
+```
+  + 위 화살표 함수는 주변 context 에서 this 값을 상속하기에 코드는 정상적으로 작동합니다.
+- 만약 addScoop 메소드도 화살표 함수로 바꾼다면 어떻게 될까요?
+```javascript
+IceCream.prototype.addScoop = () => {
+  setTimeout(() => {
+    this.scoop++;
+    console.log('scoop added.');
+  }, 0.5);
+};
+
+const dessert = new IceCream();
+dessert.addScoop();
+```
+  + 화살표 함수는 주변 context 에서 this 값을 상속합니다. addScoop() 메소드 바깥에서 this 값은 전역 객체입니다. 따라서 addScoop() 메소드가 화살표 함수라면 addScoop() 안의 this 값은 전역 객체입니다. setTimeout() 함수에 전달되는 this 값은 전역 객체입니다.
+
+## 기본 함수 파라미터 (Default Function Parameters)
+```javascript
+//잘못된 기본 함수 파라미터
+function greet(name, greeting) {
+  name = (typeof name !== 'undefined') ? name : 'Student';
+  greeting = (typeof greeting !== 'undefined') ? greeting : 'Welcome';
+
+  return `${greeting} ${name}`;
+}
+
+//기본 함수 파라미터를 사용함
+function greet(name = 'Student', greeting = 'Welcome') {
+  return `${greeting} ${name}!`;
+}
+
+greet(); //결과 : Welcome Student!
+greet('Jin') //결과 : Welcome Jin!
+greet('Jeong', 'Jin') // 결과 : Jeong Jin!
+```
+- 필요한 인수가 제공되지 않을 경우 함수의 기본값을 제공합니다. ES6 에서는 기본값을 만드는 `기본 함수 파라미터` 를 도입했습니다.
+- `기본 함수 파라미터` 를 만드려면 등호(=) 를 추가하고 인수가 제공되지 않은 경우 파라미터의 기본값을 지정합니다.
