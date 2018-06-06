@@ -1,4 +1,5 @@
 # ARIA (Accessible Rich Internet Applications)
+- [Mozila ARIA 파트](https://developer.mozilla.org/ko/docs/Web/Accessibility/ARIA)
 - 보통은 WAI(Web Accessibility Initiative)-ARIA 라고 합쳐서 부릅니다.
 - ARIA 는 Accessiblity tree 로 번역될 elements 의 attributes 를 지정합니다.
   + 예 : checkbox 를 screen reader 가 읽지 못할 때 ARIA attributes 를 넣으면 screen reader 가 해당 elements 를 checkbox 로 인식하게 만들어줍니다. (name만 있음 -> name, state 있음)
@@ -111,3 +112,11 @@ button:focus {
 .toggle.pressed {  }
 /* ARIA 와 CSS 조합하기 */
 .toggle[aria-pressed="true"] {  }
+```
+### 화면 조절
+- meta viewport 태그 사용하기 : 아래같이 설정을 하면 스크린에 맞춰서 화면을 조절해줍니다.
+```HTML
+<meta name="viewport" content="width=device-width, initial-scale=1">
+```
+- 상대적인 사이즈 조절 : 'width: 50%', 'font-size: 1.2em'(부모의 폰트사이즈),  'font-size: 2rem'(root 의 폰트 사이즈)
+- 버튼 등의 사이즈를 크게 잡아 다른 것들이 눌리지 않게 합시다(최소 48 픽셀). 아이콘 이미지가 작더라도 패딩을 추가해서 48픽셀을 맞추도록 합니다. 또한 버튼 주위에 최소 32 픽셀의 마진이 있으면 좋습니다.
