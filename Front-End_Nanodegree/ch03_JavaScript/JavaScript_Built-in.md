@@ -540,6 +540,7 @@ function* getEmployee() {
 const generatorIterator = getEmployee();
 
 // get the first name out of the generator
+/* next() 에 대한 첫 호출은 일부 데이터를 전달하지만 어디에도 저장되지 않습니다. */
 let name = generatorIterator.next().value;
 
 // pass data in *and* get the next name
