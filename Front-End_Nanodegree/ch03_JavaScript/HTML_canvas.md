@@ -26,6 +26,10 @@
    + `drawImage` 는 캔버스 객체에서 제공합니다. 매개변수로는 컨텍스트에 그릴 element, x축, y축, 너비, 높이 입니다.
    + 위 toDataURL 은 실행되지 않을 것입니다. 보여줄 이미지를 직접적으로 호스팅하지 않아서입니다. (Uncaught SecurityError: Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported.)
    + 마우스 우클릭 없이 이미지를 저장하려 서버를 만들어야 합니다.
+- `createImageData()` : 새로운 빈 이미지데이터 객체를 만듭니다.
+- `getImageData()` : 지정된 사각형의 픽셀 데이터를 캔버스에 복사하는 이미지데이터 객체를 return 합니다.
+- `putImageData()` : 지정된 이미지데이터 객체의 데이터를 다시 캔버스에 넣습니다.
+
 
 ### 로컬 웹 서버
 - 파이썬 :
@@ -72,12 +76,20 @@ ctx.lineTo(10, 10);
 ctx.fill(); //채워진(검은색) 삼각형
 ctx.stroke(); //채워지지 않은(하얀색) 삼각형
 ```
+- `fill()` : 현재 드로잉을 채웁니다.
+- `stroke()` : 정의했던 경로에 실제로 그립니다.
+- `beginPath()` : 경로를 시작하거나 현재 경로를 새로고칩니다.
+- `moveTo` : 라인을 만들지 않고 캔버스의 특정 위치로 경로를 이동합니다.
+- `lineTo()` : 새로운 포인트를 더하고 거기서부터 특정 위치까지 선을 긋습니다.
+
+
 
 ## 움직이는 물체
 - `scale(x, y)` : x 하고 y 값만큼 곱합니다. (x 축에서 x 배, y 축에서 y 배)
 - `translate(x, y)` : 모든 그리기 명령들을 가로는 x 만큼 수직, 세로는 y 만큼 수평 이동합니다. (x 픽셀 뒤의 모든 elements 를 오른쪽으로 이동, 40 픽셀 아래로 이동)
 - `ctx.rotate(x)` : 중심부의 특정 라디안( 각도 * (Math.PI/180) )만큼 회전시킵니다.
 - 참고로 먼저 물체를 `scale` 하고 나서 `rotate` 한 후에 `translate` 을 마지막으로 해야합니다.
+- `transform()` : 현재의 변형 매트릭스를 변경합니다.
 
 ## 캔버스 상테 저장 및 복원
 - 모든 캔버스 객체는 드로잉 states 의 스택을 포함합니다. (스택 : 새로운 항목을 한 쪽에서만 푸시할 수 있는 데이터 구조)
@@ -148,6 +160,10 @@ ctx.strokeStyle = 'black';
 ctx.lineWidth = 3;
 ctx.strokeText("canvas meme", c.width / 2, 40);
 ```
+- `fillText()` : 채워진 글자를 캔버스에 그립니다.
+- `strokeText()` : 채워지지 않은 글자를 캔버스에 그립니다.
+- `measureText()` : 지정된 글자의 너비를 포함한 객체를 return 합니다.
+
 
 ## 비디오
 - `requestAnimationFrame` 을 사용해서 비디오를 캔버스에 재생합니다.
