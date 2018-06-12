@@ -251,3 +251,59 @@ gulp.task('default', function () {
 ```
 - 작은 이미지는 더 공격적으로 손실 압축을 할 수 있습니다.
   + 그 중에서 SVG 는 XML 형식으로 파일 크기를 늘리거나 품질을 저하하지 않으면서 무한대로 확장이 가능합니다.
+
+## jasmine
+- jasmine 은 프론트엔드 테스트에 사용하는 테스팅 프레임워크입니다. 현재 높은 인지도를 가지고 있는 프레임워크는 Mocha 와 jasmine 둘입니다.
+- (자스민으로 프론트엔드 테스트 코드 작성하기)[http://blog.jeonghwan.net/tool/2017/03/28/jasmine.html]
+- `$ npm install -g jasmine` 으로 설치하고 HTML 에는 아래의 코드를 추가합니다.
+```HTML
+<link rel="shortcut icon" type="image/png" href="jasmine/lib/jasmine-2.0.0/jasmine_favicon.png">
+<link rel="stylesheet" type="text/css" href="jasmine/lib/jasmine-2.0.0/jasmine.css">
+
+<script type="text/javascript" src="jasmine/lib/jasmine-2.0.0/jasmine.js"></script>
+<script type="text/javascript" src="jasmine/lib/jasmine-2.0.0/jasmine-html.js"></script>
+```
+- 테스트 러너로는 Karma 를 사용합니다. 우선 `npm init` 으로 package.json  파일을 만든 후 `npm i karma --save-dev` 로 karma 를 다운로드 받습니다.
+  + 그 다음 `node_modules/.bin/karma init` 으로 설정 파일을 만듭니다. (여기서 어떤 프레임워크를 쓸 건지 묻는데 jasmine 을 선택합니다.)
+  + 그러면 karma.conf.js 파일이 생성됩니다.
+```javascript
+module.exports = function (config) {
+  config.set({
+    frameworks: ['jasmine'],
+    files: [
+      './src/소스 파일명',
+      './test/테스트할 파일명'
+    ],
+    //테스트 종료 후 계속 파일 변화를 탐지하면서 테스트를 자동으로 재실행합니다.
+    autoWatch: true,
+    browsers: ['chrome']
+  })
+}
+```
+```javascript
+//소스 파일 src/hello.js
+let Hello = {
+  message: 'hello',
+  greeting() {
+    return this.message;
+  }
+};
+```
+```javascript
+//테스트 파일 test/hello.spec.js
+/* describe 으로 묶은 코드들을 Suite 라고 부릅니다. 아래 it 이라는 익명함수 부분을
+명세(specification), 줄여서 spec 으로 부릅니다. */
+describe('Hello', () => {
+  describe('greeting', () => {
+    it('greeting 문자열 반환', () => {
+//expect 값에 return 하길 기대하는 문자열을 저장합니다.
+      const expectedStr = hello.message,
+//실제 return 한 값입니다.
+            actualStr = hello.greeting();
+      //expect 와 toBe 의 값이 같은지를 jasmine 으로 검증합니다.
+      expect(actualStr).toBe(expectedStr);
+    })
+  })
+});
+```
+  + cmd 에 `node_modules/.bin/karma start` 를 실행합니다.
