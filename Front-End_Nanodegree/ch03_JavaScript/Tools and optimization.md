@@ -307,3 +307,20 @@ describe('Hello', () => {
 });
 ```
   + cmd 에 `node_modules/.bin/karma start` 를 실행합니다.
+
+### 비동기적 함수
+- 비동기적인 함수를 다룰 때는 `beforeEach` 와 `done` 함수를 사용합니다.
+- `beforeEach` 와 `afterEach` 는 테스트 단위(it) 으로 실행됩니다.
+  + 테스트를 실행하기 전에 `beforeEach` 가 실행되고 테스트 종료 후에는 `afterEach` 가 실행됩니다.
+  + 만약 부모 Suite 에서 `beforeEach` 와 `afterEach` 가 있는 경우 부모에서 정의된 것부터 실행합니다.
+[beforeEach 설명 블로그](https://blog.outsider.ne.kr/1129)
+[비동기 javascript 테스트-영어](https://blog.carbonfive.com/2012/07/25/asynchronous-javascript-testing-in-jasmine-mocha-and-vows/)
+- `done` 함수 : 기본적으로 `done` 함수는 자바스크립트 인터프리터가 다음 줄의 비동기 함수 코드 라인을 실행하지 않도록 막아줍니다.
+```javascript
+beforeEach (function (done) {
+  testfunction(0, function () {
+    done();
+  });
+});
+```
+  + 이 함수는 다음 테스트가 실행될 때마다 함수를 실행하기 전에는 비동기이지만 함수의 끝에서 `done` 을 수행하면 testfunction 이 효과적으로 실행될 때까지 강제로 실행됩니다.
