@@ -163,3 +163,47 @@ getJSON('../data/earth-like-results.json')
 
 #### map
 - map 메소드로 프로미스 생성
+```javascript
+getJSON('../data/earth-like-results.json')
+.then(function (response) {
+  var sequence = Promise.resolve();
+  response.result.map(function (url) {
+//데이터를 가져오고(getJSON), 그 후에 섬네일을 만듭니다.
+    getJSON(url).then(createPlanetThumb);
+  });
+});
+```
+  + 이 방식으로는 parallel 형태로 데이터를 불러옵니다.
+
+#### Promise.all()
+```javascript
+Promise.all(arrayOfPromises)
+.then(function(arrayOfValues) { /*실행*/  });
+```
+- `Promise.all()` 은 인수로 프로미스의 배열을 사용합니다.
+  + 그것을 실행한 후 then 에서 원래 프로미스의 순서대로 배열의 값들을 return 합니다. (= arrayOfPromises 와 arrayOfValues 의 순서는 같습니다)
+- `.all()` 에서 실패한 경우 첫 프로미스가 reject 되자마자 다른 모든 프로미스가 settle 될 때까지 기다리지 않고 바로 reject 됩니다.
+  + 프로미스에서 하나만 reject 되더라도 모두 다 reject 된다는 뜻입니다.
+  + resolve 된 경우 다음 체인이 배열 값을 가지게 됩니다.
+```javascript
+getJSON('../data/earth-like-results.json')
+.then(function(response) {
+  //모든 url 을 getJSON 에 전달합니다. map 이라서 getJSON 은 바로 실행됩니다.
+  var arrayOfPromises = response.results.map(function (url) {
+    getJSON(url);
+  });
+ //줄여서 변수 없이 return Promise.all(response.results.map(getJSON)); 으로도 가능합니다.
+  return Promise.all(arrayOfPromises);
+})
+/*모든 promise 들이 settle 되면 아래의 then 이 실행됩니다.
+arrayOfPromises 와 arrayOfPlanetData 의 순서는 같습니다. */
+.then(function (arrayOfPlanetData) {
+  arrayOfPlanetData.forEach(function (planet) {
+    createPlanetThumb(planet);
+  });
+})
+.catch(function (error) {
+  console.log(error);
+});
+```
+  + parallel 로 모든 요청이 발생합니다. 이번에는 발생한 순서를 정확히 할 수 있습니다.
