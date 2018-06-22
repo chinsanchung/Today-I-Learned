@@ -159,3 +159,70 @@ document.dispatchEvent(myCustomeEvent);
 ```
 
 ### backbone 이벤트 설정하기
+[공식 페이지 이벤트 소개](http://backbonejs.org/#Events)
+```javascript
+var object = {};
+
+_.extend(object, Backbone.Events);
+//콜백 함수를 target(여기선 object) 에 묶습니다.
+object.on('alert', function (msg) {
+  alert('trigger ' + msg);
+});
+object.trigger('alert', 'an event'); //결과 : trigger an event
+```
+
+### backbone 라우트
+[공식 페이지 라우트 소개](http://backbonejs.org/#Router-routes)
+
+### url 바꾸기
+- 예를 들어 'https://en.wikipedia.org/wiki/Udacity#History' 페이지는
+  + `https://` : 프로토콜
+  + `en.wikipedia.org` : 도메인
+  + `/wiki/Udacity` : 경로(path)
+  + `#History` : 조각 식별자
+- 보통 프로토콜, 도메인, 경로가 바뀌면 페이지를 새로고침하지만, 조각 식별자는 바뀌더라도 새로고침하지 않고 이벤트가 발생합니다.
+- `hashchange`
+  + 조각 식별자를 추가하거나 바뀔 때 `hashchange` 이벤트가 발생합니다.
+  + 프레임워크는 이 이벤트로 싱글 페이지 앱의 라우팅을 강화합니다.
+```HTML
+<h1>New Page Heading</h1>
+<p>New page content. Lorem ipsum...</p>
+<script>
+//HTML 내부가 아니라 다른 js 파일이라고 가정합니다.
+//조각 식별자가 바뀌면 페이지의 콘텐츠를 새로운 데이터로 업데이트합니다.
+$(window).on('hashchange', function() {
+    var newPageUrl = getFragmentIdentifier();
+
+    $.get( newPageUrl, function( pageContents ) {
+        $('#content').html( pageContents );
+    })
+});
+</script>
+```
+- `pushState`
+  + HTML5 부터 `window.history.pushState(state, title, url)` 객체가 생겼습니다.
+  + `pushState` 메소드는 브라우저의 히스토리 스택의 콘텐츠를 업데이트합니다.
+  + 인수는 총 3개입니다. `state` 는 히스토리 스택의 새 엔트리와 관련된 정보를 담은 객체입니다.
+  + `title` 은 문자열입니다. 이 필드는 현재 무시합니다.
+  + `url` 은 문자열입니다. 제공된 url 은 절대 혹은 상대 url 이라도 괜찮습니다. 다만 현재 페이지와 같은 출처여야 합니다.
+```javascript
+/* 예를 들어 https://developer.mozilla.org/en-US/docs/Web/API/History_API 에 접속할 때 브라우저는 아래의 세 히스토리 스택을 가지고 있을 것입니다.
+    https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
+    https://developer.mozilla.org/
+    New Tab
+*/
+var state = { 'userId': 13579, 'secret': 'HTML5 is awesome' };
+var title = 'A secret page!';
+var url = 'https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5';
+
+history.pushState(state, title, url);
+/*콘솔에 위의 코드를 실행하면 url 이 리로드 없이 조용히 바뀔 것입니다. 또한 히스토리 스택은 이제
+    https://developer.mozilla.org/en-US/docs/Web/API/History_API (← notice this one)
+    https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
+    https://developer.mozilla.org/
+    New Tab
+총 4개를 가지게 됩니다.
+*/
+```
+  + 현재 있는 페이지의 url 이 히스토리 스택의 가장 최근 url 임을 인지해야 합니다.
+  + 프레임 워크가 pushState를 사용하여 URL 관리를 처리하는 방법은 응용 프로그램의 링크에서 클릭을 수신하고 페이지에 새 내용을 불러오고 pushState를 사용하여 페이지가 현재 표시하고있는 정보와 일치하도록 URL을 업데이트합니다.
