@@ -97,3 +97,158 @@ var html = template(context);
 // fill the page with content
 brickContainer.innerHTML = html;
 ```
+- 퀴즈에서 사용한 핸들바입니다. (store.hbs 탬플릿에 작성한 핸들바입니다.)
+```HTML
+<!-- model as |item| 은 반복문입니다.
+항목별로 같은 내용을 반복합니다. -->
+{{#each model as |item|}}
+  <section class="row color-group {{item.color}}-bricks">
+    <h2>{{item.color}}</h2>
+    {{#each item.bricks as |brick|}}
+    <!-- 항목의 onSale 이 참이면 'on-sale' 아니면 '' 입니다. -->
+    <div class="col-sm-4 well {{if item.onSale 'on-sale' ''}}">
+      <p class="brick-size">Size: {{brick.size}}</p>
+      <p class="brick-quantity">Quantity: {{brick.quantity}}</p>
+    </div>
+    {{/each}}
+  </section>
+{{/each}}
+
+{{outlet}}
+```
+
+### 동적 데이터 로딩
+- 앱의 탬플릿을 정적 HTML 이 아니라 라우트 파일을 이용한 동적 데이터로 만들어봅니다.
+- 앰버는 라우트 파일을 사용하는데 있어서 다양한 hook 을 제공합니다.
+  + `model` hook 은 새로운 데이터 로딩에 대한 액세스를 얻게 해줍니다. 모델이나 데이터를(객체 형태입니다.) return 할 책임이 있습니다.
+```javascript
+import Route from 'ember';
+
+export default Route.extend({
+//model() {} === model: function () {}
+  model() {
+    return Ember.$.get('/menu/menu.json');
+  }
+});
+```
+- 다음에는 탬플릿을 핸들바로 반복합니다.
+```HTML
+<!-- model hook 에서 가져온 데이터입니다.
+핸들바 log 를 사용해서 변수를 로그 아웃하는 데 사용합니다.-->
+{{log model}}
+
+{{#each model as |item|}}
+<ul>
+<li class="menu-item">
+  <h4>{{item.name}}</h4>
+  <img src="/img/{{item.image}}" alt="{{item.name}}">
+  <a href="/item/{{item.id}}">Details</a>
+</li>
+{{/each}}
+</ul>
+{{outlet}}
+```
+- 특정 항목을 가져와야 할 때 model() 의 인수를 넣습니다.
+```javascript
+export default Ember.Route.extend({
+/*param 객체를 넣어 router.js 의 item_name 에 접근하게 합니다.
+그걸로 각 항목의 json 파일 이름을 가져옵니다. */
+  model(params) {
+    return Ember.$.get('/menu/' + params.item_name + '.json')
+  }
+});
+```
+- 참고로 모델 hook 에서 return 된 데이터는 model 변수에 저장됩니다.
+- 만든 페이지에서 항목을 클릭하거나 뒤로 가기를 눌렀을 때 깜빡이는 이유는 a (앵커 태그) 에 특정 URL 을 링크해서 그렇습니다.
+  + 앰버에서 제공하는 `{{link-to}}` 탬플릿 헬퍼를 사용합니다.
+```HTML
+<ul calss="items-container">
+{{#each model as |item|}}
+  <li class="menu-item">
+    <h4>{{item.name}}</h4>
+    <img src="/img/{{item.image}}" alt="{{item.name}}">
+    {{#link-to 'item' item.id}}Details{{/link-to}}
+  </li>
+{{/each}}
+</ul>
+```
+  + `{{link-to}}` 는 어떤 라우트를 연결해야 할지를 알아야 합니다. 그래서 뒤에 'item' 라우트로 연결했습니다. 그 다음 필요한 item.id 를 가져옵니다.
+  + 내장 라우트에서의 link-to 에서는 'item.nutrition' 식으로 연결합니다.
+
+## 컴포넌트 앰버-스타일 커스텀 HTML
+- 바로 위에서 사용한 코드들을 컴포넌트라는 앰버의 특별한 표현으로 간편하게 바꿀 수 있습니다.
+```HTML
+<ul class="items-container">
+  {{#each model as |item|}}
+    {{menu-item}}
+  {{/each}}
+</ul>
+```
+  + 컴포넌트는 자바스크립트 파일에서 자체 탬플릿으로 제공됩니다.
+- 컴포넌트를 만드려면 이름에 - 가 있어야합니다. 우선 이름을 menu-item 으로 만듭니다. `ember g component menu-item`
+  + 그러면 컴포넌트 폴더 안에 컴포넌트 파일, 탬플릿 폴더 안에도 새 폴더에 탬플릿을 만듭니다.
+- menu 탬플릿(menu.hbs) 를 컴포넌트로 바꾸는 과정입니다.
+  + 우선 menu.hbs 의 HTML 을 menu-item.hbs 로 옮깁니다. 그리고 컴포넌트를 빈 자리에 넣습니다. (컴포넌트를 닫힌 상자라고 생각합니다. 밖에서는 안을 볼 수 없습니다.)
+```HTML
+{{#each model as |item|}}
+<!-- menu-item.hbs 컴포넌트에 옮긴 것들을 불러옵니다.
+내부 item = 외부 item -->
+  {{menu-item food=item}}
+{{/each}}
+```
+  + 그런데 옮긴 대신 menu-item.hbs 의 item 은 더 이상 사용할 수 없습니다. 그래서 컴포넌트 안에 item 을 지정합니다. (여기선 컴포넌트의 item 을 food 로 바꿨습니다.)
+  + 컴포넌트는 default DOM element 인 div 를 가지고 있어서, 그것을 list item 에 업데이트해야 합니다.
+```javascript
+//menu-item.js
+export default Ember.Component.extend({
+/* 컴포넌트를 li 와 class 로 감쌉니다(wrapped)
+그러면 menu-item.hbs 탬플릿의 li 를 없애도 됩니다. */
+  classNames: ['menu-item']
+  tagName: 'li'
+});
+/* 만약 <div class="col-sm-4 well {{if item.onSale 'on-sale' ''}}"> 을 나타내고 싶으면
+classNameBindings 를 사용합니다.
+classNameBindings: ['sale:on-sale']
+그리고 탬플릿을 변경합니다. {{lego-brick brick=brick sale=item.onSale}}*/
+```
+- 완성입니다. 의미론적이고 기술적인 탬플릿을 만들었습니다. 다른 개발자가 봐도 쉽게 이해할 수 있게 됐습니다.
+
+## 앰버 서비스
+- 앰버의 서비스는 애플리케이션의 다른 파트들에 사용되는 객체입니다.
+  + 이번에는 order-tracker 라는 이름의 컴포넌트를 만듭니다. `ember g component order-tracker` 그리고 서비스 order-manager 를 만듭니다. `ember g service order-manager`
+- 퀴즈 : 우선 서비스를 만듭니다. 그리고 라우트 파일에 있던 데이터를 서비스의 js 파일로 옮깁니다.
+  + service 인 order-manager.js 에 라우트에서 서비스에 저장한 데이터를  불러올 때 쓰는 메소드를 작성합니다.
+  + 라우트 파일에서는 model() 에서 데이터를 가져오는 메소드를 return 합니다.
+```javascript
+export default Ember.Route.extend({
+  warehouse: Ember.inject.service('brick-warehouse'),
+  model() {
+    return this.get('warehouse').getRedBricks();
+  }
+});
+```
+- 서비스가 모든 데이터를 다루고, 라우트는 데이터에 직접 접근하지 않고 그저 서비스의 데이터에 요청만 합니다.
+
+## 사용자 행동에 응답하기
+- 앰버는 유저의 상호작용을 actions 로 조정합니다. 기본 액션은 click 입니다.
+- 예시로 클릭 버튼의 액션을 만듭니다.
+  + 클릭 버튼은 탬플릿에 작성합니다. `<button {{action 'chooseItem' food.name}}>Select Item</button>` chooseItem 함수를 food.name 과 함께 호출합니다.
+  + 클릭 함수는 컴포넌트 파일에 정의합니다. 모든 액션들은 actions 객체 안에 있어야 합니다.
+  + 처음엔 서비스를 특정 이름으로 정의하고, 함수에 그 서비스를 가져옵니다. 그리고 어떤 아이템을 매개로 실행할지를 결정합니다.
+```javascript
+//menu-item.js 컴포넌트 파일입니다.
+export default Ember.Component.extend({
+/*order-manager 서비스를 orderManager 이름으로 접근합니다. */
+  orderManager: Ember.inject.service('order-manager'),
+  classNames: ['menu-item'],
+  tagName: 'li',
+/*기본으로 아침으로 설정합니다. 카테고리는 탬플릿에서 select 로
+정한 것으로 변경됩니다. 변경사항은 여기 mealCategory 에 업데이트됩니다. */
+  mealCategory: 'breakfast',
+  actions: {
+    chooseItem(menuItemName) {
+      this.get('orderManager').chooseMenuOption(this.get('mealCategory'), menuItemName);
+    }
+  }
+});
+```
