@@ -80,7 +80,7 @@ document.querySelectorAll('.header');
 document.querySelectorAll('header');
 ```
 - 결과를 출력할 때 배열로 출력하지 않습니다. `NodeList` 라 불리는 특별한 리스트 형태로 출력합니다.
-  + 그래서 반복문으로 출력이 .
+  + 그래서 반복문으로 출력할 수 있습니다.
 ```javascript
 const allHeaders = document.querySelectorAll('header');
 
