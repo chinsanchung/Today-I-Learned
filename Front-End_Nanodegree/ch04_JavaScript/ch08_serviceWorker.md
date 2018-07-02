@@ -1,7 +1,7 @@
 # Service Worker
 ## 오프라인에서의 실행
 - 모든 데이터를 네트워크로 받는 방식은 단점이 있습니다. 통신 연결이 좋지 않거나, 주변에 사람이 너무 많거나, 서버에 버그가 있다던가 등등 의 이유로 네트워크에서 데이터를 받지 못하고 하염없이 기다려야만 할 수도 있습니다.
-- 그래서 오프라인과 네트워크를 병행하면 서버에 부담도 적게 들고 통신환경이 안좋더라도 앱에 접근하게 만들어줍니다.
+- 그래서 오프라인과 네트워크를 병행하면 서버에 부담도 적게 들고 통신환경이 좋지 않더라도 앱에 접근하게 만들어줍니다.
 ## witter 데모 앱 체험하기
 - [witter 깃허브](https://github.com/jakearchibald/wittr) 에서 클론이나 다운을 받고 `npm install` 다음에 `npm run serve` 를 실행합니다.
 - 현재 주소는 http://localhost:8888/ 로 실행하고, http://localhost:8889/ 를 들어가면 연결상태를 조절할 수 있습니다.
@@ -17,7 +17,7 @@
 ## Service Worker 간략한 소개
 - [구글 개발자 블로그](https://developers.google.com/web/fundamentals/primers/service-workers/?hl=ko)
 - Service worker 는 브라우저와 네트워크 요청 사이에 있는 자바스크립트 파일입니다.
-- web worker 처럼 웹 페이지에서 따로 작동합니다. 사용자에게 보이지 않습니다. DOM에 액세스 할 수 없지만 페이지를 제어하고 컨트롤을 사용합니다.
+- web worker 처럼 웹 페이지와는 별개로 작동합니다. 사용자에게 보이지 않습니다. 자바스크립트 Worker 이므로 DOM에 액세스 할 수 없지만 페이지를 제어하고 컨트롤(DOM 조작)을 사용합니다.
 - 그 뜻은 브라우저가 만든 요청을 가로채서 HTTP 캐시, 인터넷에 전송하고, 전달받은 응답을 다른 캐시에 보내거나 새로운 커스텀 랜덤 응답을 만들어서 브라우저에 전달하거나 둘을 합쳐서 진행할 수도 있습니다.
 - 서비스 워커는 `navigator.serviceWorker.register('/sw.js')` 형식으로 등록합니다.  이것은 프로미스를 리턴합니다. 그래서 성공이나 실패에 대한 콜백을 얻을 수 있습니다.
 ```javascript
@@ -57,7 +57,9 @@ self.addEventListener('fetch', function (event) {
 - 사용자가 서비스 워커 scope 를 통해 페이지로 이동할 때 이것을 제어합니다. HTML 의 네트워커 요청은 서비스 워커로 이동하고 fetch 이벤트를 작동(trigger)시킵니다.
   + 그것 뿐만 아니라 해당 페이지에 의해 작동된 모든 요청에 대한 fetch 이벤트를 얻게 됩니다. 또한 다른 출처에서의 CSS 나 자바스크립트, 이미지 요청이더라도 각각에 대해 fetch 이벤트를 얻습니다.
   + 그리고 그것들을 자바스크립트로 검사할 수 있습니다.
-
+- 설치가 완료되면 활성화 단계가 진행되고, 여기서 오래된 캐시를 관리할 수 있게 됩니다.
+- 활성화 단계 후에는 해당 범위 안의 모든 페이지를 제어합니다.
+  + 다만 처음 등록한 페이지는 다시 로드해야만 제어가 가능합니다.
 ### 서비스 워커 등록하기
 - 우선 프로젝트를 샘플 상태로 만들어야 합니다. `git reset --hard `, `git checkout task-register-sw`
 - 그 다음 public/js/main/indexController.js 로 이동합니다.
@@ -65,6 +67,31 @@ self.addEventListener('fetch', function (event) {
 - 서비스 워커는 URL에 관계없이 제어 된 페이지에 의해 만들어진 요청을 거의 차단합니다. 그로 인해 요청을 헷갈리거나 헤더를 바꾸거나 다른 응답을 해버릴 수도 있습니다.
 - 그래서 서비스 워커는 오직 HTTPS 에서만 작동합니다.(안전한 폼의 HTTP)
   + 서비스 워커는 페이지보다 오래 지속됩니다. 그래서 해커같은 사람들이 중간에 조작할 수도 있습니다.
+- 구글 블로그에서 나온 등록 코드입니다.
+```javascript
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+      console.log('서비스 워커 등록 성공: ', registration.scope);
+    }).catch(function(err) {
+      console.log('서비스 워커 등록 실패: ', err)
+    });
+  });
+}
+```
+- 그리고 구글 블로그에서 나온 install 이벤트를 처리하는 서비스 워커 스크립트입니다.
+```javascript
+self.addEventListener('install', function(ev) {
+  ev.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(function(cache) {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
+  );
+});
+```
+- 설치 후에 다른 페이지로 이동하거나 새로고침을 하면 서비스 워커는 fetch 이벤트를 수신합니다.
 
 ### 서비스 워커의 라이프사이클
 - 페이지를 열 준비가 되고 서비스 워커 등록 코드를 더했습니다. 그 다음 새로고침을 해봅니다.
