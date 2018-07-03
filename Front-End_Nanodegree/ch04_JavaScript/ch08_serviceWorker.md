@@ -102,3 +102,79 @@ self.addEventListener('install', function(ev) {
   + 그것이 새로고침을 두 번 해도 저장된 요청이 나오는 이유입니다.
 - 만약 서비스 워커를 과거의 요청 코드가 있는데도 바꾼다면 새로운 서비스 워커가 생성됩니다. 하지만 새로운 서비스 워커는 응답을 받아 기다리기만 하고 페이지를 제어하진 않습니다.
   + 새로고침은 새 버전으로 바꿔주지 않습니다. 창을 닫거나 서비스 워커가 제어하지 않은 새 페이지로 이동해야 합니다.
+
+### 크롬 개발자 도구와 서비스 워커
+- 크롬에서 Application 을 들어가 서비스 워커를 선택하면 Source, Status 를 알 수 있습니다. Status 는 서비스 워커의 상태를 보여주는데 만약 서비스 워커가 있는 파일(index.js) 을 수정하고 새로고침하면 waiting to active 라는 메시지가 뜹니다. 수정한 서비스 워커가 대기하고 있다는 뜻입니다.
+  + 만약 새로고침이 아니라 서비스 워커가 없는 다른 페이지로 이동하거나 브라우저를 닫았다 열면 waiting to active 란 메시지 없이 그저 active 상태만 보이게 될 것입니다.
+- 같은 도구의 상단에 Update on reload 를 하면 새로고침이나 탭을 닫지 않아도 바로 결과가 반영됩니다.
+
+## 하이재킹 요청
+
+```javascript
+self.addEventListener('fetch', function(event) {
+	// TODO: respond to all requests with an html response
+	// containing an element with class="a-winner-is-me".
+	// Ensure the Content-Type of the response is "text/html"
+  event.respondWith(
+    new Response('<b class="a-winner-is-me">Hello</b>', {
+      headers: {'Content-Type': 'text/html'}
+    })
+  );
+});
+```
+- `event.respondWith()` 은 브라우저에게 이 요청을 스스로 처리할 거라고 알려줍니다.
+  + 이벤트나 respondWith 은 응답 객체나 응답으로 해결되는 프로미스를 가집니다.
+- 응답을 만드는 방법 중 하나는 `new Response()` 입니다.
+  + 첫 번째 인수로 응답의 body 를 가집니다. blob, buffer, 다른 것들이 될 수 있지만 가장 간단하게 문자열을 인수로 취합니다.
+    + 새로고침하면 직접 만든 응답을 얻게 됩니다.(Hello world)
+    + url 을 아무렇게나 쳐도 결과는 같습니다. 모든 fetch 를 가로채기 때문입니다.
+  + 두 번째 인수는 객체입니다. 위에서 입력한 프로퍼티가 Network 개발자 도구의 Response Headers 에 나타납니다. 예를 들어 위의 코드대로 작성하면 첫 번쨰 인수의 HTML 태그가 제대로 반영되어 나타나게 만들어줍니다.
+- 참고로 `New Response()` 의 마지막에 세미콜론을 넣어선 안됩니다. 코드들이 미완성이 되기 때문입니다.
+- 하이재킹한 응답은 lie-fi 나 offline 이 되더라도 작동합니다. 네트워크는 해당 콘텐츠를 제공할 때 완전히 바뀌지 않습니다.
+
+### 하이재킹 요청 02 - fetch
+- fetch(url) 은 네트워크 요청을 만들고 응답을 읽을 수 있게 만들어줍니다.
+- 현재 서비스 워커의 `event.respondWith` 은 응답 혹은 응답을 확인하는 프로미스를 가집니다.
+  + 반면 `fetch` 는 응답을 확인하는 프로미스를 return 합니다. 그래서 `event.respondWith` 과 fetch 를 같이 post 할 수 있습니다.
+```javascript
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    fetch('/imgs/dr-evil.gif')
+  );
+});
+```
+  + 출력 결과 다른 콘텐츠를 네트워크를 사용해 전달했습니다.
+- fetch API 는 normal browser fetch 를 수행합니다.
+  + 그래서 결과는 캐시에서부터 옵니다.
+- 퀴즈 : 끝이 jpg 인 url 요청만 응답하기
+```javascript
+self.addEventListener('fetch', function(event) {
+  // TODO: only respond to requests with a url ending in ".jpg"
+  if(event.request.url.endsWith('.jpg')) {
+    event.respondWith(
+      fetch('/imgs/dr-evil.gif')
+    );
+  }
+});
+```
+  + `endsWith()` 메소드는 유용한 문자열 메소드입니다.
+
+### 하이재킹 요청 03
+- 요청에 대한 네트워크 가져 오기로 응답해봅니다. 브라우저가 요청한대로 자체 장치에 남겨두면됩니다.
+- fetch 메소드는 URL 같은 요청 객체를 가지고 프로미스를 return 합니다.
+  + 프로미스로 .then 콜백에 접근해 성공, 실패 결과를 얻습니다. 이 콜백은 프로미스에 대한 이벤트 값이 됩니다.
+  + fetch 는 서버의 연결을 만들 수 없으면 실패하게 됩니다.
+```javascript
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    fetch(event.request).then(function(response) {
+      if (response.status == 404) {
+        return new Response("not found");
+      }
+      return response;
+    }).catch(function() {
+      return new Response("failed all");
+    })
+  );
+});
+```
