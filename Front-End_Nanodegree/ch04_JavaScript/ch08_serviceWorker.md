@@ -179,7 +179,7 @@ self.addEventListener('fetch', function(event) {
 });
 ```
 
-## 캐싱과 에셋 전달
+### 캐싱과 에셋 전달
 - 만약 Witter 를 네트워크 없이 사용하려면 HTML, CSS, 자바스크립트, 이미지, 폰트를 저장할 어딘가가 필요합니다.
 - `cache API` 를 사용하면 가능합니다. cache API 는 전역의 캐시 객체를 제공합니다.
   + 캐시를 만들거나 열고 싶으면 `cache.open('캐시이름').then(function(cache) {});` 을 실행합니다.
@@ -199,3 +199,44 @@ cache.addAll([
 - 나중에 캐시에서 원하는 걸 꺼내려면 `cache.match(request)` 를 호출합니다. 이것은 요청이나 URL 을 전달합니다.
   + 만약 매칭된 응답을 찾으면 프로미스를 return 하고 그렇지 않으면 null 을 return 합니다.
 - `caches.match(request)` 도 비슷하지만, 이것은 가장 오래전부터 시작해 맞는 캐시를 찾아내려 합니다.
+- 브라우저가 처음 서비스 워커를 실행하면 이벤트가 열리고 설치 이벤트가 나타납니다.
+  + 설치 이벤트로 만든 새 서비스 워커는 설치가 완성되기 전까진 브라우저는 페이지를 제어할 수 없고 관련 작업만 제어할 수 있습니다.
+  + 이것을 이용해 모든 것을 네트워크로부터 얻어내고 그것들을 저장할 캐시를 만들어봅니다.
+  + `event.waitUntil()` : 설치 진행 상황을 알려줍니다. 프로미스가 resolve 면
+  브라우저는 설치가 다 됐다는 걸 알게 됩니다.
+  아니라면 서비스 워커는 버려집니다.
+```javascript
+//index.js 캐시에 url 넣기 퀴즈
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open('wittr-static-v1').then(function(cache) {
+      return cache.addAll([
+        '/',
+        'js/main.js',
+        'css/main.css',
+        'imgs/icon.png',
+        'https://fonts.gstatic.com/s/roboto/v15/2UX7WLTfW3W8TclTUvlFyQ.woff',
+        'https://fonts.gstatic.com/s/roboto/v15/d-6IYplOFocCacKzxwXSOD8E0i7KZn-EPnyo3HZu7kw.woff'
+      ]);
+    })
+  );
+});
+
+self.addEventListener('fetch', function(event) {
+  // TODO: respond with an entry from the cache if there is one.
+  // If there isn't, fetch from the network.
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      if (response) return response;
+      return fetch(event.request);
+    })
+  );
+});
+```
+
+## 정적 캐시 업데이트
+- Application 에서 Update on reload 를 지우고 실제 사용자가 접하는 방식으로 바꿉니다. 그러고 나서 `/public/scss/_theme.scss` 를 바꿔봅니다.
+  + 그리고 새로고침을 하면 전혀 바뀌질 않은걸 보게 됩니다. Shift+refresh 로 서비스 워커를 bypass 해야 바뀐걸 볼 수 있습니다.
+  + 왜냐면 캐시가 아직도 엣날 CSS 를 가지고 있어서입니다.
+- 캐시는 index.js 의 addEventListener('install') 으로 업데이트됩니다.
+  + 하지만 현재 작성한 것에는 새로운 서비스 워커를 설치하는게 없습니다.
