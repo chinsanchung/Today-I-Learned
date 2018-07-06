@@ -239,4 +239,99 @@ self.addEventListener('fetch', function(event) {
   + 그리고 새로고침을 하면 전혀 바뀌질 않은걸 보게 됩니다. Shift+refresh 로 서비스 워커를 bypass 해야 바뀐걸 볼 수 있습니다.
   + 왜냐면 캐시가 아직도 엣날 CSS 를 가지고 있어서입니다.
 - 캐시는 index.js 의 addEventListener('install') 으로 업데이트됩니다.
-  + 하지만 현재 작성한 것에는 새로운 서비스 워커를 설치하는게 없습니다.
+  + 하지만 현재 작성한 것에는 설치할 새로운 서비스 워커가 없습니다. 그래서 실행되질 않습니다.
+  + 위에서 서비스 워커를 바꾸지 않고 CSS 만 바꿨기 때문에 새로 설치해야 할 것이 없습니다.
+- CSS 도 업데이트하려면 서비스 워커도 바꿔야 할 필요가 있습니다. 그러면 그 업데이트된 워커를 브라우저는 새 서비스 워커로 인식할 것입니다.
+  + 새 서비스 워커는 자바스크립트, HTML, 업데이트된 CSS 를 가져와 새 캐시에 넣는 인스톨 이벤트를 발생시킵니다.
+  + 그 캐시는 자동으로 생기지 않고 직접 캐시의 이름을 바꿔서 만들어야합니다. 옛 캐시를 굳이 건드릴 필요는 없습니다. (옛 서비스 워커의 정보가 담겨있습니다.)
+  + 옛 서비스 워커가 출시되고 인계받을 준비가 되면 이전 캐시를 삭제하고 다음 페이지 로드가 새 캐시에서 리소스(최신 CSS)를 가져옵니다.
+- `self.addEventListener('activate', function(event) {})` activate 이벤트는 서비스 워커가 active 일 때(페이지를 제어하고 옛 서비스 워커가 없어질 때입니다) 발생합니다. 이것으로 옛 캐시를 없앨 수 있습니다.
+  + 인스톨 이벤트처럼 `event.waitUntil` 을 사용해 프로세스의 길이를 알립니다.
+  + activate 이면, 브라우저는 fetch 같은 다른 서비스 워커 이벤트를 대기시킵니다. 서비스 워커는 첫 fetch 를 받을 때까지는 캐시를 가지고 있습니다.
+- `caches.delete(cacheName)` 으로 캐시를 지웁니다. 프로미스를 return 합니다.
+- `caches.keys()` 로 모든 캐시의 이름을 가져옵니다. 프로미스를 return 합니다.
+- 참고로 good caching 으로 일하면 편합니다. 밑의 코드에서 CSS 를 업데이트하면 CSS URL 이 바뀌고 캐시 이름도 바뀝니다.
+```javascript
+var staticCacheName = 'witter-static-8fe4b8f';
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open(staticCacheName).then(function(cache) {
+      return cache.addAll([
+        '/',
+        'js/main-a4929ce.js',
+        'css/main-2fee7ea.css',
+        'imgs/icon-5012ac1.png' //등등
+      ]);
+    })
+  );
+});
+```
+
+### UX 를 프로세스에 추가하기
+- 서비스 워커의 업데이트를 알리는 업데이트 알림 API 가 서비스 워커에 내장되어있습니다.
+```javascript
+navigator.serviceWorker.register('/sw.js').then(function(reg) {
+  //메소드들
+  reg.unregister();
+  reg.update();
+  //프로퍼티
+  reg.installing;
+  reg.waiting;
+  reg.active;
+  //registration 객체가 새 업데이트를 찾으면 updatefound 이벤트를 발생시킵니다.
+  reg.addEventListener('updatefound' function() {
+    //reg.installing has changed
+  });
+});
+var sw = reg.installing;
+console.log(sw.state);
+/*결과창의 용어 정리
+"installing"
+"installed"
+"activating" : activate 이벤트 시작, 완료는 아님
+"activated" : 서비스 워커는 fetch 이벤트를 받을 준비가 됨
+"redundant" : 서비스 워커가 새 워커로 대체되고, 설치가 실패하더라도 중복이 발생함
+*/
+sw.addEventListener('statechange', function() {
+  //sw.state has changed
+})
+//controller 가 없다 : 서비스 워커를 사용해 페이지를 로드하지 못했다는 뜻입니다.
+if(!navigator.serviceWorker.controller) {
+  //그래서 네트워크의 콘텐츠를 로드했다는 것입니다.
+}
+//waiting 워커가 있다면 업데이트 준비가 됐다는 뜻
+if (reg.waiting) {
+  //there's an update ready
+}
+if (reg.installing) {
+  //there's an update in progress
+  //만약 실패라면
+  reg.installing.addEventListener('statechange', function() {
+    if (this.state == 'installed') {
+      //there's an update ready
+    }
+  })
+}
+reg.addEventListener('updatefound', function() {
+  reg.installing.addEventListener('statechange', function() {
+    if (this.state == 'installed') {
+      //there's an update ready
+    }
+  });
+});
+```
+
+### 업데이트 발생(trigger)하기
+- `self.skipWaiting()` 서비스 워커가 기다리거나 설치 중일 때 호출합니다.
+- 대기중인 서비스 워커에 신호를 보내는 방법 :
+  + 페이지에서 보내려면 `reg.installing.postMessage({foo: 'bar'});`
+  + 서비스 워커에서는 `self.addEventListener('message', function(event) {event.data;})` 로 보냅니다.(event.data 내용 =  {foo: 'bar'})
+- 사용자가 새로고침을 누르면 대기를 스킵한다는 호출 메시지를 서비스 워커에게 보냅니다.
+- navigator.serviceWorker.controller 의 값이 바뀌면 페이지는 이벤트를 얻습니다.(새로운 서비스 워커를 승계했다는 뜻입니다.)
+```javascript
+navigator.serviceWorker.addEventListener('controllerchange', function() {
+  //navigator.serviceWorker.controller has changed
+})
+//참고: 서비스 워커가 skipWaiting 이라는 메시지 보내기
+worker.postMessage({action: 'skipWaiting'});
+```
