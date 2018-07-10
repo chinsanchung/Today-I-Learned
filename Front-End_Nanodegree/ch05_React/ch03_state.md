@@ -156,3 +156,230 @@ this.state = {
   + 업데이트가 있을 때마다 페이지의 어떤 부분이 바뀐건지 정확하게 추적할 필요가 없습니다. 또 페이지를 효율적으로 렌더링할 방법을 결정할 필요도 없습니다.
 - 리액트는 이전 출력(output)과 새 출력을 비교하고 변경사항을 확인, 다음 결정을 내립니다.
   + 이러한 결정 과정을 `조정(Reconciliation)`이라고 합니다.
+
+## setState 로 state 업데이트
+### state 업데이트
+- `setState` 는 두 가지 사용법이 있습니다.
+  + 우선 `setState` 에 함수를 전달하는 것입니다. 이 함수는 첫 번째 인수로 이전 state 를 전달합니다. 이 함수가 return 한 새 객체는 현재 state 와 합병해서(merge) 컴포넌트의 새로운 state 를 만듭니다.
+```javascript
+this.setState((prevState) => ({
+  count:prevState.count + 1
+}))
+```
+  + 두번째 방법은 `setState` 에 객체를 전달하는 것입니다. 객체는 현재 state 와 합병해서(merge) 컴포넌트의 새로운 state 를 만듭니다.
+```javascript
+this.setState({
+  username: 'Tyler'
+})
+```
+- 함수 setState 는 컴포넌트의 새로운 state 가 이전 state 를 의존할 때 사용합니다.
+  + 그 외에는 객체 setState 를 사용합니다. 어떤 방법으로 사용하던 결과는 같습니다.
+- `setState` 를 호출할 때마다 리액트는 기본적으로 전체 애플리케이션을 다시 렌더링하고 UI 를 업데이트합니다.
+  + 그래서 리액트에서는 UI 란 그저 state 의 함수일 뿐입니다.
+  + state 가 바뀌면 UI 는 그에 따라 자동으로 업데이트합니다.
+### contact 앱에서의 설정
+- remove 버튼으로 state 의 특정 데이터를 바꾸고 싶지만 문제는 state 는 App 컴포넌트에, remove 버튼은 ListContacts 컴포넌트에 있다는 것입니다.
+  + 그래서 App 컴포넌트 안에 함수를 만들어 state 를 업데이트하도록 만들 겁니다. 그리고 그 함수를 아래의 ListContacts 컴포넌트의 prop 으로 전달할 것입니다.
+  + 다음으로 ListContacts 컴포넌트 안의 버튼을 연결합니다. 그래서 클릭하면 특정 contact 를 전달하고 호출한 다음, 컴포넌트의 현재 state 를 업데이트합니다.
+- 로컬 컴포넌트 state 를 업데이트하려면 setState 메소드를 써야 합니다.
+  + 두 방법 중에 함수 setState 를 씁니다. 왜냐면 이전 state 를 기준으로 contacts 를 업데이트하기 때문입니다.
+  + 이 setState 는 새로운 contacts 리스트를 return 합니다.
+```javascript
+//App.js
+/* (contact) 는 클릭한 것, (state) 는 현재의 state.
+state.contacts 는 현재의 contacts
+(c) 는 map() 처럼 반복해서 사용할 변수 */
+removeContact = (contact) => {
+  this.setState((state) => ({
+//state 의 contact id !== 클릭한 contact id
+    contacts: state.contacts.filter((c) => c.id !== contact.id)
+  }))
+}
+//밑의 호출
+<ListContacts onDeleteContact={this.removeContact} contacts={this.state.contacts} />
+```
+```javascript
+//ListContacts.js
+<button onClick={() => props.onDeleteContact(contact)} className='contact-remove'>Remove</button>
+```
+  + 화살표 함수는 props.onDeleteContact 를 호출해 반복하는 특정 contact 로 전달합니다.
+  + 여기의 contact 는 클릭한 특정 contact 입니다.
+### state 설정하기
+- 앞에서 초기화할 때 컴포넌트의 state 를 정의하는 방법을 살펴봤습니다.
+  + state 는 렌더링된 결과(output) 에 최종적으로 영향을 주는 바뀌는 정보를 반영하기에, 컴포넌트는 `this.setState()` 를 사용해 라이프사이클 전체에서 state 를 업데이트할 수 있습니다.
+  + 로컬 state 가 바뀔 때마다 리액트는 `render()` 메소드를 호출해 컴포넌트의 렌더링을 다시 시작합니다.
+- `setState()` 를 사용하는 두 방법이 있습니다.
+- 첫번째는 state 업데이트를 병합하는 것입니다. 이 방법으로 `this.state.subject` 를 새로운 값으로 대체하면서도 `this.state.message` 를 그대로 둘 수 있습니다.
+```javascript
+class Email extends React.Component {
+  state = {
+    subject: '',
+    message: ''
+  }
+  // ...
+});
+```
+  + 컴포넌트의 초기 state 는 두 가지 프로퍼티(subject, message)가
+  포함되어 있지만 독립적으로 업데이트할 수 있습니다.
+```javascript
+this.setState({
+  subject: 'Hello'
+})
+```
+- 두번째로는 객체가 아닌 함수를 전달하는 것입니다.
+```javascript
+this.setState((prevState) => ({
+  count: prevState.count + 1
+}))
+```
+  + 여기서 전달한 함수는 `prevState` 인수를 취합니다.
+  + 컴포넌트의 새 state 가 이전의 state 에 의존하는 경우(여기서는 이전 state 의 카운트를 1 증가시킬 때), `setState()` 함수를 사용합니다.
+- state 퀴즈 정답
+  + `setState()` 를 호출할 때마다 컴포넌트는 새로운 state 로 `render()` 를 호출합니다.
+  + 객체를 `setState()` 에 전달해서 state 업데이트를 병합(merge)할 수 있습니다.
+  + state 업데이트는 비동기일 수 있습니다.(즉 `setState()` 는 첫번째 인수로 이전 state 의 함수로 정할 수 있습니다.)
+### 정리
+- 컴포넌트는 초기화될 때 state 를 설정할 수 있지만, 일반적으로는 사용자의 입력으로 시간이 지남에 따라 state 가 바뀔 것으로 기대됩니다.
+- 컴포넌트는 `this.setState()` 을 사용해 자신의 내부 state 를 바꿀 수 있습니다.
+- state 가 바뀔 때마다 리액트는 바뀐다는걸 알고 `render()` 를 호출해 컴포넌트를 다시 렌더링합니다.
+- 이렇게 하면 앱의 UI 를 빠르고 효율적으로 업데이트할 수 있습니다.
+
+## PropTypes
+### `PropTypes` 으로 컴포넌트의 prop 타입 체크
+- 앱의 추가 기능을 구현할 때마다 컴포넌트를 자주 디버깅하게 될 겁니다.(만약 컴포넌트에 전달하는 `props`가 의도치 않은 데이터 유형이라면 등)
+- `PropTypes` 는 바로 보고 싶은 데이터 유형을 정의하고, 컴포넌트로 전달한 props 가 예상과 달리 불일치할 떄 경고 메시지를 표시하는 패키지입니다.
+- 다시 말해 `PropTypes` 는 특정 컴포넌트에 전달하는 특정 유형의 props 를 지정할 수 있게 해줍니다. 또한 그것이 필요한지 아닌지를 지정하게 해줍니다.
+  + 또 좋은 점은 PropTypes 는 경고 메시지를 콘솔에 띄워주는 제3자 컴포넌트라는 점입니다.(NPM 으로 설치하는 컴포넌트입니다.)
+- prop-type 를 설치합니다.
+```
+npm install --save prop-types
+```
+- 설치 후 ListContacts.js 에서 import 를 작성해야합니다.
+```javascript
+import PropTypes from 'prop-types'
+```
+  + 그리고 stateless 함수형 컴포넌트인 ListContacts 에 프로퍼티를 추가합니다.
+```javascript
+//배열은 .array  함수는 .func 을 썼습니다.
+/* ListContacts.propTypes 의 p 는 소문자, 밑은 대문자 P 입니다.
+위의 것은 변수, 즉 함수의 프로퍼티(객체 자체)입니다.
+후자는 import 로 가져온 라이브러이입니다. */
+ListContacts.propTypes = {
+  contacts: PropTypes.array.isRequired,
+  onDeleteContact: PropTypes.func.isRequired
+}
+```
+- 컴포넌트에 전달해야 하는 특정 props 를 이해하려면, 문서(documentation)를 읽거나 또는 만약 컴포넌트의 작성자가 PropTypes 를 사용한다면 그것을 사용할 수도 있습니다.
+  + 위의 ListContacts.propTypes 는 특정 컴포넌트를 사용하는 방법에 대한 훌륭한 문서(documentation) 역할을 할 것입니다.
+### 정리
+- `PropTypes` 는 리액트 앱에서 의도한 데이터 유형을 검증할 좋은 방법입니다.
+- `PropTypes` 를 사용해 데이터를 확인하는 방법은 개발 중일 때 버그를 식별해 원활한 사용에 도움을 줍니다.
+
+## Controlled Component
+### 정의
+- 일반적으로 form state 는 DOM 안에 있습니다. 하지만 리액트는 애플리케이션 내부의 state 를 효과적으로 관리합니다.
+  + 그렇다면 form 을 리액트로 처리하려면 어떻게 해야 할까요.
+  + 이것을 `Controlled Component` 로 해결할 수 있습니다.
+- `Controlled Component` 는 form 을 렌더링하지만, form state 의 진실 소스(source of truth)는 DOM 내부가 아닌 컴포넌트 내부에 있습니다.
+  + 이런 이름을 가진 이유는 리액트가 form 의 state 를 제어하기 때문입니다.
+```javascript
+class NameForm extends React.Component {
+  state = { email: '' }
+  handleChange = (event) => {
+    this.setState({email: event.target.value})
+  }
+  render() {
+    return (
+      <form>
+/* input 필드의 텍스트는 컴포넌트 state 의 email 프로퍼티가 될 겁니다.
+따라서 input 필드의 state 를 업데이트할 유일한 방법은
+컴포넌트 state 의 email 프로퍼티를 업데이트하는 것입니다.*/
+        <input type="text" value={this.state.email}
+        onChange={this.handleChange} \>
+      </form>
+    )
+  }
+}
+```
+  + 이것이 진실한 Controlled Component 입니다. 왜냐면 리액트가 state 의 이메일 프로퍼티를 제어하고 있어서입니다.
+  + 만일 input 필드를 바꾸고 싶다면 handleChange 메소드를 만들고 setState 를 사용해 이메일 주소를 업데이트하도록 만들어야 합니다.
+  + 만약 input 필드가 바뀐다면 위의 메소드를 onChange 속성(attribute) 에 전달해 호출할 수 있습니다.
+- 비록 Controlled Component 가 쳐야 할 코드가 많지만 좋은 점들이 있습니다.
+  + 첫째로 즉시 입력 유효성 검사(instant input validation)를 지원합니다.
+  + 둘째로 조건부로 form 버튼을 사용하게/못하게 제어해줍니다.
+  + 셋째로 입력 포맷(input format)을 시행합니다.
+- 이런 장점들은 몇몇 사용자 input 에 따라 UI 를 업데이트할 때 도움을 줍니다.
+  + 이 점은 Controlled Component 뿐만 아니라 일반적으로 리액트의 핵심이기도 합니다.
+- 애플리케이션 상태가 바뀐다면 UI 가 새로운 state 를 기반으로 업데이트됩니다.
+### 리액트 개발자 도구들
+- 리액트 개발자 도구는 각 props 및 state 와 함께 컴포넌트 계층 구조를 검사할 수 있게 해줍니다.
+  + [크롬 확장 프로그램](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en-US) 을 설치하고 콘솔 창에서 리액트 탭을 확인하면 됩니다.
+### contact 앱의 input 필드 생성
+- contacts 앱에서는 input 부분을 만들 겁니다. 입력해서 리스트를 filter 해서 보여주게 만들 것입니다.
+  + state 에 있는 특정 프로퍼티 값이 무엇이든 간에 input 필드를 바인딩할 것입니다. 또 UI 를 form 데이터를 기반으로 업데이트할 것입니다.
+- 인풋 필드에 무엇을 치던 onChange 함수가 호출되고, updateQuery 를 호출해 인풋 필드 안의 문자열을 전달할 것입니다.
+- `value` 속성(attribute) 은 `<input>` elemnt 에 설정됩니다. 표시되는 값은 항상 컴포넌트 state 에 있는 값이 되어 state 를 'single source of truth' 로 만듭니다.
+- 리액트가 궁극적으로 input form element 값을 제어하기 때문에 이 컴포넌트는 Controlled Component 로 간주됩니다.
+- 사용자 input 이 `ListContacts` 컴포넌트의 자체 `state` 에 미치는 영향은 아래와 같습니다.
+  + 사용자가 텍스트를 인풋 필드에 입력합니다.
+  + 이벤트 리스너는 모든 onChange 이벤트에 대해 `updateQuery()` 함수를 호출합니다.
+  + 그 다음 `updateQuery()` 가 `setState()` 를 호출해서 새로운 state 에서 병합해 컴포넌트의 내부 state 를 업데이트합니다.
+  + state 가 바뀐 후 `ListContacts` 컴포넌트가 다시 렌더링됩니다.
+- 이러한 업데이트한 state 를 활용해 contacts 를 필터링하는 방법을 알아봅니다.
+  + 아래의 패키지가 필요합니다. (escape-string-regxp , sort-by)`npm install --save escape-string-regexp sort-by`
+  + 그리고 ListContacts.js 에 import 를 적습니다.
+```javascript
+import escapeRegExp from 'escape-string-regexp'
+import sortBy from 'sort-by'
+```
+```javascript
+let showingContacts
+if (this.state.query) {
+  const match = new RegExp(escapeRegExp(this.state.query), 'i')
+  showingContacts = this.props.contacts.filter((contact) => match.test(contact.name))
+} else {
+  showingContacts = this.props.contacts
+}
+```
+  + 정규 표현식 객체를 만들어 match 변수에 정의했습니다. 그리고 contacts 의 name 의 포멧을 테스트했습니다.
+  + 만약 쿼리 안에 $ 나 / 등의 문자를 입력할 경우 그것들을 회피합니다(escapeRegExp). 그래서 이 특수 문자를 regexp 문자가 아닌 문자열 리터럴로 사용합니다.
+  + i 는 case 를 무시하고 그것에 신경을 쓰지 않는 것입니다.
+```javascript
+showingContacts.sort(sortBy('name'))
+```
+  + `sortBy()` 가 하는 역할은 객체의 배열에서 특정 프로퍼티를 기준으로 정렬해주는 일종의 유틸리티 도우미입니다. 지금은 name 을 정렬합니다.
+#### 정규 표현(Regular Expressions)
+- 정규 표현식은 복잡하지만 프로그래밍의 패턴을 검증하는데 큰 가치가 있습니다.
+- [MDN](https://developer.mozilla.org/ko/docs/Web/JavaScript/Guide/%EC%A0%95%EA%B7%9C%EC%8B%9D) 에서 정규 표현식에 대해 알아봅니다.
+- 그리고 String`.match` 메소드가 정규 표현식을 사용해 텍스트 패턴을 확인하는 방법도 확인합니다. [MDN](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/String/match)
+### destructuring
+- 현재 ListContacts 컴포넌트의 `render()` 메소드는 state 객체 (`this.state.query`)의 query, 그리고 props 객체(`this.props.contacts`)의 `contacts` 에 자주 접근합니다.
+  + `props` 와 `state` 는 단순한 자바스크립트 객체이므로, 매번 이들을 `this.state.query` 와 `this.props.contacts` 으로 리팩토링하는 대신, ES6 으로 별개의 변수로 압축을 풀 수 있습니다.
+  + 이런 압축해체(unpacking) 과정을 객체 destructuring 이라 부릅니다.
+- 결론적으로 객체를 destructuring 하면 코드의 return 값을 바꾸진 않지만 상황을 더 깔끔하게 보여주게 만듭니다.
+```javascript
+const { contacts, onDeleteContact } = this.props
+const { query } = this.state
+//이렇게 하면 아래처럼 깔끔하게 작성할 수 있습니다.
+if (this.state.query) //에서
+if (query)
+
+showingContacts = this.props.contacts //에서
+showingContacts = contacts
+
+this.props.onDeleteContact(contact) //에서
+onDeleteContact(contact)
+```
+### 표시된 contacts 수를 보여주기
+- input 에 입력하면 전체에서 몇 명이 필터링됐는지 숫자로 표시하고, 또 Show all 을 누르면 특정 필터를 초기화하는 기능을 넣을 겁니다.
+### 퀴즈
+- 각 state 업데이트는 연관된 핸들러 함수가 있습니다.
+- form element 는 속성(attribute)을 통해 현재 값을 받습니다.
+- form 인풋 값은 컴포넌트의 state 에 저장됩니다.
+- controlled element 에 대한 이벤트 핸들러는 컴포넌트의 state 를 업데이트합니다.
+### 정리
+- Controlled Components 를 사용하면 리액트 state 가 form 데이터의 '단일 진실 소스'(single source of truth) 역할을 합니다.
+  + 이것은 ListContacts 컴포넌트의 사용자 인풋이 궁극적으로 페이지의 렌더링을 다시 발생시키는(trigger) 방법입니다.
+- ListContacts 컴포넌트에서는 컴포넌트가 form 을 렌더링할 뿐만 아니라 사용자 인풋을 기반으로 form 에서 발생하는 일들을 제어합니다.
+  + 이럴 경우 이벤트 핸들러는 컴포넌트의 state 를 사용자의 검색 쿼리로 업데이트합니다.
+  + 그리고 알다시피 리액트 state 를 바꾸면 페이지에 다시 렌더링되어 실제 검색 결과를 효과적으로 표시합니다.
