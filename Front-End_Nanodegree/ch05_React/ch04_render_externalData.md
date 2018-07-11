@@ -115,6 +115,6 @@ ContactsAPI.remove(contact)
 `componentWillUnmount()`
   - 이 이벤트는 DOM 에서 컴포넌트를 지울 때 호출됩니다.
 - 라이프사이클 이벤트를 설명한 그림으로 더 쉽게 이해할 수 있습니다.
-![lifecycle event](/image/04_lifecycle-events.png)
+![lifecycle event](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch05_React/image/04_lifecycle.png)
   + 리액트 DOM 이 컴포넌트를 렌더링할 때 왼쪽 위에서부터 모든 게 시작됩니다.
   + 이미지에는 더 많은 이벤트들이 있지만 가장 자주 사용하는건 위에서 설명한 네 이벤트입니다. `componentDidMount()`, `componentWillMount()`, `componentWillUnmount()`, `componentWillReceiveProps()`.
