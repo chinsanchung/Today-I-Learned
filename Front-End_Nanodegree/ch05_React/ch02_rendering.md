@@ -217,7 +217,7 @@ class App extends Component {
 export default App;
 ```
 - ContactList 를 가져와 앱 안에 넣었습니다. 컴포넌트에 많은 element 를 캡슐화 하는 것은 두 가지 장점이 있습니다. 이 둘은 리액트 composition 모델을 이해하는데 있어 매우 중요합니다.
-  + 첫째로 element 들을 재사용하기 쉬워집니다. 다시 쓰고 싶다면 <ContactList/> 를 입력하면 끝입니다.
+  + 첫째로 element 들을 재사용하기 쉬워집니다. 다시 쓰고 싶다면 `<ContactList/>` 를 입력하면 끝입니다.
   + 둘쨰로는 매우 깔끔한 인터페이스입니다. 다른 props 를 주기만 하면 컴포넌트들을 다르게 구성할 수 있습니다. 원래 people 의 배열을 contacts 라는 props 에 넣고 변수 people 은 `this.props.contacts` 가 됩니다.
   + `this.props.contacts` 의 뜻은 각 컴포넌트가 this.props 객체를 가졌음을 알 수 있습니다. this.props 프로퍼티들은 컴포넌트([...])에 전달했던 props 입니다.
 ```javascript
