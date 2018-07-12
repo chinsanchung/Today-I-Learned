@@ -86,7 +86,120 @@ onNavigate={() => {
 state 를 사용해 사용자에게 표시할 내용을 제어하려 했습니다. 하지만 뒤로가기를 눌렀을 때 작동이 되질 않았습니다.
 이제 리액트 라우터로 앱의 화면을 관리해봅니다.
 
-## BrouwserRouter 컴포넌트
+## BrowserRouter  컴포넌트
 ### 설치
 - [react-router-dom](https://www.npmjs.com/package/react-router-dom) 을 설치합니다. `npm install --save react-router-dom`
-### BrouwserRouter
+### BrowserRouter
+- 리액트 라우터에 대한 첫 컴포넌트는 BrowserRouter  입니다.
+  + BrowserRouter 는 URL 의 변경 내용을 청취(listen)합니다.
+  + 그리고 실제로 바뀌면, 올바른 화면(screen)이 나왔는지 확인합니다.
+- 리액트 라우터의 좋은 점은 전부 다 컴포넌트라는 것입니다. 멋지게 사용하고 또 쉽게 코드에 접근하게 해줍니다.
+- BrowserRouter 의 역할을 보여주겠습니다. 리액트 라우터 저장소(repository) 코드입니다.
+```javascript
+class BrowserRouter extends React.Component {
+  static propTypes = {
+    basename: PropTypes.string,
+    forceRefresh: PropTypes.bool,
+    getUserConfirmation: PropTypes.func,
+    keyLength: PropTypes.number,
+    children: PropTypes.node
+  }
+
+  history = createHistory(this.props)
+
+  render() {
+    return <Router history={this.history} children={this.props.children}  />
+  }
+}
+```
+- `BrowserRouter` 가 실제로 하는 일은 `Router` 컴포넌트를 렌더링하고 `history` prop 을 전달하는 것입니다.
+  + `history` 란 리액트 Training 에서 만든 history 라이브러리에서 나온 것입니다. 이 라이브러리는 다양한 환경의 차이점을 추상화하고 history 스택을 관리, 탐색, 탐색 확인, 그리고 세션 간의 state 를 유지할 수 있는 최소한의 API 를 제공합니다.
+  + 간단히 말해서 `BrowserRouter` 를 사용할 때 URL 의 변경 사항을 듣고 앱이 변경 사항을 인식하게 해주는 `history` 객체를 만드는 것입니다.
+### contacts 앱에 설치하기
+- index.js 에 들어가 BrowserRouter  경로를 import 합니다.
+```javascript
+import { BrowserRouter } from 'react-router-dom'
+```
+  + 그리고 BrowserRouter 에서 전체 앱을 포장합니다.
+```javascript
+ReactDOM.render(
+  <BrowserRouter><App /></BrowserRouter>,
+  document.getElementById('root')
+);
+```
+  + 이 설정은 라우터가 다음에 가져올 다른 모든 컴포넌트와 함께 작업할 수 있도록 만들어줍니다. 그리고 URL 을 청취(listen)하고 URL 이 바뀌면 다른 컴포넌트에 알립니다.
+### 정리
+- 요약하자면 리액트 라우터가 제대로 작동하려면 `BrowserRouter` 컴포넌트에서 전체 앱을 포장해야 합니다.
+- 또한 `BrowserRouter` 는 앱에서 URL 의 변경 사항을 인삭하게 해주는 history 라이브러리를 래핑(wrap)합니다.
+- [history github](https://github.com/reacttraining/history)
+
+## Link Component
+- 리액트 라우터의 Link Component 는 중요합니다. 그것은 사용자가 앱을 탐색할 방법입니다.
+  + 사용자가 링크를 클릭하면 <Link /> 는 BrowserRouter 와 대화해서 URL 을 업데이트하도록 알립니다.
+  + 이 컴포넌트는 사용자가 웹에서의 링크가 기대하는 바를 수행합니다.
+- `Link` 는 앱 주위에서 선언적이고 접근가능한 탐색을 제공하는 간단한 방법입니다.
+  + `to` prop 을 `Link` 컴포넌트에 전달하면 앱에 전달할 경로를 알려줍니다.
+```javascript
+<Link to="/about">About</Link>
+```
+- 복잡한 방식(예: 쿼리 매개변수를 전달하거나 페이지의 특정 부분과 연결하기)으로 링크를 작성하는 것도 가능합니다. 만약 새로운 경로에 state 를 전달하려면 아래처럼 객체를 전달하는 코드를 작성합니다.
+```javascript
+<Link to={{
+  pathname: '/courses',
+  search: '?sort=name',
+  hash: '#the-hash',
+  state: { fromDashboard: true }
+}}>
+  Courses
+</Link>
+```
+  + 항상 위의 형식으로 작성할 필요는 없습니다만 존재한다는 것만 알아두세요. 링크에 대한 [문서](https://reacttraining.com/react-router/web/api/Link)입니다.
+### contacts 앱에 적용
+- ListContacts 화면에 링크를 업데이트해봅니다.
+  + 현재 새 연락처를 만드는 새 페이지 링크가 있는 상황입니다.
+- 우선 Link 를 import 합니다.
+```javascript
+import { Link } from 'react-router-dom'
+```
+- 그리고 <a> 태그로 링크를 걸었던 부분을 <Link> 컴포넌트로 바꿉니다.
+  + 이제 링크 컴포넌트는 실제로 앵커(a) 태그를 렌더링합니다.
+  + 그리고 href 를 지우고 'to' prop 을 작성합니다. 그리고 실제 URL 을 적습니다.
+  + onClick 을 지웁니다. 리액트 라우터가 클릭 작업을 알아서 해주기 때문입니다.
+- 완성입니다. 이제 BrowserRouter, 링크, 클릭 시 브라우저의 URL 업데이트 작업을 가집니다.
+### 정리
+- 리액트 라우터는 앱 주위에 선언적이고 접근 가능한 탐색을 추가해주는 `Link` 컴포넌트를 제공합니다.
+- 앵커 태그 대신 <Link> 태그를 사용합니다.
+- 링크 컴포넌트는 앱으로 사용자가 접근할 좋은 방법입니다. `to` prop 을 링크에 전달해 사용자를 절대 경로로 안내합니다.
+
+## Route Component
+- <Route> 는 URL 과 일치 혹은 불일치한 경로를 사용합니다.
+  + 만약 경로가 URL 과 일치하다면, Route 는 UI 를 렌더링합니다. 하지만 아무것도 렌더링하지 않는다면 그건 불일치한 것입니다.
+- Route 는 예전에 screen 이 list 인지 create 인지 확인했던 것처럼 비슷한 일을 합니다.
+  + 하지만 컴포넌트 state 를 체크하는 대신 Route 는 URL 을 체크합니다. 이걸 설치하면 뒤로가기를 쓸 수 있게 될 것입니다.
+### contacts 앱에 설정하기
+- 이제 리액트 라우트로 URL 과 UI 를 관리해봅니다.
+- 우선 App.js 에서 Route 를 import 합니다.
+```javascript
+import { Route } from 'react-router-dom'
+```
+- 이제 screen state 를 체크했던 걸 Route 렌더링으로 바꿔봅니다.
+  + Route path 가 URL 과 맡다면 해당 route 를 렌더링합니다.
+  + <CreateContact> 도 같은 방식으로 바꿉니다.
+```javascript
+<div className="app">
+  <Route exact path="/" render={() => (
+    <ListContacts
+      contacts={this.state.contacts}
+      onDeleteContact={this.removeContact}
+    />
+  )}/>
+  <Route path="/create" component={CreateContact}/>
+</div>
+```
+  + 위를 component 가 아닌 render prop 을 사용한 이유는 <ListContacts> 에게 props(contacts, onDeleteContact, onNavigate) 를 전달하기 위해서입니다.
+  + 반면 아래는 경로가 맞으면 이 컴포넌트를 렌더링해주세요 라는 뜻입니다. 그래서 URL 이 맞다면 CreateContact 의 screen 을 렌더링 할 것입니다.
+- 위의 것의 경로를 `path="/"` 로만 하면 `/create` 일 때 두 화면 모두 띄울 것입니다.
+  + 그래서 정확한 경로를 지정해줍니다. `exact path="/"`
+  + 이것이 exact path 와 기본 path 의 차이점입니다. 정확히 맞거나 아니면 부분적으로 일치하거나 입니다.
+- 이제 뒤로가기도 적용되고 URL 로 이동할 수 있게 됐습니다. 그러니 state 의 screen 을 지워도 됩니다. 또 ListContacts 의 onNavigate prop 도 필요 없습니다.
+- 알아야 할 점은 리액트 라우터는 URL 로 UI 를 동기화할 라우트를 가져오는데 앱을 크게 바꾸지는 않는다는 것입니다.
