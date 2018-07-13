@@ -203,3 +203,116 @@ import { Route } from 'react-router-dom'
   + 이것이 exact path 와 기본 path 의 차이점입니다. 정확히 맞거나 아니면 부분적으로 일치하거나 입니다.
 - 이제 뒤로가기도 적용되고 URL 로 이동할 수 있게 됐습니다. 그러니 state 의 screen 을 지워도 됩니다. 또 ListContacts 의 onNavigate prop 도 필요 없습니다.
 - 알아야 할 점은 리액트 라우터는 URL 로 UI 를 동기화할 라우트를 가져오는데 앱을 크게 바꾸지는 않는다는 것입니다.
+### 정리
+- 라우터 컴포넌트에 래핑된 컴포넌트는 URL 의 일부 앞부분이 일치할 때 렌더링됩니다. 만약 exact 플래그로 설정되면 완전히 일치할 때만 경로가 맞게 됩니다.
+- Route 컴포넌트는 Route 의 render prop 을 사용해서 라우터가 렌더링할 특정 컴포넌트에 props 을 전달해줍니다.
+  + render 는 컴포넌트를 렌더링하는 역할을 하며, 렌더링된 컴포넌트에 props 를 전달할 수 있습니다.
+- 요약하자면 Route 컴포넌트는 현재 URL 경로를 기반으로 렌더링되는 컴포넌트를 결정하는 컴포넌트입니다. 따라서 리액트 라우터를 사용해 애플리케이션을 작성하는데 중요한 요소입니다.
+
+## contacts 앱 form 마무리
+### contact form 만들기
+- 이번에는 ImageInput.js 파일이 필요합니다. 없다면 [github](https://github.com/udacity/reactnd-contacts-complete/blob/master/src/ImageInput.js) 으로 복사합니다.
+- ImageInput 컴포넌트는 데이터 URL 을 서버에 제출하기 전에 이미지 파일을 동적으로 읽고 크기를 조정하는 커스텀 `<input>` 입니다. 그리고 이미지의 미리보기를 보여줍니다.
+  + 구글은 이 컴포넌트가 웹에서 파일 및 이미지 관련 기능을 가지고 있어서 사용자에게 제공하기로 결정했습니다.
+- CreateContact 컴포넌트에 콘텐츠를 추가합니다.
+  + 우선 이미지 URL 을 불러올 링크 컴포넌트와 ImageInput 컴포넌트를 import 하는 문장을 작성합니다.
+```javascript
+import { Link } from 'react-router-dom'
+import ImageInput from './ImageInput'
+```
+  + 그리고 이미지 업로드하는 <Link>, 이름과 이메일을 적을 <input>, 버튼을 작성합니다.
+```javascript
+class CreateContact extends Component {
+  render() {
+    return (
+      <div>
+        <Link
+          className="close-create-contact"
+          to="/"
+        >close
+        </Link>
+        <form className="create-contact-form">
+          <ImageInput
+            className="create-contact-avatar-input"
+            name="avatarURL"
+            maxHeight={64}
+          />
+          <div className="create-contact-details">
+            <input type="text" name="name" placeholder="Name"/>
+            <input type="text" name="email" placeholder="Email"/>
+            <button>Add Contact</button>
+          </div>
+        </form>
+      </div>
+    )
+  }
+}
+```
+### form 데이터를 직렬화하기
+- 이 시점에서 form 은 사용자 입력(contacts 앱에서는 이름, 이메일)의 값을 직렬화해서 URL 에 쿼리 문자열로 추가합니다. (예:localhost:3000/create?avartarURL=&name=Jin+abc&email=aa!%40google.com)
+  + 앱이 이러한 form 필드를 독자적으로 직렬화하게 만들면 몇 가지 기능을 추가할 수 있습니다.
+- form-serialize 패키지를 사용해 정보들을 자바스크립트 객체로 출력해 앱이 사용하게 해줍니다. `npm install --save form-serialize`
+#### contacts 앱에 적용하기
+- form 이 브라우저에서 작동하는 방식입니다.
+ + `name="name"` 필드의 name 을 가져와서 그 내부의 값을 URL 로 직렬화합니다.
+ + 이번에는 자바스크립트를 써서 이 방식을 적용해봅니다.
+- 그래서 form 을 직렬화하고 앱에게 'contact 를 만들고 싶다' 고 전달합니다.
+  + 그러면 앱은 contact 를 저장하고 이것을 state 에 추가하는 작업을 처리할 것입니다. 이런 form 의 작업은 단순히 앱에 말을 전달하는 것입니다.
+- 따라서 form 을 제출할 때 브라우저가 이 form 을 사용하는 대신 직접 form 을 제어해봅니다.
+  + `handleSubmit` 라는 핸들러를 만듭니다. 이것은 이벤트를 매개변수로 합니다.
+  + e.preventDefault() 를 작성하면 브라우저는 더 이상 form 을 제출하지 않습니다. (URL 에 name, avartarURL, email 이 뜨지 않게 됩니다.)
+  + 이제 스스로 직렬화를 할 수 있습니다. `form-serialize` 라이브러리를 사용합니다.(NPM 같은 것입니다.)
+```javascript
+import serializeForm from 'form-serialize'
+```
+- `form-serialize` 라이브러리를 사용해 브라우저가 URL 에서 했던 것과 같은 것을 할 것입니다.
+  + 다만 문자열로 직렬화하고 페이지를 새로고침하지 않고, 객체로 직렬화할 것입니다.
+  + e.target 은 실제로 form 그 자체입니다.
+  + {hash: true} 는 객체를 전달해줍니다.
+  + 이제 객체 값을 가졌고 contact form 이 할 일은 더이상 없습니다.
+- 다음엔 `this.props.onCreateContact(values)` 으로 values 를 전달합니다.
+### 새로운 contact 로 서버 업데이트
+- contact form 도 만들었고, 데이터를 직렬화해서 부모 컴포넌트에 전달하는 기능도 있습니다. 이제 마지막으로 contact 를 서버에 저장해봅니다.
+  + App.js 의 마지막 <Route path="/create"> 에서 component 를 render 로 바꿔 프로퍼티를 넣을 수 있게 합니다.
+```javascript
+<Route path="/create" render={() => (
+  <CreateContact
+    onCreateContact={(contact) => {
+      this.CreateContact(contact)
+    }}
+)}/>
+```
+- 그리고 render() 위에서 CreateContact 메소드를 만듭니다. 그것은 프로미스로 contact 를 서버로부터 전송받습니다. 그리고 그것을 list state 에 넣습니다.
+  + 객체의 contacts 키에 현재 contacts 를 연결(concat) 합니다.
+    + 연결은 새로운 배열을 return 하고 이제 새로운 contact 가 리스트에 있습니다.
+```javascript
+createContact(contact) {
+  ContactsAPI.create(contact).then(contact => {
+    this.setState(state => ({
+      contacts: state.contacts.concat([ contact ])
+    }))
+  })
+}
+```
+- 마지막으로 실제 URL 로 돌아가 contacts 를 나열하고 새로 추가된 것을 보게 만듭니다.
+  + 리액트 라우터에서 `history` 라 불리는 prop 을 가져옵니다. 그리고 history.push('/') 를 작성합니다. 완성입니다.
+```javascript
+<Route path="/create" render={({ history }) => (
+  <CreateContact
+    onCreateContact={(contact) => {
+      this.CreateContact(contact)
+      history.push('/')
+    }}
+)}/>
+```
+- `concat()` 메소드 : 둘 이상의 배열들을 합병(merge)하는데 쓰입니다.
+  + 이 메소드는 존재하는 배열을 바꾸진 않지만 새로운 배열 instance 를 return 합니다.
+  + 따라서 concat 안의 contact 는 {} 이 아니라 [] 로 감싸야 합니다. ( {} 로 하면 새로 만든 contact 가 key 가 없다는 에러가 뜹니다. )
+```javascript
+const new_array = old_array.concat([value1, value2, ..., valueN])
+```
+
+## 마지막
+- 리액트 라우터를 더 알아보려면 아래의 링크를 클릭합니다.
+[Build your own React Router v4](https://tylermcginnis.com/build-your-own-react-router-v4/)
+[공식 문서](https://reacttraining.com/react-router/web/guides/philosophy)
