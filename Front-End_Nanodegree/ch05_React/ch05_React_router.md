@@ -50,7 +50,7 @@ render() {
   )
 }
 ```
-  + 아까 state 에 추가한 screen 프로퍼티를 사용해 화면에 표시할 내용을제어합니다. `this.state.screen` 이 `list` 면 기존의 모든 연락처 목록이 표시되고, `create` 면 CreateContact 컴포넌트가 표시됩니다.
+  + 아까 state 에 추가한 screen 프로퍼티를 사용해 화면에 표시할 내용을 제어합니다. `this.state.screen` 이 `list` 면 기존의 모든 연락처 목록이 표시되고, `create` 면 CreateContact 컴포넌트가 표시됩니다.
   + 참고: `&&` 은 논리 AND 연산자인데 이것으로 short-circuit evaluation 을 사용했습니다.
 ### Short-circuit Evaluation Syntax
 ```
@@ -90,11 +90,11 @@ state 를 사용해 사용자에게 표시할 내용을 제어하려 했습니�
 ### 설치
 - [react-router-dom](https://www.npmjs.com/package/react-router-dom) 을 설치합니다. `npm install --save react-router-dom`
 ### BrowserRouter
-- 리액트 라우터에 대한 첫 컴포넌트는 BrowserRouter  입니다.
-  + BrowserRouter 는 URL 의 변경 내용을 청취(listen)합니다.
+- 리액트 라우터에 대한 첫 컴포넌트는 `BrowserRouter`  입니다.
+  + `BrowserRouter` 는 URL 의 변경 내용을 청취(listen)합니다.
   + 그리고 실제로 바뀌면, 올바른 화면(screen)이 나왔는지 확인합니다.
 - 리액트 라우터의 좋은 점은 전부 다 컴포넌트라는 것입니다. 멋지게 사용하고 또 쉽게 코드에 접근하게 해줍니다.
-- BrowserRouter 의 역할을 보여주겠습니다. 리액트 라우터 저장소(repository) 코드입니다.
+- `BrowserRouter` 의 역할을 보여주겠습니다. 리액트 라우터 저장소(repository) 코드입니다.
 ```javascript
 class BrowserRouter extends React.Component {
   static propTypes = {
@@ -134,8 +134,8 @@ ReactDOM.render(
 - [history github](https://github.com/reacttraining/history)
 
 ## Link Component
-- 리액트 라우터의 Link Component 는 중요합니다. 그것은 사용자가 앱을 탐색할 방법입니다.
-  + 사용자가 링크를 클릭하면 <Link /> 는 BrowserRouter 와 대화해서 URL 을 업데이트하도록 알립니다.
+- 리액트 라우터의 `Link Component` 는 중요합니다. 그것은 사용자가 앱을 탐색할 방법입니다.
+  + 사용자가 링크를 클릭하면 <Link /> 는 `BrowserRouter` 와 대화해서 URL 을 업데이트하도록 알립니다.
   + 이 컴포넌트는 사용자가 웹에서의 링크가 기대하는 바를 수행합니다.
 - `Link` 는 앱 주위에서 선언적이고 접근가능한 탐색을 제공하는 간단한 방법입니다.
   + `to` prop 을 `Link` 컴포넌트에 전달하면 앱에 전달할 경로를 알려줍니다.
@@ -166,6 +166,12 @@ import { Link } from 'react-router-dom'
   + 그리고 href 를 지우고 'to' prop 을 작성합니다. 그리고 실제 URL 을 적습니다.
   + onClick 을 지웁니다. 리액트 라우터가 클릭 작업을 알아서 해주기 때문입니다.
 - 완성입니다. 이제 BrowserRouter, 링크, 클릭 시 브라우저의 URL 업데이트 작업을 가집니다.
+```javascript
+<Link
+  to="/create"
+  className="add-contact"
+>Add contact</Link>
+```
 ### 정리
 - 리액트 라우터는 앱 주위에 선언적이고 접근 가능한 탐색을 추가해주는 `Link` 컴포넌트를 제공합니다.
 - 앵커 태그 대신 <Link> 태그를 사용합니다.
@@ -205,9 +211,9 @@ import { Route } from 'react-router-dom'
 - 알아야 할 점은 리액트 라우터는 URL 로 UI 를 동기화할 라우트를 가져오는데 앱을 크게 바꾸지는 않는다는 것입니다.
 ### 정리
 - 라우터 컴포넌트에 래핑된 컴포넌트는 URL 의 일부 앞부분이 일치할 때 렌더링됩니다. 만약 exact 플래그로 설정되면 완전히 일치할 때만 경로가 맞게 됩니다.
-- Route 컴포넌트는 Route 의 render prop 을 사용해서 라우터가 렌더링할 특정 컴포넌트에 props 을 전달해줍니다.
+- `Route` 컴포넌트는 `Route` 의 render prop 을 사용해서 라우터가 렌더링할 특정 컴포넌트에 props 을 전달해줍니다.
   + render 는 컴포넌트를 렌더링하는 역할을 하며, 렌더링된 컴포넌트에 props 를 전달할 수 있습니다.
-- 요약하자면 Route 컴포넌트는 현재 URL 경로를 기반으로 렌더링되는 컴포넌트를 결정하는 컴포넌트입니다. 따라서 리액트 라우터를 사용해 애플리케이션을 작성하는데 중요한 요소입니다.
+- 요약하자면 `Route` 컴포넌트는 현재 URL 경로를 기반으로 렌더링되는 컴포넌트를 결정하는 컴포넌트입니다. 따라서 리액트 라우터를 사용해 애플리케이션을 작성하는데 중요한 요소입니다.
 
 ## contacts 앱 form 마무리
 ### contact form 만들기
@@ -257,11 +263,11 @@ class CreateContact extends Component {
  + `name="name"` 필드의 name 을 가져와서 그 내부의 값을 URL 로 직렬화합니다.
  + 이번에는 자바스크립트를 써서 이 방식을 적용해봅니다.
 - 그래서 form 을 직렬화하고 앱에게 'contact 를 만들고 싶다' 고 전달합니다.
-  + 그러면 앱은 contact 를 저장하고 이것을 state 에 추가하는 작업을 처리할 것입니다. 이런 form 의 작업은 단순히 앱에 말을 전달하는 것입니다.
+  + 그러면 앱은 `contact` 를 저장하고 이것을 state 에 추가하는 작업을 처리할 것입니다. 이런 form 의 작업은 단순히 앱에 말을 전달하는 것입니다.
 - 따라서 form 을 제출할 때 브라우저가 이 form 을 사용하는 대신 직접 form 을 제어해봅니다.
   + `handleSubmit` 라는 핸들러를 만듭니다. 이것은 이벤트를 매개변수로 합니다.
   + e.preventDefault() 를 작성하면 브라우저는 더 이상 form 을 제출하지 않습니다. (URL 에 name, avartarURL, email 이 뜨지 않게 됩니다.)
-  + 이제 스스로 직렬화를 할 수 있습니다. `form-serialize` 라이브러리를 사용합니다.(NPM 같은 것입니다.)
+  + 이제 스스로 직렬화를 할 수 있습니다. `form-serialize` 라이브러리를 사용합니다.[공식 문서](https://www.npmjs.com/package/form-serialize)
 ```javascript
 import serializeForm from 'form-serialize'
 ```
@@ -270,7 +276,15 @@ import serializeForm from 'form-serialize'
   + e.target 은 실제로 form 그 자체입니다.
   + {hash: true} 는 객체를 전달해줍니다.
   + 이제 객체 값을 가졌고 contact form 이 할 일은 더이상 없습니다.
-- 다음엔 `this.props.onCreateContact(values)` 으로 values 를 전달합니다.
+  + 다음엔 `this.props.onCreateContact(values)` 으로 values 를 전달합니다.
+```javascript
+handleSubmit = (e) => {
+  e.preventDefault()
+  const values = serializeForm(e.target, { hash: true })
+  if (this.props.onCreateContact)
+  this.props.onCreateContact(values)
+}
+```
 ### 새로운 contact 로 서버 업데이트
 - contact form 도 만들었고, 데이터를 직렬화해서 부모 컴포넌트에 전달하는 기능도 있습니다. 이제 마지막으로 contact 를 서버에 저장해봅니다.
   + App.js 의 마지막 <Route path="/create"> 에서 component 를 render 로 바꿔 프로퍼티를 넣을 수 있게 합니다.
@@ -282,9 +296,9 @@ import serializeForm from 'form-serialize'
     }}
 )}/>
 ```
-- 그리고 render() 위에서 CreateContact 메소드를 만듭니다. 그것은 프로미스로 contact 를 서버로부터 전송받습니다. 그리고 그것을 list state 에 넣습니다.
-  + 객체의 contacts 키에 현재 contacts 를 연결(concat) 합니다.
-    + 연결은 새로운 배열을 return 하고 이제 새로운 contact 가 리스트에 있습니다.
+- 그리고 `render()` 위에서 `CreateContact()` 메소드를 만듭니다. 그것은 프로미스로 `contact` 를 서버로부터 전송받습니다. 그리고 그것을 list state 에 넣습니다.
+  + 객체의 `contacts` 키에 현재 `contacts` 를 연결(concat) 합니다.
+    + 연결은 새로운 배열을 return 하고 이제 새로운 `contact` 가 리스트에 있습니다.
 ```javascript
 createContact(contact) {
   ContactsAPI.create(contact).then(contact => {
