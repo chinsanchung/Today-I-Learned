@@ -177,7 +177,7 @@ function closeModal() {
 <a href="#" onclick="do()">do<a>
 <!-- 버튼으로 설정합시다. -->
 <button class="link" onclick="do()">do</button>
-```HTML
+```
   + 패턴 3 :
 ```HTML
 <a href="/">
