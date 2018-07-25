@@ -1,5 +1,5 @@
 # ARIA (Accessible Rich Internet Applications)
-- [Mozila ARIA 파트](https://developer.mozilla.org/ko/docs/Web/Accessibility/ARIA)
+- [Mozila ARIA 파트](https://developer.mozilla.org/ko/docs/Web/Accessibility/ARIA), [구글 개발자 블로그 ARIA](https://developers.google.com/web/fundamentals/accessibility/semantics-aria/aria-labels-and-relationships?hl=ko)
 - 보통은 WAI(Web Accessibility Initiative)-ARIA 라고 합쳐서 부릅니다.
 - ARIA 는 Accessiblity tree 로 번역될 elements 의 attributes 를 지정합니다.
   + 예 : checkbox 를 screen reader 가 읽지 못할 때 ARIA attributes 를 넣으면 screen reader 가 해당 elements 를 checkbox 로 인식하게 만들어줍니다. (name만 있음 -> name, state 있음)
