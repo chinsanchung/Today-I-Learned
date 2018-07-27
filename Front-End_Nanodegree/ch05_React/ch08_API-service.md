@@ -167,3 +167,88 @@ function zoomToArea() {
 - 앱에 검색 form 을 feature 에 넣어 만들어봅니다. [Github link 09](https://github.com/udacity/ud864/blob/master/Project_Code_9_MyCommuteDistanceMatrixAPIPart2.html)
 - 사용자 컨트롤 윈도우를 확장해서 걷거나, 자전거를 타거나, 운전하거나, 다른 곳으로 이동하는 등 특정 장소에 도착하기를 원하는 시간(분 단위)을 지정할 수 있도록 합니다.
 - select 태그로 이동 시간과 교통 수단을 결정하게 하고, 이동 시간을 계산할 `searchWithinTime` 함수를 만듭니다.
+- 참고로 아래의 atLeastOne 변수는 중요합니다. 왜냐면 OK 응답을 getDistanceMatrix 함수로부터 얻는다 해도, 받아 들일 수있는 출퇴근 거리 내에 있는 마커를 찾지 못하면 그것을 사용자에게 알리고 싶어하기 때문에 중요합니다.
+```javascript
+if (duration <= maxDuration) {
+  //the origin [i] should = the markers[i]
+  markers[i].setMap(map);
+  atLeastOne = true;
+  // Create a mini infowindow to open immediately and contain the distance and duration
+  //보이는 각 마커에 작은 정보 윈도우를 넣었습니다.
+  var infowindow = new google.maps.InfoWindow({
+    content: durationText + ' away, ' + distanceText
+  });
+  //...
+}
+```
+
+## Directions API
+- 구글 지도 API 에는 어떻게 이동할지 그 수단에 대한 정보를 제공하는 기능이 있습니다. 바로 `Directions API` 입니다.
+- `Directions API` 는 Distance Matrix API 처럼 여행에 대한 정보를 제공합니다.
+  + 하지만 시간만 제공하는 Distance Matrix API 와 다르게, 필요할 경우 A 지점에서 B 지점으로, 심지어 C 지점에서 Z 지점까지 단계별 지침을 제공합니다.
+  + 많은 수의 같은 입력을 사용합니다. (travel mode 의 운전, 걷기, 자전거, 대중교통 등 / multiple transit mode 의 버스, 기차 / restrictions 의 톨게이트, 고속도로, 페리 피하기)
+  + Directions 는 출발지, 목적지, 경유지(way point)를 문자열로 지정합니다.(이름 혹은 위도-경도)
+- `Directions API` 는 일련의 경유지 또는 via 포인트를 사용하여 멀티 포트 directions 을 return 할 수 있습니다.
+- 이번에도 url 에 입력해서 알아봅니다.
+```
+https://maps.googleapis.com/maps/api/directions/json?origin=Disneyland&destination=Universal+Studios+Hollywood4&key=YOUR_API_KEY
+```
+  + Directions API 는 단일 출발지, 목적지 페어가 필요합니다. 그것들을 위도 경도 좌표나 도시로 입력할 수 있습니다. 현재의 url 요청은 출발지에서 도착지로 가능 운전 directions 를 기본값으로 설정합니다.
+- url 에 추가로 입력가능한 것들도 알아봅니다. travel mode 와 다양한 것들을 추가할 수 있습니다.
+- `travel_mode` 를 transit 로 하고, `transit_mode` 를 subway 로 하면 지하철로 이동하는 게 됩니다. 그리고 `transit_routing_preferences` 을 지정해 less_walking, less_transfers 등등을 입력할 수 있습니다.
+- 이번에는 `travel_mode` 를 bicycling 으로 하고 중간에 경유지를 지정해봅니다.(origin=..&destination=..&waypoints=..)
+  + 경유지 파라미터를 사용해서 경로의 중지로 간주되는 추가 목적지를 지정할 수 있습니다. Or I can specify via instead of waypoints.(해석불가)
+```
+{
+  - geocoded_waypoints: [
+    {
+      geocoder_status: "OK",
+      place_id: "...",
+      types: [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ]
+    },
+    {
+      geocoder_status: "OK",
+      place_id: "...",
+      types: [
+        "premise"
+      ]
+    }
+  ],
+  routes: [
+    ...
+    {
+      distance: {text: "...", value: 12108},
+      duration: {text: "...", value: 2191}
+    },
+    end_address: "...",
+    end_location: {
+      start_location: {lat: ..., lng: ...}
+    },
+    steps: [
+      {
+        distance: {...},
+        duration: {...},
+        end_address: "...",
+        end_location: {...},
+        start_address: "...",
+        start_location: {...},
+        steps: [
+          {...},
+          {...},
+          {...}
+        ],
+        via_waypoint: []
+      }
+    ]
+  ],
+  status: "OK"
+}
+```
+  + 밑의 status 가 OK 가 아니라면 위의 route 도 응답에서 볼 수 없습니다.
+  + 위의 geocoded_waypoints 를 봅니다. 이것은 출발지, 목적지와 추가 경유지를 가지고 서비스가 해당 위치를 잘 찾는지 확인합니다. 여기선 경유지 없는 결과가 나왔습니다.
+  + routes 에는 경유지를 입력하지 않았다면 하나의 legs 만 있을 겁니다. 하지만 경유지를 입력하면 routes 는 여러 legs 로 분할할 겁니다.
+  + 각 leg 는 duration 과 distance, 그리고 출발/도착 장소가 있습니다. 그리고 또 하나 혹은 그 이상의 steps 가 있습니다. step 은 가장 작은 명령 단위입니다. 4분 23초
