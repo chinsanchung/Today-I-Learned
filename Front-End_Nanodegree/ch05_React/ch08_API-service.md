@@ -243,7 +243,11 @@ https://maps.googleapis.com/maps/api/directions/json?origin=Disneyland&destinati
         ],
         via_waypoint: []
       }
-    ]
+    ],
+    overview_polyline: {...},
+    summary: "",
+    warning: [],
+    waypoint_oreder: { }
   ],
   status: "OK"
 }
@@ -251,4 +255,87 @@ https://maps.googleapis.com/maps/api/directions/json?origin=Disneyland&destinati
   + 밑의 status 가 OK 가 아니라면 위의 route 도 응답에서 볼 수 없습니다.
   + 위의 geocoded_waypoints 를 봅니다. 이것은 출발지, 목적지와 추가 경유지를 가지고 서비스가 해당 위치를 잘 찾는지 확인합니다. 여기선 경유지 없는 결과가 나왔습니다.
   + routes 에는 경유지를 입력하지 않았다면 하나의 legs 만 있을 겁니다. 하지만 경유지를 입력하면 routes 는 여러 legs 로 분할할 겁니다.
-  + 각 leg 는 duration 과 distance, 그리고 출발/도착 장소가 있습니다. 그리고 또 하나 혹은 그 이상의 steps 가 있습니다. step 은 가장 작은 명령 단위입니다. 4분 23초
+  + 각 leg 는 duration 과 distance, 그리고 출발/도착 장소가 있습니다. 그리고 또 하나 혹은 그 이상의 steps 가 있습니다. step 은 가장 작은 명령 단위입니다. 그리고 leg 는 overview polylinke 을 가지고 있습니다. 그것은 지도에 루트를 사용자가 볼 수 있게 만들어줍니다.
+  + warning 은 추가했던 설정들이 결과에 없을 때 띄우는 메시지입니다.
+- 경유지를 지정할 때 `optimize:true` 를 추가하면 모든 정지 지점을 가장 최적화된 방식으로 처리하는데 도움을 줍니다.
+  + 그 말은 경유지의 순서가 원래 요청에서 제공 한 방법과 다른 결과가 나올 수도 있다는 것입니다.
+
+## Route Directions 서비스 보여주기
+- directions API 를 앱에 적용해봅니다. 사용자가 통근 시간을 반영한 장소를 등록한 후 앱이 경로를 보여주는 것입니다. [Github link 10](https://github.com/udacity/ud864/blob/master/Project_Code_10_DisplayingRoutesDirectionsService.html)
+- 우선 직장 근처의 장소를 찾을 때 나오는 정보 윈도 안의 경로를 보여주는 버튼을 만듭니다. 그리고 이에 대한 함수 `displayDirections` 를 만듭니다.
+  + 이 함수는 방향을 계산하고 경로를 지도에 보여줍니다.
+  + 새로운 DirectionsService 인스턴스를 만들어 사용합니다. 여기 status 가 OK 면 DirectionsRenderer 의 인스턴스를 만들게 됩니다.
+### drivingOptions
+- drivingOptions (도로의 교통상황을 보여주는 옵션) 을 추가하려면 drivingOptions 파라미터를 요청에 넣어야 합니다. travel_mode 는 drving 으로 하는게 효과적입니다.
+```javascript
+drivingOptions: {
+  departureTime: new Date(Date.now()),
+  trafficModel: "optimistic"
+}
+```
+  + departureTime 은 이동 시간을 계산해주는 옵션을 제공합니다.
+  + 또한 최선의 추측, 낙관적 또는 비관적 인 트래픽 모델을 지정할 수 있습니다. 이 모델을 사용하면 트래픽이 더 가벼운 날이나 더 무거운 날의 경로와 소요 시간을 알 수 있습니다.
+
+## Distance Matrix and Directions Specifics
+- Distance Matrix API 요청은 travel_mode 뿐만 아니라 출발지와 도착지의 결합으로 만들어집니다. 아래는 요청할 때 살펴볼 점입니다.
+  + 선택한 travel_mode 에 관계없이 요청당 최대 25개 출발지 또는 25개 목적지를 전달할 수 있지만 최대 100개의 element 와 elements = 출발지 * 목적지 만 허용됩니다. 예를 들어 10개의 출발지와 10개의 목적지 = 100 개의 elements 가 있습니다. 이 값은 웹 서비스를 사용할 때 Premium Plan 고객의 경우 최대 625개 element 로 증가합니다.
+  +  다른 대부분의 서비스는 Rate Limited (초당 쿼리 수는 50을 초과 할 수 없음)이지만 Distance Matrix API는 elements (쿼리가 아닌)의 측면에서 속도가 제한됩니다. 특정 기간 내에 너무 많은 elements 가 요청되면 OVER_QUERY_LIMIT 응답 코드가 return 됩니다.
+  + 일부 매개변수는 특정 travel_mode 에서만 유효합니다.
+    + 예 1:  travel_mode = 대중교통 이면 AvoidTolls 및 AvoidHighways는 무시됩니다.
+    + 예 2: 모든 TransitOptions 는 travel_mode = 대중교통 인 경우에만 유효합니다.
+    + 예 3: departureTime 은 DrivingOptions 또는 TransitOptions 매개변수의 일부로 전달할 수 있습니다.
+- Directions API 요청은 출발지, 목적지 및 travelMode 도 포함하지만 경유지 또는 via 지점의 선택적 매개변수도 있습니다. 다음은 요청할 때 살펴봐야 할 점입니다.
+  + 자바스크립트 API 를 사용하는 클라이언트 측 약도 서비스의 경우 요청 당 최대 8개의 중간 지점을 지정할 수 있습니다. 출발지 및 목적지 외에 요청당 총 10개의 geocoding 된 포인트가 생성됩니다. 이 한도는 프리미엄 플랜 고객의 경우 8 에서 23 까지 증가합니다.
+  + 웹 서비스의 경우 API 키와 같은 유효한 식별자를 제공하는 한 요청 당 최대 23개의 경유지를 지정할 수 있습니다. 이 값을 초과하면 응답 코드에 나타납니다.
+  + TRANSIT travel_mode 에서는 경유지를 지원하지 않습니다.
+
+## Roads API
+- gps 추적기의 정확도가 낮으면 gps 추적이 흔들거리고 이상하게 뜹니다. 이를 해결하려면 Google Maps Roads API 가 필요합니다. [구글 개발자 블로그: Roads API](https://developers.google.com/maps/documentation/roads/intro)
+- Roads API 는 흔들거리게 찍힌 GPS 지점을 가장 가능성 높은 길로 스냅합니다.
+  + 100개의 흔들거리는 GPS 좌표를 전달하면 Roads API 는 차량이 주행할 가능성이 가장 높은 도로에 스냅했던 데이터를 return 합니다.
+  + 추가적으로 포인트를 삽입하는 요청으로 도로 형상(geometry)을 부드럽게 따라가는 경로를 만들 수도 있습니다.
+  + 또한 특정 도로 구간에 대한 속도 제한 데이터를 다시 가져올 수 있습니다.
+- 다만 Roads API 는 웹 서비스 형태로만 사용가능합니다. 그리고 이 데이터는 오직 프리미엄 플랜 고객들만 쓸 수 있습니다. 그래서 기존의 API 키로는 이 타입의 요청을 하지 못할 겁니다.
+### url 요청 연습
+- url 로 속도 제한 데이터 요청을 테스트해봅시다.
+```
+https://roads.googleapis.com/v1/snapToRoads?path=-35.1234|-35.13343,14.12367|...&interpolate=true&key=YOUR_API_KEY
+```
+- snapToRoads 요청으로 필요한 매개변수를 삽입합니다. 경로, 흔들거리는 GPS 포인트들입니다. 그리고 interpolate 를 true 로 합니다.
+```
+https://roads.googleapis.com/v1/speedLimits?path=...
+```
+- 이번에는 속도 제한 요청입니다. 이것은 경로에 따른 포인트들에 대한 속도 제한 데이터입니다.
+- Roads API 는 웹 서비스 형태로만 된다는 걸 명심합니다. 자사브크립트 API 에는 이런 서비스가 없습니다.
+### Quiz : interpolate
+- Interpolating snapToRoads request :
+도로 snapToRoads 요청에 최대 100 위도/경도 포인트를 전달할 때(주소가 아닙니다), 여행한 도로에 대한 더 완전하고 명확한 그림을 제공하기 위해 100 위도/경도 포인트를 더 많은 포인트로 전환하도록 선택할 수 있습니다. 그러나 포인트가 거의 없고 넓게 퍼져있으면 interpolation 은 정확한 그림을 제공하지 못할 수도 있습니다. - 데이터가 많을수록 좋습니다.
+
+## Place Autocomplete 01
+- 전에 부동산 앱에서 Places 라이브러리를 저장했던 적이 있었습니다. 구글 Places 라이브러리의 기능은 앱이 시설의 경계, 고정된 위치와 같은 정의된 영역 내에 포함된 시설, 지리적 위치 또는 중요한 관심 장소와 같은 장소를 검색할 수 있게합니다.
+  + 이걸로 많은 양의 데이터에 장소 데이터에 접근할 수 있습니다.
+- 구글 Places 라이브러리는 장소 자동완성 기능을 가지고 있으며 그걸로 사용자가 위치를 입력하는 동안 각 키 입력으로 예상 결과를 되돌릴 수있게합니다. 그걸로 더 빠르고 정확한 검색이 가능해집니다. 게다가 사용자가 타이핑을 끝내기 전에 뭘 입력하는지 알 수 있게 됩니다.
+### 앱에 적용하기
+- [github link 11](https://github.com/udacity/ud864/blob/master/Project_Code_11_FasterIsBetterPlacesAutocompletePart1.html), [동영상](https://youtu.be/-uHDYCEnifU)
+- 우선 script src 에 places 라이브러리를 추가합니다. 이걸로 자동완성과 다른 기능들을 쓸 수 있습니다.
+```
+https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=MYAPIKEY&v=3&callback=initMap
+ ```
+ - 다음으로 두 개의 새로운 장소 자동완성 인스턴스를 시작 함수와 함께 정의하고 두 입력 박스에 묶습니다.
+  + 이것은 사용자가 뭘 입력하는지 예측, 입력 박스 아래의 pic 리스트에서 가장 비슷한 옵션을 제공합니다.
+  + 자동 완성을 실행할 텍스트 입력을 지정하는 것 외에도 결과를 바이어스하기위한 위도/경도 영역 인 경계를 추가 할 수 있습니다.
+  + 타입 제한도 추가할 수 있습니다. 예를 들어 정확한 주소 또는 사업용 시설만을위한 주소 등의 유형을 제한합니다.
+  + 또한 특정 국가에 대한 결과를 제한하기 위해서 컴포넌트 제한도 추가할 수 있습니다.
+-  지도 경계를 위해 zoom 을 영역 자동완성으로 바이어스합니다.
+- 기존의 geocoder 나 distances matrix 서비스와 비교해봅니다.
+  + A 장소에서 우선 zoom 해서 자동완성과 기존 서비스로 검색을 해봅니다.
+  + 다음 B 로 지도 경계를 옮겨서 검색을 해보면 자동완성은 새로운 장소를 자동완성하는 반면, 기존 서비스는 A 장소에 대한 것만 검색이 될 것입니다.
+
+## Place Autocomplete 02
+- 자동완성 대신 검색 박스로 사용자 검색 경험을 높여보도록 하겠습니다.
+- 검색 박스는 자동완성처럼 사용자가 타이핑하는걸 예측합니다.
+  + 차이점은 검색 박스는 Google Places API 에서 정의한 장소를 포함할 수 있는 확장된 예측 목록을 지원합니다.
+  + 게다가 검색 쿼리를 제안합니다.(예: A 주위의 카페)
+  + 하지만 자동완성처럼 검색을 제한하진 못합니다.
+### 앱에 적용하기
+[Github link 12](https://github.com/udacity/ud864/blob/master/Project_Code_12_FasterIsBetterPlacesAutocompletePart2.html), [강의 링크](https://youtu.be/zNJsj69DnAM)
