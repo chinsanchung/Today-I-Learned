@@ -339,3 +339,36 @@ https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=MY
   + 하지만 자동완성처럼 검색을 제한하진 못합니다.
 ### 앱에 적용하기
 [Github link 12](https://github.com/udacity/ud864/blob/master/Project_Code_12_FasterIsBetterPlacesAutocompletePart2.html), [강의 링크](https://youtu.be/zNJsj69DnAM)
+
+## Devil in the Details - Places Details
+[강의 링크](https://youtu.be/-_1MMBU0EH0)
+- places 라이브러리는 많은 데이터베이스를 가지고 있습니다.
+- 자동완성과 검색 박스가 return 한 장소들은 place ID 라는 고유 식별자를 가집니다.
+  + place ID 를 lat,lng 이나 많은 서비스(distance matrix, directions API 등)들처럼 전달할 수 있음을 알아야 합니다.
+- Place ID 는 위치 혹은 장소에 대한 어마어마한 세부 정보들을 얻을 수 있는 키입니다.
+  + 검색 박스로 결과를 얻을 때 place ID 를 얻게 됩니다.
+### 연습
+- 장소 정보 웹 서비스에서 place ID 를 사용하여 사용 가능한 세부 정보 유형을 확인하는 예시입니다.
+```
+https://maps.googleapis.com/maps/api/place/details/json?placeid=ChlJN1t_tDeuEmsRUsoyG83frY4&key=MYAPIKEY&v=3&callback=initMap
+ ```
+ - 전화번호, 운영 시간, 관련 사진, 리뷰, 평가 등등이 나옵니다. 이것을 비즈니스를 의미하는 establishment 라고 부릅니다.
+  + 사진들은 사진 레퍼런스 ID 를 가집니다. 사진 레퍼런스 ID 및 wif 를 사용해 사진 레퍼런스 ID 를 사용하는 또 다른 간단한 URL 을 작성할 수 있습니다.
+- 이번에는 place photo 요청을 해봅니다.
+```
+https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=...
+```
+  + 장소 세부사항 요청으로 해당 장소에 대한 사진을 보여줍니다.
+- 부동산 앱에 적용해봅니다. [Github link 13](https://github.com/udacity/ud864/blob/master/Project_Code_13_DevilInTheDetailsPlacesDetails.html)
+  + 지도 API 를 요청할 때 꼭 Places 라이브러리를 불러야 한다는 걸 명심하셔야 합니다.
+- github 링크의 코드 650번에서 에러가 있습니다. `id: place.id` 는 `id: place.place_id`여야 합니다.
+```javascript
+// Create a marker for each place.
+var marker = new google.maps.Marker({
+    map: map,
+    icon: icon,
+    title: place.name,
+    position: place.geometry.location,
+    id: place.place_id
+});
+```
