@@ -347,10 +347,11 @@ https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=MY
   + place ID 를 lat,lng 이나 많은 서비스(distance matrix, directions API 등)들처럼 전달할 수 있음을 알아야 합니다.
 - Place ID 는 위치 혹은 장소에 대한 어마어마한 세부 정보들을 얻을 수 있는 키입니다.
   + 검색 박스로 결과를 얻을 때 place ID 를 얻게 됩니다.
+- [구글 개발자 블로그: Place ID](https://developers.google.com/places/web-service/place-id), [구글 개발자 블로그: Place details](https://developers.google.com/places/web-service/details)
 ### 연습
 - 장소 정보 웹 서비스에서 place ID 를 사용하여 사용 가능한 세부 정보 유형을 확인하는 예시입니다.
 ```
-https://maps.googleapis.com/maps/api/place/details/json?placeid=ChlJN1t_tDeuEmsRUsoyG83frY4&key=MYAPIKEY&v=3&callback=initMap
+https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJN1t_tDeuEmsRUsoyG83frY4&fields=name,rating,formatted_phone_number&key=YOUR_API_KEY
  ```
  - 전화번호, 운영 시간, 관련 사진, 리뷰, 평가 등등이 나옵니다. 이것을 비즈니스를 의미하는 establishment 라고 부릅니다.
   + 사진들은 사진 레퍼런스 ID 를 가집니다. 사진 레퍼런스 ID 및 wif 를 사용해 사진 레퍼런스 ID 를 사용하는 또 다른 간단한 URL 을 작성할 수 있습니다.
@@ -372,3 +373,49 @@ var marker = new google.maps.Marker({
     id: place.place_id
 });
 ```
+
+## 구글 Places API 의 검색 방법들
+### Nearby 검색
+- Nearby 검색은 지정 지역 내의 장소를 찾는 가장 간단한 방법입니다. 센터와 검색할 반지름을 지정해서 찾습니다.
+- 이 검색은 기본적으로 20개의 장소 목록을, 프리미엄 플랜 라이선스가 있으면 60개의 장소 목록을 반환합니다.
+### Text 검색
+- Text 검색을 사용하면 사용자 또는 시스템이 텍스트 쿼리를 사용해서 지정할 위치 없이도 장소 검색이 가능합니다. 이 검색방식은 위치 정보를 전달해서 편향될 수도 있습니다.
+### Radar 검색
+- Rader 검색은 Nearby 검색과 동일한 파라미터를 지정할 수 있고, 반환되는 데이터가 제한적이지만 최대 200개의 결과를 반환합니다.
+- 모든 검색에 대해 next_page_token 의 값을 새 검색의 pagetoken 파라미터에 전달하여 다음 결과 집합을 볼 수 있습니다.
+  + next_page_token 이 null 이거나 반환되지 않으면 결과는 나오지 않습니다.
+
+- 아래는 필수적인 파라미터, 옵션 파라미터의 목록이며 이것들과 함께 사용할 수 있는 검색 방법들입니다.
+![검색 방법 1](https://lh3.googleusercontent.com/qFxkShPh5qNPpNzzmtNKjhUKZuOD3NM6O3Yx9ajCgyxjf8HZkoBv4UzfomkkYhfVo9xWcqpEN76oIp3DSTL6=s0#w=651&h=370)
+![검색 방법 2](https://lh3.googleusercontent.com/D87WymWM5s9-MLFYkx965W0orXtP_GiQaejhArKE1Tw71aEK8wRnuOEh2fkAaPxmDaAHXIpU9JQ016B0fs7_=s0#w=651&h=867)
+![검색 방법 3](https://lh3.googleusercontent.com/gaqcuIF8lZAs7ApNDUF35LV5PqzySnh-8uZ-7RWgi-saBLli-TzdEmDpEZ7_-3uUWmITSN5DRc9KqHww6mM=s0#w=651&h=390)
+
+## TimeZone API
+- 만약 미팅을 베를린에 있는 동료와 잡았다고 합시다. 위치를 기준으로 현재 위치하는 시간대를 찾을 빠른 방법은 어떤 걸까요.
+- 구글 지도 API 는 TimeZone API 서비스를 가지고 있습니다.
+  + 위도/경도 및 day 타임 스탬프의 형태로 위치를 전달할 수 있습니다. 서비스는 일광 절약 시간제를 적용할지 여부를 서비스에 알려주며 서비스는 해당 좌표에 따라 시간대를 되돌려줍니다.
+  + 또한 일광 절약 시간과 협정 세계시(UTC)를 나타내는 UTC 로부터의 해당 시간대의 오프셋으로 인해 해당 시간대가 현재 상쇄되었는지 여부를 알려줍니다.
+  + [구글 개발자 블로그: TimeZone API](https://developers.google.com/maps/documentation/timezone/intro)
+### 연습
+```
+https://maps.googleapis.com/maps/api/timezone/json?location=38.2955003,141.4179154&timestamp=1331766000&key=YOUR_API_KEY
+```
+```
+{  
+  dstOffset	0
+  rawOffset	32400
+  status	"OK"
+  timeZoneId	"Asia/Tokyo"
+  timeZoneName	"Japan Standard Time"
+}
+```
+- 결과는 일본 기준 시간입니다.
+  + dstOffset 0 : 현재 일광 절약 시간에 대한 오프셋이 없습니다.
+  + rawOffset 32400 : UTC 로부터의 오프셋은 32400초(9시간)입니다.
+- 참고로 위도/경도는 고양이가 사람보다 많다는 시로지마 섬입니다. :smiley_cat:
+
+## Geolocation API
+- Geolocation API 는 현재 위치을 알게 해주는 서비스입니다. 이 서비스는 Geolocation 이 기본적으로 내장되어 있지 않은 기계, 장치에 유용합니다. Unix, Linux 등으로 작동하는 기계는 현재 위치를 알 필요가 있습니다.
+- Geolocation API 는 기계들이 장소에 대한 정보를 얻게 해주는 웹 서비스를 제공합니다.
+  + 기계는 장소, 정확한 위도/경도를 얻기 위해 셀 타워나 와이파이 노드에서 정보를 Geolocation API 에 전달할 수 있습니다.
+- GPS 가 약하거나 사용이 불가능하고, 혹은 실내에서 정보를 찾고자 할 때에는 최고의 API 입니다.
