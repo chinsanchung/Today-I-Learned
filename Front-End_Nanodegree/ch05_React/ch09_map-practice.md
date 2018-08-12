@@ -25,3 +25,111 @@
 - [구글 지도 개발자 문서](https://developers.google.com/maps/documentation/javascript/tutorial)
 - [Geo 개발자 블로그](https://mapsplatform.googleblog.com/)
 - [구글 개발자 유투브](https://www.youtube.com/user/GoogleDevelopers/videos)
+
+## 리액트에서 구글 맵 사용하기
+1. 방법 1: Map 컴포넌트에서 지도 데이터를 가져오고 App 컴포넌트로 출력하기 [참조 블로그](http://cuneyt.aliustaoglu.biz/en/using-google-maps-in-react-without-custom-libraries/)
+```javascript
+//Map component
+class Map extends Component {
+  componentDidMount() {
+    const map = new window.google.maps.Map(document.querySelector('#map'), {
+      center: { lat: 41.0082, lng: 28.9784 },
+      zoom: 8
+    });
+  }
+
+  render() {
+    return (
+      <div style={{ width: 500, height: 500 }} id="map" />
+    );
+  }
+}
+```
+```javascript
+//InfoWindow component
+import React from 'react';
+import { withStyles } from 'material-ui/styles';
+import Card, { CardActions, CardContent, CardMedia } from 'material-ui/Card';
+import Button from 'material-ui/Button';
+import Typography from 'material-ui/Typography';
+
+const styles = {
+  card: {
+    maxWidth: 345,
+  },
+  media: {
+    height: 0,
+    paddingTop: '56.25%',
+  },
+};
+
+function InfoWindow(props) {
+  const { classes } = props;
+  return (
+    <div>
+      <Card className={classes.card}>
+        <CardMedia
+          className={classes.media}
+image="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Bosphorus.jpg/397px-Bosphorus.jpg"
+          title="Contemplative Reptile"
+        />
+        <CardContent>
+          <Typography gutterBottom variant="headline" component="h2">
+            Istanbul
+          </Typography>
+          <Typography component="p">
+            Istanbul is a major city in Turkey that straddles Europe and Asia across the Bosphorus Strait. Its Old City reflects cultural influences of the many empires that once ruled here.
+
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <Button size="small" color="primary">
+            Share
+          </Button>
+          <Button size="small" color="primary">
+            Learn More
+          </Button>
+        </CardActions>
+      </Card>
+    </div>
+  );
+}
+
+
+export default withStyles(styles)(InfoWindow);
+```
+```javascript
+//App component
+createInfoWindow(e, map) {
+    const infoWindow = new window.google.maps.InfoWindow({
+        content: '<div id="infoWindow" />',
+        position: { lat: e.latLng.lat(), lng: e.latLng.lng() }
+    })
+    infoWindow.addListener('domready', e => {
+      render(<InfoWindow />, document.getElementById('infoWindow'))
+    })
+    infoWindow.open(map)
+  }
+
+  render() {
+    return (
+      <Map
+        id="myMap"
+        options={{
+          center: { lat: 41.0082, lng: 28.9784 },
+          zoom: 8
+        }}
+        onMapLoad={map => {
+          const marker = new window.google.maps.Marker({
+            position: { lat: 41.0082, lng: 28.9784 },
+            map: map,
+            title: 'Hello Istanbul!'
+          });
+          marker.addListener('click', e => {
+            this.createInfoWindow(e, map)
+          })
+        }}
+      />
+    );
+  }
+```
