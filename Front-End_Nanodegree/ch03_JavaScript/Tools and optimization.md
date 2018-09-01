@@ -20,19 +20,20 @@ gulp.task('default', function () {
 - SASS 폴더를 만들고 CSS 파일을 SCSS 확장자로 바꿉니다.
   + SCSS 초기 연습. gulpfile.js 입니다.
 ```javascript
+//frontend-memory-game의 css 파일을 예로 들었습니다.
 'use strict';
 
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 
-gulp.task('sass', function () {
-  return gulp.src('./sass/**/*.scss')
+gulp.task('sass', function() {
+  return gulp.src('styles/sass/**/*.scss')
     .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('./css'));
+    .pipe(gulp.dest('styles/css'));
 });
 
-gulp.task('sass:watch', function () {
-  gulp.watch('./sass/**/*.scss', ['sass']);
+gulp.task('sass:watch', function() {
+  gulp.watch('styles/sass/**/*.scss', ['sass']);
 });
 ```
 - SCSS 파일은 아래처럼 바뀝니다.
@@ -49,26 +50,26 @@ gulp.task('sass:watch', function () {
 ```
 
 ### AutoPrefixer
-- AutoPrefixer 플러그인은 vendor-prefixed CSS 속성을 자동으로 추가해 줍니다.
--
+- AutoPrefixer 플러그인은 vendor-prefixed CSS 속성을 자동으로 추가해 줍니다. `npm install --save-dev gulp-autoprefixer`
 ```javascript
+//frontend-memory-game의 css 파일을 예로 들었습니다.
 'use strict';
 
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 
-gulp.task('sass', function () {
-  return gulp.src('./sass/**/*.scss')
-    .pipe(sass().on('error', sass.logError));
+gulp.task('sass', function() {
+  return gulp.src('styles/sass/**/*.scss')
+    .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer({
-      browsers : ['last 2 versions']
+      browsers: ['last 2 versions']
     }))
-    .pipe(gulp.dest('./css'));
+    .pipe(gulp.dest('styles/css'));
 });
 
-gulp.task('sass:watch', function () {
-  gulp.watch('./sass/**/*.scss', ['sass']);
+gulp.task('sass:watch', function() {
+  gulp.watch('styles/sass/**/*.scss', ['sass']);
 });
 ```
 
