@@ -80,22 +80,33 @@ gulp.task('sass:watch', function () {
 - 보통은 gulp 를 이용해서 eslint 를 사용합니다. `npm install --save-dev gulp-eslint`
   + gulpfile.js 입니다.
 ```javascript
+//frontend-memory-game 에서 실행했던 파일입니다.
 var gulp = require('gulp');
+var sass = require('gulp-sass');
+var autoprefixer = require('gulp-autoprefixer');
 var eslint = require('gulp-eslint');
 
+gulp.task('default', ['sass', 'lint'], function() {
+  gulp.watch('styles/sass/**/*.scss', ['sass'])
+  gulp.watch('js/**/*.js', ['lint'])
+});
+
+gulp.task('sass', function() {
+  gulp.src('styles/sass/**/*.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions']
+    }))
+    .pipe(gulp.dest('styles/css'));
+});
+
 gulp.task('lint', function() {
-  return gulp.src(['**/*.{js,jsx}','!node_modules/**'])
+  return gulp.src(['js/**/*.js'])
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
 });
 
-gulp.task('watch', function() {
-	gulp.watch('**/*.{js,jsx}', ['lint']);
-});
-
-gulp.task('default', ['watch'], function () {
-});
 ```
   + gulp 를 cmd 에 입력하면 eslint 를 실행하고 결과를 알려줍니다.
 
