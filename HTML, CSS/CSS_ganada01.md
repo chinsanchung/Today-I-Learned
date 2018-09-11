@@ -1,4 +1,4 @@
-# 한 걸음 더 CSS: 코딩가나다(Programmers)
+# 한 걸음 더 CSS: 코딩가나다(Programmers) 파트 1, 파트 2
 [프로그래머스 페이지](https://programmers.co.kr/learn/courses/4521)
 ## 파트 1. 가운데 정렬
 웹 사이트를 만들 때 가장 우선시해야할 것은 레이아웃입니다. 그 레이아웃 중에서 가장 보편적인 것이 가운데 정렬입니다.
@@ -55,5 +55,88 @@ body {
 }
 .box p {
   padding: 3rem;
+}
+```
+
+## 파트 2. 네거티브 마진
+네거티브 마진은 마이너스 값으로 마진을 설정합니다. 만약 이미지 위치가 기본적으로 제공하는 그리드로는 답답하다, 살짝 튀게 하고 싶을 때 사용합니다.
+네거티브 마진은 오래전부터 웹 표준에 있던 정식 개념이라 호환성 문제는 없습니다. 그러니 안정적으로 사용 수 있습니다.
+### 01
+1. margin-top 을 -500px 으로 하면 위로 튀어나옵니다. 이미지가 잘리기 때문에 상위 컨테이너 box 의 마진을 바꿔줍니다. `margin: 600px auto 0;`(상단 | 좌우 | 하단)
+```CSS
+.box {
+  background-color: white;
+  width: 960px;
+  margin: 600px auto 0;
+  text-align: center;
+  border-radius: 20px;
+  border-right: 5px solid #ccc;
+  border-bottom: 5px solid #999;
+}
+.box-cover {
+  margin-top: -500px;
+
+}
+```
+### 02
+```HTML
+<div class="header">
+  <div class="box-wrapper">
+    <div class="box">A</div>
+    <div class="box select">B</div>
+    <div class="box">C</div>
+  </div>
+</div>
+<div class="contents">
+  <h1>NewYork City</h1>
+  <p>test</p>
+  <div class="map">Map</div>
+  <p>test2</p>
+</div>
+```
+1. 두 번째 box 만 색상을 바꿔봅니다. 그리고 네거티브 마진을 줘봅니다.`margin-left: -50px;` B 를 네거티브 마진을 적용해 원래 위치보다 조금 더 빠르게 시작하도록 브라우저를 속인 것입니다.(만약 플러스라면 시작점이 느려집니다.)
+***margin 은 언제나 시작점을 속이거나 종점을 속이던지 하는 속성입니다.***
+2. 다음에는 `margin-right: -50px` 를 줘봅니다. B 는 움직이지 않았는데 원래 B 가 끝나는 지점보다 더 빠르게 끝나도록 브라우저를 속입니다. 그래서 C 가 더 빠르게 시작해서 세 박스가 겹쳐있게 됩니다.
+3. header 를 더 빨리 끝나게 만들어봅니다. `margin-bottom: -100px`(종료 시점이 더 빠르게 끝납니다.) header 말고 contents 의 `margin-top: -100px;` 으로 해도 같은 결과가 나옵니다.(시작점이 더 빨라집니다.)
+4. p 태그의 사이에 있는 map 을 디자인합니다. 만들 경우 좌우에 여백이 생기는데 그 여백을 네거티브 마진으로 없앨 수 있습니다.`margin-left: -50px;` 시작점을 속여서 좌측 여백을 없앴지만 우측은 그대로입니다. (전체가 늘어나지 않고 좌측으로만 따라갔습니다. 왜냐면 div 는 블록 요소라서 width 값이 기본으로 auto 로 돼있습니다. 부모의 값을 따라가기 때문에 시작점이 빨라지더라도 종점은 부모측이 끝나는 지점과 같아지는 것입니다.) 이번에는 우측에도 네거티브 마진을 줍니다.`margin: 40px -50px;`(상하|좌우)
+5. 네거티브 마진을 응용해봅니다. 마우스를 가져다 대면 호버로 네거티브 마진을 적용해 띄울 수 있습니다.
+```CSS
+.header {
+  margin-bottom: -100px;
+}
+.box {
+  width: 100px;
+  height: 100px;
+  background-color: yellow;
+  margin: 5px;
+  float: left;
+  text-align: center;
+  line-height: 100px;
+  font-family: 'arial';
+  font-size: 50px;
+}
+.box.select {
+  background-color: orangered;
+  margin-left: -50px;
+  margin-right: -50px;
+}
+.map {
+  background-color: orange;
+  padding: 50px;
+  text-align: center;
+  border: 10px solid orangered;
+  margin: 40px -50px;
+}
+.map:hover {
+  margin: 40px -100px;
+  box-shadow: 0 0 30px rgba(0,0,0,0,2);
+}
+/*5 에서 새로 적용한 .map*/
+.map {
+  background-color: white;
+  padding: 50px;
+  text-align: center;
+  margin: 40px 0;
+  transition: all 1s;
 }
 ```
