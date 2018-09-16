@@ -114,10 +114,15 @@ button {
 float 의 원래 용도(이미지와 텍스트의 조화로운 배치)를 고려하지 않고 단순하게 왼쪽, 오른쪽 이동시키는 데로만 사용하면 이런 부작용이 생기는 것입니다.
 4. 이 부작용을 어떻게 해결해야 할까요. 여러 방법이 있지만 부모 박스에 `overflow:hidden` 으로도 해결이 가능합니다.
 - 오버플로우 속성은 float 와 연계하기 위해서만 있는 것은 아닙니다. 오버플로우의 원래 용도는 아니지만 float 문제 해결을 위해 적당히 사용하고 있는 것입니다.
-- 아까 부모 box 는 float 한 자식의 높이를 인지하지 못한다고 했습니다. 하지만 ***최상위 부모인 body 는 float 한 자식의 높이를 인지할 수 있습니다.***
+- 아까 부모 box 는 float 한 자식의 높이를 인지하지 못한다고 했습니다. 하지만 ***최상위 부모인 body 는 float 한 자식의 높이를 인지할 수 있습니다.*** float 로 위로 뜨더라도 body 의 바깥으로 빠져나가지는 않습니다. body 는 최상위 요소이기 때문에 모든 자식 요소들(float 된 요소라고 해도)을 표현해야만 하는 책임이 있습니다.
+5. 따라서 박스를 작은 body 가 되게끔 만들면 문제를 해결할 수 있습니다. body 에서 float 를 표현하는 부분만 가져와서 적용하는 것입니다.
+- 예를 들어 `overflow:scroll`을 주면 박스의 배경색이 돌아오고 박스는 이제 작은 body 가 됩니다. 박스는 높이도 지정할 수 있고 만약 높이가 그림보다 작다면 스크롤 기능으로 모든 이미지를 볼 수 있도록 해줍니다. 박스에 오버플로우를 주면 작은 body 가 된다고 생각하면 됩니다. 작은 body 이기 때문에 float 인 이미지의 높이를 인식해 어디서 끝나는지를 알아 정상적인 박스로 바꾸는데 도움을 줍니다.
+`overflow:hidden`을 줘도 작은 body 를 만드는 것은 같습니다.
+- 다만 실제로 박스가 body 가 된 것은 아닙니다. body 는 유일합니다. 박스는 오버플로우를 통해 body 의 특징 하나(블록 포맷팅 컨텍스트)를 가져온 것입니다. 그래서 박스는 독립적인 영역을 가지게 됩니다.(별도의 페이지가 생긴 것과 같습니다. 따라서 박스와 나머지 밑부분은 서로 영향을 받지 않고 섞이지 않게 됩니다.)
 ```CSS
 .box {
   background-color: white;
+  overflow: hidden;
 }
 .left {
   float: left;
@@ -126,3 +131,62 @@ float 의 원래 용도(이미지와 텍스트의 조화로운 배치)를 고려
   float: right;
 }
 ```
+#### 이미지와 p 태그
+```HTML
+<div class="box">
+  <img src="test.png" class="left">
+  <p>test</p>
+</div>
+```
+1. 현재 문장은 `float:left`한 이미지로 인해 오른쪽으로 밀렸을 뿐 시작점은 왼쪽이라고 앞에서 했었습니다. 문장의 시작점을 밀린 오른쪽으로 바꾸려면 어떻게 해야 할까요. `margin-left:100px`(이미지의 크기를 알아서 100픽셀로 잡을 수 있었습니다.)으로 주면 문장이 밀린 부분에서부터 시작하게 됩니다.
+2. 이번에는 문장 안에 span 을 넣고 그것에 클리어 `clear:both`를 집어 넣습니다.(인라인인 span 에 클리어를 적용하려면 `display:block`을 추가해야 합니다.)
+- 클리어는 상단에 플로트가 있으면 그 플로트가 끝나는 지점을 바리케이트처럼 막아줍니다.(이미지가 끝나는 지점에서부터 span 을 시작합니다.) 현재 이미지와 p 태그는 body 안에서 서로 영향을 주고받는 상황입니다. 만약 p 태그에 `overflow:hidden`을 준다면 이미지와 p 태그는 서로 별개의 영역이 되어 문장은 원래 위치로 올라가게 됩니다. 그리고 별개의 영역이기 때문에 아까 `margin-left:100px`한 것도 더이상 필요가 없게 됩니다.
+그래서 고정 레이아웃과 가변 레이아웃을 설정할 때 오버플로우를 굉장히 많이 사용합니다.
+
+```CSS
+.box {
+  background-color: white;
+  overflow: hidden;
+}
+.box p {
+  border: 10px solid blue;
+}
+.box p span {
+  background-color: cyan;
+  clear: both;
+  display: block;
+}
+.left {
+  float: left;
+}
+```
+### 03
+```HTML
+<div class="wrapper">
+  <div class="box"></div>
+  <div class="box"></div>
+</div>
+```
+1. 현재 상자는 가운데와 최상단, 최하단에 마진 병합이 생긴 상황입니다. 최상단, 최하단은 박스의 마진이 wrapper 의 마진처럼 되버린 것입니다. 이것을 해결하려면 wrapper 에 `overflow:hidden`을 줘서 새로운 body 처럼 만들면 됩니다.
+```CSS
+body {
+  background-color: #ddd;
+}
+.wrapper {
+  background-color: #222;
+  width: 140px;
+  overflow: hidden;
+}
+.box {
+  width: 100px;
+  height: 100px;
+  background-color: white;
+  margin: 20px;
+}
+```
+
+## 정리
+오버플로우는 새로운 문서를 시작한다는 일이라 생각할 수 있습니다.
+기본값인 visible 이 아닌 다른 오버플로우 속성이 부여된 요소는 독립적인 문서가 됩니다. (Block formatting context)
+단점은 오버플로우의 본래 목적에 맞게 사용하지 않으면 짤리는 경우가 생길 수 있다는 것입니다.
+CSS3 의 flex bot 나 grid 를 사용하면 굳이 플로트, 오버플로우를 섞을 필요는 없습니다만 익스플로러 지원을 위해서 아직까지는 그 둘이 필요합니다.
