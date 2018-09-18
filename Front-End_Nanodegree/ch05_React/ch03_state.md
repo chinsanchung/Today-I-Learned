@@ -73,6 +73,29 @@ function ListContacts(props) {
 - `stateless functional components` 는 직관이 매우 뛰어납니다.
   + 이미 익숙한 함수를 사용하고, 이 함수는 props 를 인수로 취해  UI 에 대한 설명을 return 합니다.
   + 함수형 컴포넌트는 `this` 키워드가 없습니다. 함수를 호출할 컨택스트에 대해 걱정하지 않아도 됩니다.
+- 비교 : state 없이 props 만 있는 컴포넌트일 경우 함수형 컴포넌트로 작성할 수 있습니다. 함수형 컴포넌트는 state, componentDidMount, componentWillMount 등의 함수를 가지지 않고 단지 HTML 을 리턴하는 역할만 합니다.
+  + 함수형 컴포넌트는 매개변수로 props 를 사용합니다. 다만 매개변수에 괄호로 감싸서 사용해야 합니다.
+```javascript
+//기본 컴포넌트
+class Test from Components {
+  render() {
+    return (
+      <div className="test">
+        <p>{this.props.testText}</p>
+      </div>
+    )
+  }
+}
+//함수형 컴포넌트
+function Test({testText}) {
+  return (
+    <div className="test">
+      <p>{testText}</p>
+    </div>
+  )
+}
+
+```
 ### 정리
 - 컴포넌트가 내부 `state` 를 추적하지 못하는 경우(즉 실제로는 render() 메소드만 있는 경우), 컴포넌트를 stateless functional component 로 선언할 수 있습니다.
 - 리액트 컴포넌트는 실제 렌더링을 위해 HTML 을 return 하는 단순한 자바스크립트 함수일 뿐입니다. 따라서 아래의 예 두 개는 모두 같습니다.
@@ -159,6 +182,15 @@ this.state = {
 
 ## setState 로 state 업데이트
 ### state 업데이트
+```javascript
+//이렇게 직접 state 를 바꾸면 안됩니다.
+componentDidMount() {
+  setTimeout(() => {
+    this.state.greeting = 'hello'
+  }, 5000)
+}
+```
+- 참고로 state 를 직접 업데이트하면 render 실행 과정(`componentWillMount` => `render` => `componentDidMount`)이 작동하질 않게 됩니다. 그래서 `this.setState`라는 함수를 사용해야 합니다.
 - `setState` 는 두 가지 사용법이 있습니다.
   + 우선 `setState` 에 함수를 전달하는 것입니다. 이 함수는 첫 번째 인수로 이전 state 를 전달합니다. 이 함수가 return 한 새 객체는 현재 state 와 합병해서(merge) 컴포넌트의 새로운 state 를 만듭니다.
 ```javascript
@@ -383,3 +415,29 @@ onDeleteContact(contact)
 - ListContacts 컴포넌트에서는 컴포넌트가 form 을 렌더링할 뿐만 아니라 사용자 인풋을 기반으로 form 에서 발생하는 일들을 제어합니다.
   + 이럴 경우 이벤트 핸들러는 컴포넌트의 state 를 사용자의 검색 쿼리로 업데이트합니다.
   + 그리고 알다시피 리액트 state 를 바꾸면 페이지에 다시 렌더링되어 실제 검색 결과를 효과적으로 표시합니다.
+
+## 프로그래머스 리액트 웹서비스의 12장
+### Loading States
+state 안을 비운 채로 시작해서 시간이 지나면 state 를 채우는 작업을 진행합니다.
+1. 우선 state 를 비웁니다. 그런데 비우기만 하고 map 함수로 불러오기를 그대로 진행하면 에러가 뜹니다. 왜냐면 `this.state.aaa.map` 을 실행할 state 가 비어있기 때문입니다.
+2. 그래서 우선 loading 이라는 문자만 띄우고, state 가 없을 때마다 loading 을 띄우고 아닐 경우 state 의 리스트를 출력하도록 만들어봅니다. states 를 map 으로 출력하는 함수를 render 메소드 안이 아니라 바깥으로 옮겨서 만듭니다.
+참고로 함수 앞에 _ 를 쓴 이유는 리액트 자체 기능과 직접 만든 기능을 구분하기 위해서입니다.
+```javascript
+_renderMovies = () => {
+  const movies = this.state.movies.map((movie, index) => {
+    return <Movie title={movie.title} poster={movie.poster} key={index}
+  })
+  return movies;
+}
+```
+3. 이제 state 안에 데이터가 있다면 render 의 리턴 안에 위의 함수를 실행하도록 해주는 삼항연산자를 만듭니다.
+```javascript
+render() {
+  return (
+    <div className="app">
+      {this.state.movies ? this._renderMovies() : "Loading"}
+    </div>
+  )
+}
+```
+4. 전에 만들었던 componentDidMount 에 setTimeout 을 넣어 5초 후에 state 를 치우도록 하면 완성입니다. render 를 우선 하고(Loading) 5초 후에 componentDidMount 로 state 를 채우면 `_renderMovies` 함수를 실행합니다.
