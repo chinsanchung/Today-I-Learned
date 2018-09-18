@@ -7,7 +7,8 @@
   + 그리고 `render()` 메소드는 이러한 작업을 수행하는 다른 함수도 호출해서는 안됩니다.
   + 오직 props 를 통해 인풋을 받아 UI(JSX)의 설명(description) 을 return 해야 합니다.(그 외에는 아무것도 return 하지 않습니다.)
 - 따라서 `render()` 메소드는 오직 콘텐츠를 표시하는데 쓰이고, Ajax 요청 같은 것을 처리하는 코드는 **lifecycle events** 에서 다뤄야 합니다.
-### 라이프사이클 이벤트
+
+## 라이프사이클 이벤트
 - 라이프사이클 이벤트는 컴포넌트에서 특별히 명명된 메소드입니다.
 - 이 메소드는 컴포넌트 인스턴스에 자동으로 바인딩되며, 리액트는 컴포넌트의 수명동안 특정 시간에 자연스럽게 메소드를 호출합니다.
   + 다양한 라이프사이클 이벤트가 있지만 가장 일반적으로 사용하는 이벤트는 아래 4개입니다.
@@ -22,8 +23,13 @@
 - 이 메소드들을 사용하기 위해선 컴포넌트에 이름을 가진 메소드를 만들고 리액트가 그것을 호출할 것입니다.
   + 이 방법으로 리액트 컴포넌트의 라이프사이클의 다른 부분들에 쉽게 접근할 수 있습니다.
 - 만약 API 에서 외부 데이터를 가져오고 싶다면, `componentDidMount()` 메소드가 바로 완벽한 해답입니다. 오직 `componentDidMount()` 에서만 Ajax 요청을 할 수 있습니다.
-
-## componentDidMount 라이프사이클 이벤트
+### 라이프사이클 순서
+- render : `componentWillMount` => `render()` => `componentDidMount`
+- update : `componentWillReceiveProps` => `shouldComponentUpdate` => `componentWillUpdate` => `render` => `componentDidUpdate`
+  - `shouldComponentUpdate` 에서는 전에 가져온 props 를 비교합니다. 예전 props 와 새 props 를 비교해서 만약 새로 바뀐 것이라면 리액트는 `shouldComponentUpdate` 를 true 라고 생각합니다.
+  - 그리고 `componentWillUpdate` 를 실행합니다.
+  - 만약 예를 들어 업데이트 중이라는 로딩 이미지, 메시지를 보여주고 싶면 `componentWillUpdate` 여기에서 빙글빙글 돌아가는 이미지를 붙일 수도 있을 것입니다. 업데이트가 끝나면 `componentDidUpdate` 에서 보여줬던 로딩중 이미지, 메시지를 숨기면 되는 것입니다.
+### componentDidMount 라이프사이클 이벤트
 - 앞서 말했듯이 `componentDidMount()` 메소드는 컴포넌트가 DOM 에 추가된 직후에 실행되기에, 원격 데이터를 가져오거나 Ajax 요청을 수행할 경우에 사용합니다.
   + 공식 문서 : 이 메소드는 컴포넌트가 마운트된 직후 호출됩니다. DOM 노드가 필요한 초기화는 여기에 있어야 합니다. 원격 종점에서 데이터를 로드해야할 때 네트워크 요청을 인스턴스화하는게 좋습니다. 이 메소드의 state 를 설정하면 리렌더링이 실행됩니다.
 ```javascript
@@ -64,6 +70,34 @@ export default User;
     + 사용자 데이터베이스에 요청을 보내는 `UserAPI` 의 `fetchUser` 요청이 실행됩니다.
     + 데이터가 return 되면 `setState()` 가 호출되고 `name`, `age` 프로퍼티가 업데이트됩니다.
   3. state 가 바뀌고 `render()` 가 다시 호출됩니다. 페이지를 리렌더링하지만, 이번에는 `this.state.name` 과 `this.state.age` 은 값을 가집니다.
+### componentDidMount 예시 두번째
+```javascript
+//001
+state = { greeting: 'hello 1'}
+componentDidMount() {
+  setTimeout(() => {
+    this.setState({
+      greeting: 'hello 2'
+    })
+  }, 5000)
+}
+/*처음에는 기존의 state 를 사용해서 hello 1 을 render 해서 출력하고, 그 다음에
+componentDidMount 를 실행합니다. 업데이트가 있기에 5초 후에 자동으로 render 를 다시 실행해서 새로운 state 인 hello 2 로 바꿨습니다.*/
+//002
+componentDidMount() {
+  setTimeout(() => {
+    this.setState({
+      lists: [
+        ...this.state.lists,
+        {
+          title: '111'
+        }
+      ]
+    })
+  })
+}
+```
+- 002는 기존 state 안에 있던 lists 를 유지하면서 그 뒤에 하나 더 추가하는 형식입니다. 이를 응용해서 무한 스크롤을 구현할 수 있습니다. 스크롤이 끝나면 새로 20개를 로딩한다던가 등등 이런 방식으로 말입니다. 페이스북, 인스타그램도 이런 형식으로 추가 콘텐츠를 밑으로 로딩합니다.
 ### contacts 앱에서 Ajax 요청하기
 - 우선 모든 것들을 ContactsAPI 로 import 하는 문장을 작성합니다.
 ```
