@@ -17,16 +17,30 @@ false(소수는 더할 경우 완벽한 0.3이 나오지 않음. 0.3000000000000
 add(2, 5); // 7
 add(2)(5); // 7
 ```
+```javascript
+//answer
+function add(x) {
+    return function(y) {
+        return x + y;
+    };
+}
+```
 
 *Question: What value is returned from the following statement?*
 ```javascript
 "i'm a lasagna hog".split("").reverse().join("");
+```
+우선 split 에서 ""으로 정했으니 글자 하나하나 자릅니다. 그리고 reverse 로 역순으로 뒤집고, join 을 통해 큰따옴표로 다시 묶습니다.
+```javascript
+//answer
+"goh angasal a m'i"
 ```
 
 *Question: What is the value of `window.foo`?*
 ```javascript
 ( window.foo || ( window.foo = "bar" ) );
 ```
+`window.foo === bar` 가 정답입니다.
 
 *Question: What is the outcome of the two alerts below?*
 ```javascript
@@ -37,6 +51,8 @@ var foo = "Hello";
 })();
 alert(foo + bar);
 ```
+우선  IIFE 로 인해서 `alert(foo+bar)` 먼저 나옵니다. 그 값은 Hello World 입니다.
+그 다음 밑에 있는 경고창이 뜨는데, 내부 스코프에 선언한 bar 때문에 밖에서는 사용이 불가능합니다. 그래서 `ReferenceError: bar is not defined` 가 나오고 경고창은 뜨지 않습니다.
 
 *Question: What is the value of `foo.length`?*
 ```javascript
@@ -44,7 +60,7 @@ var foo = [];
 foo.push(1);
 foo.push(2);
 ```
-
+`foo.length` 는 push 로 인해 값이 두 개 들어갔으므로 2가 됩니다.
 *Question: What is the value of `foo.x`?*
 ```javascript
 var foo = {n: 1};
