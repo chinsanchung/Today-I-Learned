@@ -67,7 +67,7 @@ var foo = {n: 1};
 var bar = foo;
 foo.x = foo = {n: 2};
 ```
-
+foo.x 는 undefined 로 출력됩니다. 그런데 bar 안에는 `{n : 1, x : {n : 2}}` 가 됐습니다. 그래서 bar.x 는 `{n : 2}`라는 값이 제대로 나옵니다.
 *Question: What does the following code print?*
 ```javascript
 console.log('one');
@@ -79,7 +79,27 @@ Promise.resolve().then(function() {
 })
 console.log('four');
 ```
-
+- 우선 two 부분부터 살펴봅니다. 이것은 자바스크립트 엔진의 task que 에 대한 문제입니다. 두 번째의 setTimeout 이 0 이므로 딜레이 없이 1, 2, 3 이 출력될 것 같지만 결과는 다릅니다. 자바스크립트에서 비동기로 호출되는 것들은 콜스텍이 아니라 테스크 큐에 저장됩니다. 비동기로 실행되는 함수(핸들러)는 항상 먼저 실행되지 않습니다. 이것과 관련해선 다음의 예제로 이해할 수 있습니다. [출처](http://asfirstalways.tistory.com/362)
+```javascript
+function test1() {
+  console.log('test1');
+  test2();
+}
+function test2() {
+  setTimeout(function() {
+    console.log('test2')
+  }, 0)
+  test3();
+}
+function test3() {
+  console.log('test3')
+}
+test1();
+```
+  - test1 이 콘솔에 우선 찍히고, 그 다음 test2 를 호출하면서 setTimeout 함수를 실행하는데 이것은 콜스텍에 저장되더라도 바로 실행되진 않습니다. 이 함수(핸들러)는 콜 스텍이 아니라 이벤트 큐 영역에 들어가서입니다.
+  - 그 다음 test3 함수가 콜스텍으로 들어갑니다. test3 을 콘솔에 띄워 작업을 마치면 test3 함수는 콜스텍에서 pop 됩니다. 이어서 test2 함수와 test1 함수도 콜스텍에서 pop 됩니다.
+  - 이때 이벤트 루프의 콜스텍은 비어있게 됩니다. 이 시점에서 큐의 헤드에서 하나의 이벤트를 가져와 콜 스텍으로 넣습니다.
+  - 넣은 함수는 setTimeout 의 콜백 익명함수입니다. 그래서 결국 결과는 `test1, test3, test2` 순서로 출력이 됩니다.
 *Question: What is the difference between these four promises?*
 ```javascript
 doSomething().then(function () {
