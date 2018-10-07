@@ -247,4 +247,43 @@ export default connect(mapStateProps, mapDispatchToProps)(Timer);
 ---
 `interval` : 초가 지나면 실행되는 함수입니다. setInterval(함수, 밀리초) 형태입니다. 변수에 setInterval 함수를 할당한 후, `clearInterval(변수)`로 멈출 수 있습니다.
 ---
-1. 우선 index.js 의 mapDispatchToProps 에 addSecond 함수를 추가합니다.
+### 14강 초재기
+인터벌을 만드려면 카운터가 첫째로 시작하는 순간을 찾아야합니다. 그리고 인터벌을 멈추기 위해 카운터가 멈추는 순간을 찾아야합니다. 일단 컴포넌트의 라이프사이클을 파악해야 합니다.
+1. presenter.js 에 componentWillReceiveProps 를 추가합니다. 새로운 프롭을 얻을 때마다 불러오는 함수입니다. 우선 현재 프롭과 새 프롭을 확인할 console.log 를 넣어봅니다.
+```javascript
+componentWillReceiveProps(nextProps) {
+  const currentProps = this.props;
+  console.log(`current ${currentProps.isPlaying} / next ${nextProps.isPlaying}`)
+}
+/*불러오면 현 isPlaying 은 false, 새 isPlaying 도 false 입니다.
+재생 버튼을 누르면 현 isPlaying 은 false, 새 isPlaying 은 true 로 바뀝니다.
+*/
+```
+2. 현 상태와 새로운 상태를 감지해서 사용합니다. isPlaying 의 참, 거짓 여부를 활용합니다.
+```javascript
+componentWillReceiveProps(nextProps) {
+  const currentProps = this.props;
+  if(!currentProps.isPlaying && nextProps.isPlaying) {
+    const timerInterval = setInterval(() => {
+      currentProps.addSecond()
+    }, 1000);
+    //밑의 clearInterval 에 접근하기 위해 상태를 만듬
+    this.setState({ timerInterval });
+  } else if(currentProps.isPlaying && !nextProps.isPlaying) {
+    clearInterval(this.state.timerInterval);
+  }
+}
+```
+
+### 15강
+1. timerDuration(최대 시간) 을 가져와 elapsedTime(경과시간) 을 빼야 합니다. 우선은 presenter.js 의 시간 부분을 `{timerDuration - elapsedTime}`으로 맞춥니다. 그러면 밀리초가 화면에 나옵니다.
+2. 초를 분으로 바꾸는 함수를 작업합니다. Math 함수를 사용했습니다.
+```javascript
+function formatTime(time) {
+  let minutes = Math.floor(time / 60);
+  time -= minutes * 60;
+  let seconds = parseInt(time % 60, 10);
+  return `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10
+     ? `0${seconds}` : seconds}`
+}
+```
