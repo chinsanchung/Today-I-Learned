@@ -41,6 +41,21 @@ const styles = StyleSheet.create({
 Expo 는 유저가 직접 업데이트를 받는 과정(이 과정은 험난합니다. 새 버전을 내면 승인과정을 거쳐야하는데 그 버전에서 버그가 있다면 골치아플 것입니다.)을 생략하고, 제작자가 원할 때마다 앱을 알아서 업데이트하도록 만들어줍니다. Expo client 에 푸시를 하면 앱이 아닌 서버의 코드를 업데이트해서 승인과정을 생략하는 것입니다.
 - 설치하기 : 설치와 프로젝트 생성은 [공식 페이지 링크](https://expo.io/learn)를 참고합니다. expo client 를 설치하고 `expo init 프로젝트이름` 으로 생성 후 `expo start` 로 실행합니다.
 - 실행 : 실행하면 qr 코드가 뜹니다. 폰에 설치한 Expo client 로 찍으면 시작합니다. 기본적으로 라이브 리로딩으로 설정돼있어서 코드를 고치면 저절로 새로고침을 합니다. 만약 리액트 네이티브의 기능인 핫 리로딩으로 한다면 수정한 코드를 저장하고 변경한 그 코드만을 골라서 리로드하게 해줍니다.(라이브 리로딩처럼 전체 페이지를 새로고침하지 않습니다.)
+
+### flexbox
+리액트 네이티브는 디자인할 때 CSS 가 아니라 flexbox 를 사용합니다. flexbox 의 언어는 기존의 CSS 와는 약간 다릅니다. (예 : background-color 는 CSS, backgroundColor 는 flexbox) 보면 캐멀 표기법으로 프로퍼티를 작성하고 그 값을 문자열로 작성하는 것을 알 수 있습니다.(자바스크립트처럼 작성합니다.)
+- flex : flex 를 우선 부모가 `flex : 1` 로 정의하고, 자식 뷰 컴포넌트에서 flex 를 1, 2, 3 으로 나눠서 확장합니다.
+- 리액트 네이티브에서의 flexDirection 은 디폴트로 column 입니다. flexDirection column 으로 할 경우 세로 방향으로 뷰 컴포넌트를 확장합니다.
+- 부모 뷰 컴포넌트에서 justifyContent 속성을 정의하면 자식 뷰 컴포넌트의 배치를 변경할 수 있습니다.
+  - justifyContent 의 속성으로는 flex-start, center, flex-end, space-around, space-between 등이 있습니다.
+- alignItems : 자식 뷰 컴포넌트의 보조 축(secondary axis) 의 정렬 기준을 정합니다. 값으로는 flex-start, center, flex-end stretch 가 있습니다. 예를 들어서 `alignItems: 'center'`이고 `flexDirection: 'column'`이면 세로 방향이 주축(primary axis)이고 가로 방향이 보조 축이 됩니다. 이럴 경우 가로 방향에 대해서 가운데 정렬을 하게 됩니다.
+  - 자식 뷰 컴포넌트에서는 `alignSelf` 를 사용해서 부모에서의 `alignItems` 를 이어받아 설정할 수 있습니다.
+- flexbox 에서는 CSS 처럼 축약해서 상하좌우를 한번에 입력할 수 없습니다. 일일히 각각 지정해서 입력해야 합니다.
+- marginVertical, marginHorizontal : 두 마진을 버튼 주변에 설정하면 주변부도 터치가 가능하도록 만들 수 있습니다. 손가락이 큰 사람도 접근이 가능해집니다.
+```javascript
+marginVertical: 10,
+marginHorizontal: 10
+```
 ### 기능들
 #### StatusBar
 `StatusBar`는 맨 위의 핸드폰 표시들을 바꿀 수 있게 해줍니다. 우선 리액트 네이티브에서 `StatusBar` 를 가져온 후 컴포넌트 형태로 사용합니다.
@@ -50,15 +65,6 @@ import { StatusBar } from 'react-native';
 <StatusBar barStyle="light-content" /> //기존의 검정 글씨로 바꿉니다.
 <StatusBar hidden={true} /> //상태바를 숨깁니다.
 ```
-#### flexbox
-리액트 네이티브는 디자인할 때 CSS 가 아니라 flexbox 를 사용합니다. flexbox 의 언어는 기존의 CSS 와는 약간 다릅니다. (예 : background-color 는 CSS, backgroundColor 는 flexbox) 보면 캐멀 표기법으로 프로퍼티를 작성하고 그 값을 문자열로 작성하는 것을 알 수 있습니다.(자바스크립트처럼 작성합니다.)
-- flex : flex 를 우선 부모가 `flex : 1` 로 정의하고, 자식 뷰 컴포넌트에서 flex 를 1, 2, 3 으로 나눠서 확장합니다.
-- 리액트 네이티브에서의 flexDirection 은 디폴트로 column 입니다. flexDirection column 으로 할 경우 세로 방향으로 뷰 컴포넌트를 확장합니다.
-- 부모 뷰 컴포넌트에서 justifyContent 속성을 정의하면 자식 뷰 컴포넌트의 배치를 변경할 수 있습니다.
-  - justifyContent 의 속성으로는 flex-start, center, flex-end, space-around, space-between 등이 있습니다.
-- alignItems : 자식 뷰 컴포넌트의 보조 축(secondary axis) 의 정렬 기준을 정합니다. 값으로는 flex-start, center, flex-end stretch 가 있습니다. 예를 들어서 `alignItems: 'center'`이고 `flexDirection: 'column'`이면 세로 방향이 주축(primary axis)이고 가로 방향이 보조 축이 됩니다. 이럴 경우 가로 방향에 대해서 가운데 정렬을 하게 됩니다.
-  - 자식 뷰 컴포넌트에서는 `alignSelf` 를 사용해서 부모에서의 `alignItems` 를 이어받아 설정할 수 있습니다.
-- flexbox 에서는 CSS 처럼 축약해서 상하좌우를 한번에 입력할 수 없습니다. 일일히 각각 지정해서 입력해야 합니다.
 
 ### expo 의 기능들
 #### LinearGradient (expo)
