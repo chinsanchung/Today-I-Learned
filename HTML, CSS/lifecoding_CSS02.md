@@ -87,6 +87,7 @@ div {
 <div id="parent">
   parent
   <div id="me">me</div>
+  <div id="large">large</div>
 </div>
 ```
 - CSS 각각의 요소들의 기본 포지션은 `static`입니다. `static`은 offset 값(left, right, top, bottom)을 무시하고 원래 위치해야 하는 곳에 정적으로 위치합니다.
@@ -109,5 +110,14 @@ div {
 - 만약 기준을 부모 요소에서 상대적으로 이동하는게 아니라 웹 페이지 좌상단 꼭대기에 있는 HTML 요소를 기준으로 위치를 지정하려면 `absolute` 포지션을 써야 합니다.
   - `absolute`의 기본값(위치 이동을 하지 않을 때)는 평소대로 부모 요소의 아래에 있게 됩니다.
   - `absolute`인 요소는 더이상 부모의 소속이 아니게 됩니다. #me 는 이제 부모 콘텐츠의 사이즈, 크기 등을 물려받지 않고, 자신의 콘텐츠 크기만큼 변하게 됩니다.
-- 만약 #parent 의 포지션을 `relative`로 지정하면 #me 는 `relative`로 지정한 #parent 를 기준으로 offset 값을 설정하게 됩니다.
+- 만약 #parent 의 포지션을 `relative`로 지정하면 #me 는 `relative`로 지정한 #parent 를 기준으로 offset 값을 설정하게 됩니다. 반대로 부모 요소는 `absolute`인 자식 요소를 없는 셈 무시합니다.
   - 즉 `absolute`는 `static`인 부모 요소를 무시하다가 `static`이 아닌(포지션을 지정한) 부모가 나타나면 그 곳을 기준으로 offset 을 지정합니다.
+3. fixed
+```CSS
+#me {
+  position: fixed;
+}
+#large { height: 1000px; }
+```
+- `fixed`는 스크롤에서 독랍한, 자기 위치에 고정된 요소를 가지게 됩니다.
+- `fixed`는 `absolute`처럼 더이상 부모 요소의 소속이 아니므로 너비, 높이를 지정하지 않으면 자기 콘텐츠만큼의 크기를 가지게 됩니다.
