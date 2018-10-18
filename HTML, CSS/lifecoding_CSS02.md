@@ -64,3 +64,50 @@ border 로 경계를 확인하면 블록은 한 줄 전체를, 인라인은 문�
 ### 박스 사이징
 `box-sizing`은 박스의 크기를 화면에 표시하는 방식을 변경하는 속성입니다. 너비와 높이는 요소의 컨텐츠의 크기를 지정합니다. 따라서 테두리 `borer`가 있는 경우에는 테두리의 두께로 인해서 자신이 지정할 크기, 높이를 파악하기가 어렵습니다.
 `box-sizing`속성을 `border-box` 로 지정하면  테두리를 포함한 크기를 지정할 수 있기 때문에 예측하기가 더 쉽습니다. 최근엔 모든 요소에 이 값을 지정하는 경우가 늘고 있습니다.
+- 요소의 크기를 보통 테둘 바깥쪽이라 생각하기 쉽습니다. 하지만 실제로는 border, padding 이 빠진 콘텐츠 영역의 너비가 바로 width 로 조절할 수 있는 것입니다. 초창기에는 이렇게 콘텐츠만 있어서 헷갈리지 않았지만 border 로 테두리를 만들고 두께도 조절할 수 있다보니 이렇게 헷갈리는 경우가 생기게 됐습니다.
+- 이를 해결하는게 `box-sizing` 속성입니다. 기본값은 content-box 입니다.(콘텐츠 크기만큼만 너비, 높이 값을 지정합니다.)
+  - 그 외에도 border-box 는 테두리의 크기를 기준으로 너비, 높이 값을 지정합니다. 그래서 `*` 을 사용해서 전체 태그에 border-box 로 지정해서 헷갈릴 경우의 수를 줄이는 방법도 사용합니다.
+### 마진 겹침
+### 포지션
+화면상에서 요소의 위치를 지정하는 방법은 `static`, `relative`, `absolute`, `fixed` 네가지가 있습니다.
+1. static 과 relative
+```CSS
+div {
+  border: 5px solid tomato;
+  margin: 10px;
+}
+#me {
+  position: relative;
+  /*left,right, top, bottom 을 실행하려면 포지션을 relative 로 해야 합니다*/
+  left: 100px;
+}
+```
+```HTML
+<div id="other">other</div>
+<div id="parent">
+  parent
+  <div id="me">me</div>
+</div>
+```
+- CSS 각각의 요소들의 기본 포지션은 `static`입니다. `static`은 offset 값(left, right, top, bottom)을 무시하고 원래 위치해야 하는 곳에 정적으로 위치합니다.
+- 만약 offset 값 이동을 원래 위치(부모 요소 아래)를 기준으로 상대적으로 이동시키고 싶다면 포지션을 `relative`으로 지정해야 합니다.
+  - offset 값으로 이동하려면 포지션을 `relative`로 해야 사용이 가능해집니다.
+2. absolute
+```CSS
+#parent, #other {
+  border: 5px solid tomato;
+}
+#me {
+  background-color: black;
+  color: white;
+  position: absolute;
+  /* absolute 로 top, left 를 0으로 하면 기준점을 볼 수 있게 됩니다. */
+  top: 0;
+  left: 0;
+}
+```
+- 만약 기준을 부모 요소에서 상대적으로 이동하는게 아니라 웹 페이지 좌상단 꼭대기에 있는 HTML 요소를 기준으로 위치를 지정하려면 `absolute` 포지션을 써야 합니다.
+  - `absolute`의 기본값(위치 이동을 하지 않을 때)는 평소대로 부모 요소의 아래에 있게 됩니다.
+  - `absolute`인 요소는 더이상 부모의 소속이 아니게 됩니다. #me 는 이제 부모 콘텐츠의 사이즈, 크기 등을 물려받지 않고, 자신의 콘텐츠 크기만큼 변하게 됩니다.
+- 만약 #parent 의 포지션을 `relative`로 지정하면 #me 는 `relative`로 지정한 #parent 를 기준으로 offset 값을 설정하게 됩니다.
+  - 즉 `absolute`는 `static`인 부모 요소를 무시하다가 `static`이 아닌(포지션을 지정한) 부모가 나타나면 그 곳을 기준으로 offset 을 지정합니다.
