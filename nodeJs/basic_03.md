@@ -1,4 +1,4 @@
-# XMLHttpRequest
+# 모던 웹을 위한 자바스크립트 입문 : XMLHttpRequest
 ## 기본 개요
 - 'XMLHttpRequest' : 자바스크립트가 Ajax로 HTML 페이지에서 해당 웹 서비스에 접근해 데이터를 가져올 때 사용합니다.
 - 객체 생성 : 'let request = new XMLHttpRequest();'
