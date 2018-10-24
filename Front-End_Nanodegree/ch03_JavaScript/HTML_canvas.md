@@ -1,6 +1,8 @@
 # HTML canvas (Udacity)
 ## Basic
+HTML5에 추가된 <canvas> 요소는 자바스크립트에서 스크립트를 통해 그래픽을 그리는 데 사용됩니다. 그래프, 사진, 애니메이션, 실기간 비디오, 렌더링에도 쓰입니다.
 - [W3School Canvas 레퍼런스](https://www.w3schools.com/tags/ref_canvas.asp)
+- [MDN 소개 페이지](https://developer.mozilla.org/ko/docs/Web/HTML/Canvas)
 ### 이미지 로딩, 저장
 ```HTML
 <body>
@@ -23,13 +25,12 @@
   </script>
 </body>
 ```
-   + `drawImage` 는 캔버스 객체에서 제공합니다. 매개변수로는 컨텍스트에 그릴 element, x축, y축, 너비, 높이 입니다.
-   + 위 toDataURL 은 실행되지 않을 것입니다. 보여줄 이미지를 직접적으로 호스팅하지 않아서입니다. (Uncaught SecurityError: Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported.)
-   + 마우스 우클릭 없이 이미지를 저장하려 서버를 만들어야 합니다.
+  + `drawImage` 는 캔버스 객체에서 제공합니다. 매개변수로는 컨텍스트에 그릴 element, x축, y축, 너비, 높이 입니다.
+  + 위 toDataURL 은 실행되지 않을 것입니다. 보여줄 이미지를 직접적으로 호스팅하지 않아서입니다. (Uncaught SecurityError: Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported.)
+  + 마우스 우클릭 없이 이미지를 저장하려 서버를 만들어야 합니다.
 - `createImageData()` : 새로운 빈 이미지데이터 객체를 만듭니다.
 - `getImageData()` : 지정된 사각형의 픽셀 데이터를 캔버스에 복사하는 이미지데이터 객체를 return 합니다.
 - `putImageData()` : 지정된 이미지데이터 객체의 데이터를 다시 캔버스에 넣습니다.
-
 
 ### 로컬 웹 서버
 - 파이썬 :
@@ -55,7 +56,7 @@ ctx.fillRect(0,0,50,50);
 // Start at (0,0) and clear a 25px x 25px rectangle.
 ctx.clearRect(0,0,25,25);
 ```
-- 모든 캠버스를 지우려면 `ctx.clearRect(0, 0, c.width, c.height);` 를 실행합니다.
+- 모든 캔버스를 지우려면 `ctx.clearRect(0, 0, c.width, c.height);` 를 실행합니다.
 
 ## Path
 ```javascript
@@ -78,11 +79,9 @@ ctx.stroke(); //채워지지 않은(하얀색) 삼각형
 ```
 - `fill()` : 현재 드로잉을 채웁니다.
 - `stroke()` : 정의했던 경로에 실제로 그립니다.
-- `beginPath()` : 경로를 시작하거나 현재 경로를 새로고칩니다.
+- `beginPath()` : 경로를 시작하거나 현재 경로를 새로고침합니다.
 - `moveTo` : 라인을 만들지 않고 캔버스의 특정 위치로 경로를 이동합니다.
 - `lineTo()` : 새로운 포인트를 더하고 거기서부터 특정 위치까지 선을 긋습니다.
-
-
 
 ## 움직이는 물체
 - `scale(x, y)` : x 하고 y 값만큼 곱합니다. (x 축에서 x 배, y 축에서 y 배)
@@ -92,7 +91,7 @@ ctx.stroke(); //채워지지 않은(하얀색) 삼각형
 - `transform()` : 현재의 변형 매트릭스를 변경합니다.
 
 ## 캔버스 상테 저장 및 복원
-- 모든 캔버스 객체는 드로잉 states 의 스택을 포함합니다. (스택 : 새로운 항목을 한 쪽에서만 푸시할 수 있는 데이터 구조)
+- 모든 캔버스 객체는 드로잉 states 의 스택을 포함합니다. (스택 : 새로운 항목을 한 쪽에서만 푸시할 수 있는 데이터 구조, Last In First Out 구조를 가짐)
 ```javascript
 //버전 1
 let c = document.querySelector("#c");
@@ -164,7 +163,6 @@ ctx.strokeText("canvas meme", c.width / 2, 40);
 - `strokeText()` : 채워지지 않은 글자를 캔버스에 그립니다.
 - `measureText()` : 지정된 글자의 너비를 포함한 객체를 return 합니다.
 
-
 ## 비디오
 - `requestAnimationFrame` 을 사용해서 비디오를 캔버스에 재생합니다.
 - 이것 뿐만 아니라 키보드, 마우스, 오디오 등의 인풋을 다룰 프로세스도 필요합니다.
@@ -199,3 +197,7 @@ function handleMouseClick(evt) {
 }
 c.addEventListener("click", handleMouseClick, false);
 ```
+
+## 애니메이션 기본
+한 장면을 그리려면 캔버스를 비우고(`clearRect`)->캔버스 상태를 저장->애니매이션 도형 그리기->캔버스 상태를 복원 이라는 단계를 밟습니다.
+- 정해진 시간마다 특정 함수를 불러 애니메이션을 만드는 방법과 사용자가 키보드나 마우스 이벤트로 작동하는 애니메이션을 만드는 방법 두 가지가 있습니다. [MDN](https://developer.mozilla.org/ko/docs/Web/HTML/Canvas/Tutorial/Basic_animations)에서 태양계, 시계, 파노라마 사진 애니메이션 예시 코드를 볼 수 있습니다.
