@@ -198,6 +198,7 @@ function handleMouseClick(evt) {
 c.addEventListener("click", handleMouseClick, false);
 ```
 
-## 애니메이션 기본
+## 애니메이션
 한 장면을 그리려면 캔버스를 비우고(`clearRect`)->캔버스 상태를 저장->애니매이션 도형 그리기->캔버스 상태를 복원 이라는 단계를 밟습니다.
-- 정해진 시간마다 특정 함수를 불러 애니메이션을 만드는 방법과 사용자가 키보드나 마우스 이벤트로 작동하는 애니메이션을 만드는 방법 두 가지가 있습니다. [MDN](https://developer.mozilla.org/ko/docs/Web/HTML/Canvas/Tutorial/Basic_animations)에서 태양계, 시계, 파노라마 사진 애니메이션 예시 코드를 볼 수 있습니다.
+- 정해진 시간마다 특정 함수를 불러 애니메이션을 만드는 방법과 사용자가 키보드나 마우스 이벤트로 작동하는 애니메이션을 만드는 방법 두 가지가 있습니다. [MDN](https://developer.mozilla.org/ko/docs/Web/HTML/Canvas/Tutorial/Basic_animations)에서 태양계, 시계, 파노라마 사진 애니메이션 코드들을 볼 수 있습니다.
+그리고 공을 이용해 화면에서 튕기거나 마우스 포인터의 움직임으로 이동하는 애니메이션은 [MDN 애니메이션 고급](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Advanced_animations)에서 코드들을 볼 수 있습니다.
