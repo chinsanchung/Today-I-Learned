@@ -1,4 +1,4 @@
-# 정규표현식
+# 정규표현식(교재: Learning JavaScript)
 정규표현식은 정교한 문자열 매칭 기능을 제공합니다. 이메일 주소, URL, 전화번호처럼 보이는 문자열을 찾으려면 정규표현식에 익숙해져야 합니다. 문자열 매칭 그리고 문자열 교체 작업을 지원합니다.
 ## 정규식 만들기
 ```javascript
@@ -169,3 +169,53 @@ const matches = html.match(/(?:https?)?\/\/[a-z][a-z0-9-]+[a-z0-9]+/ig); //["//i
   - 다음에는 이스케이프한 슬래시 두 개 `(\/\/)`가 있습니다.
   - 그 다음 문자 클래스입니다. 도메인 이름에는 글자, 숫자, 하이픈이 들어갈 수 있지만 시작은 글자여야 하며 하이픈으로 끝날 순 없습니다.
   - 이 예제는 완벽하진 않지만 연습을 위해 작성한 것입니다. 완벽한 정규식은 불가능에 가깝고 불필요합니다.
+## 소극적 일치, 적극적 일치
+정규식 아마추어와 전문가를 기준은 `소극적` 일치와 `적극적` 일치의 차이를 이해하는가입니다. 정규식은 기본적으로 `적극적`입니다. 그 뜻은 검색을 멈추기 전에 일치하는 것을 최대한 많이 찾으려고 한다는 뜻입니다.
+```javascript
+/* 예: HTML 에서 <i>에서 <strong>으로 바꾸기 */
+const input = 'Regex pros know the difference between\n' +
+  '<i>greedy</i> and <i>lazy</i> matching.';
+input.replace(/<i>(.*)<\/i>/ig, '<strong>$1</strong>');
+/* 교체 결과
+"Regex pros know the difference between
+<strong>greedy</i> and <i>lazy</strong> matching."
+*/
+```
+  - $1 은 .* 그룹에 일치하는 문자열로 바꾸는 것입니다.
+  - 이런 결과가 나온 이유를 알아봅니다. 정규식은 일치할 가능성이 있는 동안은 문자를 소비하지 않고 계속 넘어갑니다. 그리고 그 과정을 적극적으로 진행합니다. 여기서는 <i>를 만나면 </i>를 더는 찾을 수 없을 때까지 소비하지 않고 진행합니다. 원래 문자열에는 </i>가 두 개 있으므로, 정규식은 첫 번째 것(greedy</i>)을 무시하고 두 번째 것(lazy</i>)에서 일치한다고 판단합니다.
+이 예제를 이번에는 소극적 일치로 바꿔봅니다. 반복 메타 문자 * 를 소극적으로 바꿉니다.
+```javascript
+input.replace(/<i>(.*?)<\/i>/ig, '<strong>$1</strong>');
+/*
+"Regex pros know the difference between
+<strong>greedy</strong> and <strong>lazy</strong> matching."
+*/
+```
+  - 이제 정규식 엔진은 </i>를 보는 즉시 일치하는 것을 찾았다고 판단합니다. 따라서 </i>를 발견할 때마다 그때까지 찾은 것을 소비하고, 일치하는 범위를 넓히려 하지 않습니다.
+반복 메타 문자 `*, +, ?, {n}, {n,}, {n,m}`뒤에는 모두 물음표를 붙일 수 있지만 책의 필자는 `*, +`외에는 물음표를 붙여서 쓰질 않았다고 합니다.
+## 역참조
+그룹을 사용하면 `역참조`도 사용할 수 있습니다.
+```javascript
+/*
+ABBA 형태의 밴드 이름을 찾습니다. PJJP 등등
+서브그룹을 포함해, 정규식의 각 그룹은 숫자를 할당받습니다. 숫자는 맨 왼쪽이 1번으로 오른쪽으로 갈수록 1씩 증가합니다.
+역슬래시 뒤에 숫자를 써서 이 그룹을 참조할 수 있습니다.
+*/
+const promo = 'Opening for XAAX is the dynamic GOOG! At the box office now!';
+const bands = promo.match(/([A-Z])(A-Z)\2\1/g);
+```
+  - 이 정규식을 왼쪽에서 오른쪽으로 읽으면, 그룹이 두 개 있고 그 다음 `\2\1`이 있습니다. 첫 번째 그룹이 X 에 일치하고 두 번째 그룹이 A 에 일치하면 `\2`는 A, `\1`은 X 입니다.
+  - 책의 필자가 실무에서 역참조를 사용하는 것은 따옴표의 짝을 맞출 때분이라고 합니다.
+HTML 에는 태그의 속성값에 큰따옴표나 작은따옴표를 써야 합니다. 역참조로 쉽게 찾아봅니다.
+```javascript
+const html = `<img alt='A "Simple" example.'>`  +
+  `<img alt="Don't abuse it!">`;
+const matches = html.match(/<img alt=(['"]).*?\1/g);
+// ["<img alt='A "Simple" example.'", "<img alt="Don't abuse it!""]
+//연습용: 적극적 일치
+const matches = html.match(/<img alt=(['"]).*\1/g)
+//["<img alt='A "Simple" example.'><img alt="Don'"]
+```
+  - 이 예제는 지나치가 단순합니다. 다른 속성이 alt 속성보다 앞에 있거나, alt 앞에 공백이 두 개 이상이면 이 정규식으로는 아무것도 찾지 못합니다.
+  - 이 그룹에서 첫 번째 그룹은 따옴표 뒤에 0개 이상의 문자를 찾습니다.(소극적 일치이므로 두 번째 <img>까지 진행하지 않습니다) 그 다음의 `\1`은 앞에서 찾은 따옴표의 짝입니다.
+  
