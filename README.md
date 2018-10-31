@@ -20,3 +20,14 @@ What I learned today
 - [페이지 콘텐츠 새로 추가](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_DOM_basic02.md#%ED%8E%98%EC%9D%B4%EC%A7%80-%EC%BD%98%ED%85%90%EC%B8%A0-%EC%83%88%EB%A1%9C-%EC%B6%94%EA%B0%80%ED%95%98%EA%B8%B0) : createElement, appendChild, createTextNode, insertAdjacentHTML
 - [페이지 콘텐츠 삭제](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_DOM_basic02.md#%ED%8E%98%EC%9D%B4%EC%A7%80-%EC%BD%98%ED%85%90%EC%B8%A0-%EC%82%AD%EC%A0%9C%ED%95%98%EA%B8%B0) : removeChild, remove
 - [스타일 페이지 콘텐츠](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_DOM_basic02.md#%EC%8A%A4%ED%83%80%EC%9D%BC-%ED%8E%98%EC%9D%B4%EC%A7%80-%EC%BD%98%ED%85%90%EC%B8%A0) : style, style.cssText, setAttribute, className 접근, classList 접근
+
+3. javascript_ES06.md
+- [문자열 표기](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_ES06.md#%EB%AC%B8%EC%9E%90%EC%97%B4-%ED%91%9C%EA%B8%B0%EB%B2%95)
+- [destructuring](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_ES06.md#destructuring)
+- [객체 문자열 속기](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_ES06.md#%EA%B0%9D%EC%B2%B4-%EB%AC%B8%EC%9E%90%EC%97%B4-%EC%86%8D%EA%B8%B0-object-literal-shortand)
+- [되풀이(iteration)](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_ES06.md#%EA%B0%9D%EC%B2%B4-%EB%AC%B8%EC%9E%90%EC%97%B4-%EC%86%8D%EA%B8%B0-object-literal-shortand) : 기존의 for 문, for in 반복문, for of 반복문
+- [Spread 연산자](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_ES06.md#spread-operator)
+- [나머지 매개변수](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_ES06.md#%EB%82%98%EB%A8%B8%EC%A7%80-%EB%A7%A4%EA%B0%9C%EB%B3%80%EC%88%98-rest-parameter)
+
+4. javascript_event(Udacity).md
+- [이벤트 응답](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_event(UdaCity).md#%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EC%9D%91%EB%8B%B5)
