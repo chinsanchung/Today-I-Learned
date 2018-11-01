@@ -30,4 +30,14 @@ What I learned today
 - [나머지 매개변수](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_ES06.md#%EB%82%98%EB%A8%B8%EC%A7%80-%EB%A7%A4%EA%B0%9C%EB%B3%80%EC%88%98-rest-parameter)
 
 4. javascript_event(Udacity).md
-- [이벤트 응답](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_event(UdaCity).md#%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EC%9D%91%EB%8B%B5)
+- [이벤트 응답](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_event(UdaCity).md#%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EC%9D%91%EB%8B%B5) : 이벤트 타겟, addEventListener
+- [이벤트 리스너 삭제](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_event(UdaCity).md#%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EB%A6%AC%EC%8A%A4%EB%84%88-%EC%82%AD%EC%A0%9C) : removeEventListner
+- [이벤트 단계](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_event(UdaCity).md#%EC%9D%B4%EB%B2%A4%ED%8A%B8-%ED%8E%98%EC%9D%B4%EC%A6%88%EB%8B%A8%EA%B3%84) : 이벤트 객체
+- [반복문에 이벤트 적용](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_event(UdaCity).md#%EB%B0%98%EB%B3%B5%EB%AC%B8%EC%97%90-%EC%9D%B4%EB%B2%A4%ED%8A%B8%EB%A5%BC-%ED%9A%A8%EA%B3%BC%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%A0%81%EC%9A%A9%EC%8B%9C%ED%82%A4%EA%B8%B0) : 이벤트 위임
+- [DOM 에서 JS 위치 설정](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_event(UdaCity).md#dom-%EC%97%90%EC%84%9C%EC%9D%98-%EC%9E%90%EB%B0%94%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8-%EC%9C%84%EC%B9%98-%EC%84%A4%EC%A0%95) : DOMContentLoaded
+
+5. javascript_performance(Udacity).md
+- [효율적으로 페이지 콘텐츠 추가](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_performance(UdaCity).md#%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-%ED%8E%98%EC%9D%B4%EC%A7%80-%EC%BD%98%ED%85%90%EC%B8%A0-%EC%B6%94%EA%B0%80%ED%95%98%EA%B8%B0) : performance.now, DocumentFragment, reflow 와 repaint, 가상 DOM
+- [호출 스택](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_performance(UdaCity).md#call-stack) : 싱글 스레드, 호출 스택
+- [이벤트 루프](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_performance(UdaCity).md#%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EB%A3%A8%ED%94%84)
+- [setTimeout](https://github.com/chinsanchung/Today-I-Learned/blob/master/Front-End_Nanodegree/ch02_JavaScript/JavaScript_performance(UdaCity).md#settimeout)
