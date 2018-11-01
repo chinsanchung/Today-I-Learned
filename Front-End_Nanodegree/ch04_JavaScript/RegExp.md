@@ -55,6 +55,7 @@ const html = 'HTML with <a href="/one">one link</a>, and some javascript' +
   '<script src="stuff.js">';
 //이 정규식의 의미는 '텍스트에서 area, a, link, script, source 를 대소문자 가리지 말고 모두 찾으라'입니다.
 const matches = html.match(/area|a|link|script|source/ig);
+//결과: ["a", "link", "a", "a", "a", "a", "script", "script"]
 ```
 여기서 `|`(파이프)는 대체를 뜻하는 메타 문자, `ig`는 대소문자 구별 없이 + 전체를 검색한다는 뜻입니다. g 플래그가 없다면 일치하는 것 중 첫 번째만 반환합니다.
 정규식은 왼쪽에서 오른쪽으로 평가하기에 area 를 a 보다 먼저 썼습니다. 이 이유는 LION, NATURE 사례에서 알 수 있습니다. a 를 먼저 쓴다면 검색 시 a 를 소비하면 area 를 소비하는 게 불가능해지기 때문입니다. 그러니 이렇게 겹치는 것이 있을 때는 더 큰 것을 먼저 씁니다. 작은 것을 먼저 쓰면 큰 것을 절대 찾지 못하게 됩니다.
@@ -84,6 +85,9 @@ const m2 = beer99.match(/[0-9]/g);
 const match = beer99.match(/[\-0-9a-z.]/ig) //75글자. ['9', '9', 'b', 'o'...]
 //원래 문자열에서 공백만 찾습니다.
 const match2 = beer99.match(/[^\-0-9a-z.]/);
+/*
+[" ", index: 2, input: "99 bottles of beer on the wall take 1 down and pass it around -- 98 bottles of beer on the wall.", groups: undefined]
+*/
 ```
 - matches 의 방법은 글자를 찾을 때, 숫자와 글자 모두를 찾을 때 각각 또 다시 만들어야 합니다. 그래서 `문자셋`으로 간편히 표현하는 것입니다.
 - match 안의 정규식에서 숫자와 알파벳 순서는 중요치 않습니다.(`/[.a-z0-9\-]/ig`도 가능) 하이픈 `-`은 이스케이프`\`해야합니다. 그러지 않으면 하이픈을 범위 표시 메타문자로 간주합니다.
@@ -103,17 +107,17 @@ const stuff =
   'medium: 5\n' +
   'low: 2\n';
 //탭, 스페이스, 세로 탭, 줄바꿈을 포함 + 숫자는 상관없으며 없어도 된다 + 0-9까지 문자열 안의 숫자 찾기 + 전역 검색
-const levels = stuff.match(/:\s*[0-9]/g);
+const levels = stuff.match(/:\s*[0-9]/g); // [": 9", ": 5", ": 2"]
 ```
 문자 제외 클래스 `\D`, `\S`, `W`를 사용하면 원치 않는 문자들을 빠르고 효율적으로 제거할 수 있습니다.
   - 예를 들어 전화번호를 데이터베이스에 저장하기 전에 형식을 통일하는 편이 좋습니다. 사람들이 전화번호를 쓰는 방식은 제각기 다르므로 문자셋을 사용해서 10자리 숫자로 통일하는 것이 좋습니다.
 ```javascript
 //예 1. 전화번호
 const messyPhone = '(505) 555-1515';
-const neatPhone = messyPhone.replace(/\D/g, '');
+const neatPhone = messyPhone.replace(/\D/g, ''); //5055551515
 //예 2. 공백이 아닌 글자가 최소 하나는 있어야 하는 필드에 데이터가 있는지 검사
 const field = ' something ';
-const valid = /\S/.test(field);
+const valid = /\S/.test(field); //true
 ```
 ## 반복
 `반복 메타 문자`는 얼마나 많이 일치해야 하는지 지정할 때 사용합니다. 예를 들어 숫자 하나를 찾지 않고 여러 개를 찾을 때 사용해봅니다.
@@ -155,6 +159,9 @@ const match = equation.match(/\(\d \+ \d\.\d\) \* \d/);
 //도메인 이름에서 .com, .org, .edu 만 찾아봅니다.
 const text = 'Visit oreilly.com today';
 const match = text.match(/[a-z]+(?:\.com|\.org|\.edu)/i);
+/*
+결과: ["oreilly.com", index: 6, input: "Visit oreilly.com today", groups: undefined]
+*/
 ```
 그룹에도 반복을 적용할 수 있습니다. 일반적인 반복은 반복 메타 문자의 바로 왼쪽 문자 하나만 적용되지만, 그룹에서는 그룹 전체를 반복합니다.
 ```javascript
@@ -218,4 +225,95 @@ const matches = html.match(/<img alt=(['"]).*\1/g)
 ```
   - 이 예제는 지나치가 단순합니다. 다른 속성이 alt 속성보다 앞에 있거나, alt 앞에 공백이 두 개 이상이면 이 정규식으로는 아무것도 찾지 못합니다.
   - 이 그룹에서 첫 번째 그룹은 따옴표 뒤에 0개 이상의 문자를 찾습니다.(소극적 일치이므로 두 번째 <img>까지 진행하지 않습니다) 그 다음의 `\1`은 앞에서 찾은 따옴표의 짝입니다.
-  
+## 그룹 교체
+그룹을 사용하면 문자열 교체도 더 다양한 방법으로 할 수 있습니다.
+```javascript
+//예 1: a 태그에서 href 속성이 아닌 것들을 제거합니다.
+let html = '<a class="nope" href="/yep">Yep</a>';
+html = html.replace(/<a .*?(href=".*?").*?>/, '<a $1>')
+//html : "<a href="/yep">Yep</a>"
+```
+  - 역참조와 마찬가지로 모든 그룹은 1로 시작하는 숫자를 할당받습니다. 정규식에서 첫 번째 그룹은 `\1`이고, 교체할 문자열에서는 $1이 첫 번째 그룹에 해당합니다. 이번에도 소극적 일치를 써서 다른 <a> 태그까지 검색이 확장되는 일을 막았습니다.
+  - 이 정규식은 href 속성의 값에 큰 따옴표가 아니라 작은따옴표를 쓴 문자열에서는 아무것도 찾지 못합니다.
+```javascript
+//예 2: class, href 속성만 남기고 나머지는 모두 없애봅니다.
+let html = '<a class="yep" href="/yep" id="nope">Yep</a>';
+html = html.replace(/<a .*?(class=".*?").*?(href=".*?").*?>/, '<a $2 $1>')
+//"<a href="/yep" class="yep">Yep</a>"
+```
+  - 이 정규식은 class 와 href 의 순서를 바꿔서 href 가 앞, class 가 뒤에 옵니다. 이 정규식은 class 뒤에 href 가 있어야만 동작하고, 속성 값에 작은따옴표를 쓰면 동작하지 않습니다.
+$1, $2 등 숫자로 참조하는 것외에도 다른 기호들이 있습니다. 자주 쓰이진 않아도 알아두면 좋습니다.
+```javascript
+const input = "One two three";
+//일치하는 것 앞에 있는 전부를 참조하는 $`
+input.replace(/two/, '($`)'); //"One (One ) three"
+//일치하는 것 자체인 $&
+input.replace(/two/, '($&)'); //"One (two) three"
+//일치하는 것 뒤에 있는 전부를 참조하는 $'
+input.replace(/two/, "($')"); //"One ( three) three"
+//달러 기호 자체를 쓸 때는 $$
+input.replace(/two/, "($$)"); //"One ($) three"
+```
+## 함수를 이용한 교체
+함수를 이용하면 아주 복잡한 정규식을 좀 더 단순한 정규식으로 분할할 수 있습니다.
+예시로 <a>태그를 정확한 규격에 맞게 바꾸는 작업을 해봅니다. class, id, href 속성 외에는 모두 제거합니다.문제는 허용하는 속성이 항상 있다는 보장도 없고, 모두 있더라도 순서가 뒤죽박죽일 수도 있습니다. 우선 테스트할 HTML 문자열입니다.
+```javascript
+const html =
+  `<a class="foo" href="/foo" id="foo">Foo</a>\n` +
+  `<A href="/bar" Class="bar">Bar</a>\n` +
+  `<a href="/baz">Baz</a>\n` +
+  `<a onclick="javascript:alert('qux')" href="/qux">Qux</a>`;
+```
+  - 이 문자열을 보면 경우의 수가 너무 많아 정규식만으로는 해결이 어렵습니다. 하지만 <a> 태그를 인식하는 정규식과 <a>태그의 속성 중에서 필요한 것만 남기는 정규식 두 개를 쓰면 됩니다.
+<a>태그에서 class, id, href 속성을 제거합니다. 여기선 단순히 정규식만 사용하지 않고 split 메소드를 사용해 한 번에 한 가지 속성만 체크합니다.
+```javascript
+function sanitizeATag(atag) {
+  //태그에서 원하는 부분을 뽑아냅니다.
+  const parts = atag.match(/<a\s+(.*?)>(.*?)<\/a>/i);
+  //parts[1]은 여는 <a>태그에 들어있는 속성입니다.
+  //parts[2]는 <a>와 </a> 사이에 있는 텍스트입니다.
+  const attributes = parts[1]
+    //속성을 분해합니다.
+    .split(/\s+/);
+  return '<a ' + attributes
+    //class, id, href 속성만 필요합니다.
+    .filter(attr => /^(?:class|id|href)[\s=]/i.test(attr))
+    //스페이스 한 칸으로 구분해서 합칩니다.
+    .join(' ')
+    //여는 <a>태그를 완성합니다.
+    + '>'
+    //텍스트를 추가합니다.
+    + parts[2]
+    //마지막으로 태그를 닫습니다.
+    + '</a>'
+}
+```
+  - 이 함수는 필요 이상으로 길어도 명확이 내용을 이해할 수 있습니다. 이 함수의 정규식으로는 우선 <a>태그의 각 부분을 찾는 정규식, 하나 이상의 공백을 찾아 문자열을 분리하는 정규식, 원하는 속성만 남도록 필터링하는 정규식입니다. 정규식 하나로 이 세 가지 일을 처리하려 했다면 어려웠을 것입니다.
+---
+sanitizeATag 함수는 <a>태그가 들어있는 HTML 블록에 사용하려고 만들었습니다. <a>태그를 찾는 정규식입니다.
+```javascript
+html.match(/<a .*?>(.*?)<\/a>/ig);
+```
+  - 이것을 사용하려면 String.prototype.replace 로 교체할 매개변수를 함수로 넘겨야 합니다.
+```javascript
+//예시로 콘솔에 출력할 뿐 아무것도 반환하지 않아 결과는 undefined 입니다.
+html.replace(/<a .*?>(.*?)<\/a>/ig, function(m, g1, offset) {
+  console.log(`<a> tag found at ${offset}. contents: ${g1}`);
+});
+```
+  - String.prototype.replace 에 넘기는 함수는 다음 순서로 매개변수를 받습니다.
+    - `m`: 일치하는 문자열 전체. `$&`와 같습니다.
+    - `g1`: 일치하는 그룹(일치하는 것이 있다면). 일치하는 것이 여럿이라면 매개변수도 여러 개 받습니다.
+    - `offset`: 원래 문자열에서 일치하는 곳의 offset(숫자)
+    - 원래 문자열: 거의 사용하지 않습니다.
+  - String.prototype.replace 는 함수가 반환하는 값을 써서 원래 문자열을 교체합니다.
+---
+각 <a>태그를 규격화하는 함수와 HTML 블록에서 <a>태그를 찾는 방법을 합칩니다.
+```javascript
+html.replace(/<a .*?<\/a>/ig, function(m) {
+  return sanitizeATag(m);
+});
+//더 단순하게 만들어봅니다.
+html.replace(/<a .*?<\/a>/ig, sanitizeATag)
+```
+  - sanitizeATag 함수는 String.prototype.replace 에서 콜백 함수에 넘기는 매개변수를 그대로 받게 만들었으므로, 익명 함수를 제거하고 sanitizeATag 를 직접 써서 단순하게 만들 수도 있습니다.
