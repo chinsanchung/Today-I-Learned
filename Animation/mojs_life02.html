@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>생활코딩 mojs 실습</title>
+  </head>
+  <body>
+    <script src="//cdn.jsdelivr.net/mojs/latest/mo.min.js"></script>
+    <script>
+      const first = new mojs.Shape({
+        shape:'circle',
+        radius:{0:40},
+        stroke:'cyan',
+        strokeWidth:{20:0},
+        //도형 색
+        fill:'none',
+        left:0,
+        top:0
+      });
+
+      const second = new mojs.Shape({
+        //parent 를 주면 second 는 독립적이지 않고 first 에 종속적이 됨
+        //그러면 second 의 위치는 first 를 기준으로 설정하게 됨
+        parent:first.el,
+        shape:'circle',
+        radius:{0:20},
+        stroke:'deeppink',
+        strokeWidth:{10:0},
+        //도형 색
+        fill:'none',
+        left:0,
+        top:0
+      });
+      document.addEventListener('click', e => {
+        first.tune({x:e.pageX, y:e.pageY}).replay();
+        //second 는 first 의 상대적인 위치에 있어서 tune 이 필요 없음
+        second.replay();
+      })
+    </script>
+  </body>
+</html>
