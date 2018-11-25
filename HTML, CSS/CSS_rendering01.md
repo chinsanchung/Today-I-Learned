@@ -17,12 +17,13 @@
 
 ## normal flow
 ### 포지션
+
 position : 속성들의 너비를 계산하는 계산식입니다. 여기서 static, relative 만 normal flow 가 적용됩니다. absolute, fixed, inherit 는 적용되지 않습니다.
----
 - `normal flow`는 계산 공식이 2가지 있습니다.
   - block formatting contexts
   - inline formatting contexts
   - relative positioning 은 포지션 모델에서 정의하기에 bfc, ifc 를 위주로 봅니다.
+![rendering01_1](https://github.com/chinsanchung/Today-I-Learned/blob/master/HTML%2C%20CSS/image/rendering01_1.jpg)
 ### 블록
 블록은 부모의 가로 길이를 가득 채운 한 줄입니다. 블록은 x 는 언제나 부모의 width 입니다. 그래서 블록은 다음 블록에서의 y 자리만 고려하면 됩니다.(두 번째 블록 요소는 첫 번째 블록이 끝나는 지점이라고 계산합니다)
 블록은 내용의 height 가 곧 블록의 height 가 됩니다.
@@ -31,6 +32,7 @@ position : 속성들의 너비를 계산하는 계산식입니다. 여기서 sta
 <div style="width:500px; background:red">&nbsp;</div>
 <div style="background:blue">&nbsp;</div>
 ```
+![rendering01_2](https://github.com/chinsanchung/Today-I-Learned/blob/master/HTML%2C%20CSS/image/rendering01_2.jpg)
   - 위의 블록은 비록 너비를 지정하기에 절반만 붉은 색으로 칠해집니다. 그래서 남은 흰 공간은 비었다고 생각하기 쉽지만, 블록은 부모의 너비를 전부 차지하기에 빈 공간 끝까지가 븕은색 div 인 것입니다. 그래서 파란색 div 가 다음 줄에서 실행됩니다.
 ```HTML
 <div style="width:200px background:red">aaaaaaaaaaaaaaaaaaa</div>
@@ -55,13 +57,8 @@ position : 속성들의 너비를 계산하는 계산식입니다. 여기서 sta
   </span>
   !!
 </div>
-<!--
-결과
-hello world
-붉은색 한 줄
-!!
--->
 ```
+![rendering01_3](https://github.com/chinsanchung/Today-I-Learned/blob/master/HTML%2C%20CSS/image/rendering01_3.jpg)
 - DOM 포함 관계와 렌더링의 포함 관계는 다릅니다. 브라우저 눈에는 블록, 인라인, 블록으로만 보일 뿐입니다.
 ```HTML
 <div style="width:500px">
@@ -100,9 +97,10 @@ hello world
   **
 </div>
 ```
+![rendering01_4](https://github.com/chinsanchung/Today-I-Learned/blob/master/HTML%2C%20CSS/image/rendering01_4.jpg)
 relative 는 static 으로 그린 후 relative 로 위치를 이동시킨 포지션입니다.
 만약 static 과 relative 가 섞여 있다면, 무조건 relative 가 static 위로 뜹니다.
-relative 때문에 그림의 너비, 높이가 바뀌질 않습니다. 미리 그림을 다 그린 후 포지션을 relative 하게 두는 것입니다.
+relative 때문에 그림의 너비, 높이가 바뀌질 않습니다. 미리 static 으로 그림을 다 그린 다음에 포지션을 relative 하게 옮겨주는 것입니다.
 HTML 의 모든 값을은 기본으로 static 포지션입니다.
 
 ## float
