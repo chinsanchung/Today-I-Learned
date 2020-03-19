@@ -25,7 +25,6 @@
 - layer of abstraction: they are built into the library for offering more convenient methods of database interaction.
     - We can choose many different ways of interacting with the database, because it offers us multiple layers of abstractions for doing so.
 
-
 #### Takeaways
 
 - Without SQLAlchemy, we'd only use a DBAPI to establish connections and execute SQL statements.
@@ -57,4 +56,76 @@
 
 ### 3. The Dialect
 
-- 
+- Because of dialect, we can forget about the database system we're using.
+
+### 4. The Connection Pool
+
+- Because SQLAlchemy has a connection pool, no longer do you have to connect to open and close your own connections manually using the DPAPI alone.
+- With a Connection Pool, the opening and closing of connections and which connection you are using when you're executing statements within a session is completely abstracted away from you.
+- Uses a connection pool to easily reuse existing connections.
+    - Avoid opening and closing connections for every data change.
+    - Handles dropped connections.
+    - Avoid doing very many small calls to the DB when we're continually assigning changes to the database. (which can be very slow)
+
+### 5. The Engine
+
+#### Takeaways
+
+- The Engine
+    - one of three main layers for how you may choose to interact with the database.
+    - It is the lowest level layer of interacting with the database, and is much like using the DBAPI directly.
+        - It looks like interacting with a DBAPI directly. (very similar to using psycopg2)
+```python
+from sqlalchemy import create_engine
+engine = create_engine('postgres;//...')
+conn = engine.connect()
+result = conn.execute('SELECT * from vechicles;')
+
+row = result.fetchone()
+rows = result.fetchall()
+result.close()
+```
+- The Engine in SQLAlchemy refers to both itself, the Dialect and the Connection Pool, which all work together to interface with our database.
+- A connection pool gets automatically created when we create SQLAlchemy engine.
+
+### 6. SQL Expressions
+
+- SQL Expression lets you compose SQL statements by building Pyhton objects instead.
+
+```python
+todos = Table('todos', ...)
+ins = todos.insert().values(dscription='Clean my room', completed=False)
+s = select([todos])
+conn = engine.connect()
+result = conn.execute(ins)
+result = conn.execute(s)
+
+result.close()
+todos.c.desciption # <Column 'description' in `todos` table>
+```
+
+#### Takeawayas
+
+- Instead of sending raw SQL (using the Engine), we can compose python objects to compose SQL expressions, instead.
+- SQL Expressions still involves using and knowing SQL to interact with the database.
+
+### 7. SQLAlchemy ORM
+
+#### Takeaways
+- ORM
+    - SQLAlchemy ORM lets you compose SQL Expressions by building Python classes of objects
+    - It is the highest layer of abstraction in SQLAlchemy.
+    - Wraps the SQL Expressions and Engine to work together to interact with the database.
+- SQLAlchemy is plit into two libraries
+    - SQLAlchemy Core
+    - SQLAlchemy ORM. It's offered as an optioonal library. You don't have to use ORM in order to use the rest of SQLAlchemy.
+        - ORM uses the Core library inside.
+        - ORM lets you **map** from the _database schema_ to the application's _Python objects_.
+        - ORM persists objects into corresponding database tables.
+
+#### SQLAlchemy Layers of Abstraction Diagram
+
+![Image](https://video.udacity-data.com/topher/2019/August/5d4de779_sqlalchemy-layers-of-abstraction/sqlalchemy-layers-of-abstraction.png)
+
+### 8. Mapping Between Tables and Classes
+
