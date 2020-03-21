@@ -132,7 +132,7 @@ application.render_view('product_detail.html', data)
 
 ### 7. TCP/IP
 
-- Postgres foloows a client-server model that supports TCP/IP for communication.
+- Postgres follows a client-server model that supports TCP/IP for communication.
 
 #### Transmission Control Protocol and Internet Protocol
 
@@ -216,7 +216,7 @@ Transactions are atomic **units of work** for the database to perform as a whole
 - psql lets you
     - Directly type and execute SQL commands
     - Inspect and preview your database and database tables using psql meta-commands
-
+- Run these codes in SQL Shell
 #### Useful basic psql commands
 
 - `psql <dbname> [<username>]`: Starts psql with a connection to dbname. Optionally use another user than current user.
