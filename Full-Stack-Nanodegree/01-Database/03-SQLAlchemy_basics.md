@@ -129,3 +129,136 @@ todos.c.desciption # <Column 'description' in `todos` table>
 
 ### 8. Mapping Between Tables and Classes
 
+#### Class Example
+
+```python
+# Human class allows us to instantiate an instance of a human being.
+class Human:
+    def __init__(self, first_name, last_name, age):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.age = age
+#  Create object instances of the Human class
+sarah = Human('Sarah', 'Silverman', 48)
+bob = Human('Bob', 'Seget', 54)
+```
+```SQL
+-- Instantiate a table schema in a Relational Database System
+CREATE TABLE humans (id INTEGER PRIMARY KEY, first_name VARCHAR, last_name VARCHAR, age INTEGER);
+```
+
+#### Takeaways
+
+- Tables map to classes.
+- Table records map to class objects.
+- Table columns map to class attributes within that class.
+
+### 9. Hello App with Flask-SQLAlchemy - Part 1
+
+#### Flask
+
+- A very simple web framework for serving web pages with data.
+    > pip3 install flask
+    > from flask import Flask
+
+#### Flask-SQLAlchemy
+
+- Flask-SQLAlchemy is a Flask extension that supports SQLAlchemy.
+    > pip3 install flask-sqlalchemy
+    > from flask_sqlalchemy import SQLAlchemy
+
+#### Initializing the app
+
+- Goal: Create a Hello app that says 'Hello' to your name, stored in a table on a database
+- Before initializing app [from: opentutorials.org](https://www.opentutorials.org/module/3669/22002)
+    - Install virtualenv `pip install virtualenv`
+    - Move to directory, then command `virtualenv venv`
+    - If you want to close virtualenv, command `deactivate`
+- Initialize
+
+```python
+# app.py
+from flask import Flask
+
+# instance of Flask. This is a standard way for creating a flask application.
+app = Flask(__name__)
+# Python decorator. Tell Flask app which endpoint to listen to for connections.
+@app.route('/')
+def index():
+    return 'Hello World!'
+
+if __name__ == '__main__':
+    app.run()
+```
+
+- Run App
+    - `FLASK_APP=app.py FLASK_DEBUG=true flask run`
+    - with `if __name__ == '__main__'`, `python app.py`
+
+### 10. Connecting to the Database
+
+#### Database Connection URI Parts
+
+![image](https://classroom.udacity.com/nanodegrees/nd0044/parts/216c669c-5e62-43a1-bcb9-8a8e5eca972a/modules/43f34772-8032-4851-938b-d952bbfc7f1c/lessons/53139bef-389d-4d0a-b7b6-e4bb4bd0ef0c/concepts/86d59d1d-6b21-479f-b1a6-2ecfe983736d#)
+
+- We need to pass in a number of parameters for SQLAlchemy to understand how to connect to our database and which database to use.
+    - host: name of the host location where your database is located.
+
+#### Connect with Flask-SQLAlchemy
+
+```python
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+# instance of a database that we can interact with in SQLAlchemy land to Flask app.
+db = SQLAlchemy(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres@localhost:5432/example'
+@app.route('/')
+@app.route('/index')
+def index():
+    return 'Hello Flask!'
+
+```
+
+- All configuration variables in a Flask App are set on the dictionary app.config
+    - Flask-SQLAlchemy expects a configuration variable called 'SQLALCHEMY_DATABASE_URI'
+
+### 11. db.Model and Defining Models
+
+#### Create records within a table
+
+```python
+db = SQLAlchemy(app)
+```
+- What db offers us is an interface by which we can use SQLAlchemy underneath. (interacting with database)
+- In particular, db offers us several objects.
+    - db.Model: Ability to create and manipulate data models.
+    - db.session: Ability to create and manipulate database transactions.
+
+#### Create a person class with db.Model
+```python
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres@localhost:5432/example'
+db = SQLAlchemy(app)
+
+class Person(db.Model):
+  __tablename__ = 'persons'
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String(), nullable=False)
+```
+#### Takeways
+
+- Declaring classes
+    - class MyModel(db.Model) will inherit from db.Model
+    - By inheriting from db.Model, we map from our classes to tables via SQLAlchemy ORM
+- Defining columns
+    - Within our class, we declare attributes equal to db.Column
+    - db.Column takes `<datatype>, <primary_key?>, <constraint?>, <default?>`
+- Table naming
+    - By default, SQLAlchemy will pick the name of the table, setting it equal to the lower-case version of your class's name. Otherwise, we set the name using `__tablename__='custom_name'`
+
+### 12. Syncing Models, db.create_all()
