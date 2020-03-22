@@ -1,6 +1,6 @@
 # Nanodgree 2. SQL and Data Modeling for the Web
 
-## chapter 02. Interacting with Databases
+## lesson 02. Interacting with Databases
 
 ### 1. Recap: Relational Databases
 
