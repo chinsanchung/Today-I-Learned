@@ -1,6 +1,6 @@
-# # Nanodgree 2. SQL and Data Modeling for the Web
+# Nanodgree 2. SQL and Data Modeling for the Web
 
-## chapter 03. SQLAlchemy Basics
+## lesson 03. SQLAlchemy Basics
 
 ### 1. Introduction
 
@@ -242,7 +242,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres@localhost:5432/example'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:0000@localhost:5432/example'
 db = SQLAlchemy(app)
 
 class Person(db.Model):
@@ -262,3 +262,133 @@ class Person(db.Model):
     - By default, SQLAlchemy will pick the name of the table, setting it equal to the lower-case version of your class's name. Otherwise, we set the name using `__tablename__='custom_name'`
 
 ### 12. Syncing Models, db.create_all()
+
+#### db.create_all()
+
+- db.create_all() detects models for us and creates tables for them (if they don't exist).
+- Then, run Flask application.
+    - Check Database 'example' with SQL Shell. `\dt`, `\d persons`
+
+#### Auto-incrementing
+
+- We see not null constraints specified on primary key column, and because we specified nulval equal to false, we also have a not null constraint on  our name column.
+- SQLAlchemy happens to be smart enough to know that when you're specifying in integer column with primary key equal to true, then it will automatically set the next value of any record as an auto-incremented number.
+
+### 13. Inserting Records, Using Debug Mode
+
+#### Inserting a record
+
+- Run `INSERT INTO persons (name) VALUES ('Amy');` to SQL Shell
+- We can fetch that record (Amy) and show it's name.
+
+```python
+def index():
+    person = Person.query.first()
+    return 'Hello ' + person.name
+```
+
+#### Debug mode
+
+- These codes will set debug mode to ON, which will automatically restart the server whenever we make changes to our application.
+- Command
+    - `FLASK_DEBUG=true`
+    - `FLASK_DEBUG=true flask run`
+    - `$ export FLASK_DEBUG=true` + `$ flask run`
+
+### 14. Experimenting in Interactive Mode
+
+- We can experiment with our app using the [interactive mode](https://docs.python.org/3/tutorial/interpreter.html#interactive-mode) of the Python interpreter.
+    - It's a way that you can easily debug and experiment with SQLAlchemy objects and writing SQLAlchemy queries outside of an application using your terminal.
+
+#### Interactive Mode with SQLAlchemy app
+
+- Open terminal, enter 'python3', then it should open up an interactive terminal.
+    - In order to import file, the file needs to be an understandable variable name by Python. (not using '-', use '_')
+    - you can type exit() in order to exit.
+- Input this code to app.py.
+
+```python
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+```
+
+- Then go to Ananconda, type `import <filename>`, `from <filename> import Person`
+    - `Person.query.all()` in order to list all of the person objects inside of Person class.
+    - You can call other SQLAlchemy methods and objects as well. `Person.query.filter(Person.name == 'Amy')`
+    - You can also save results as variable. `query = Person.query.filter(Person.name == 'Amy')`
+
+#### Tips for Debugging SQLAlchemy objects in the Python terminal
+
+- `__repr__`(optional): Ability to customize ap printable string (useful for debugging)
+    - You can return a customized string that will print anytime that you're debugging, using Python terminal or anytime you're printing an object in a Python script.
+    > `print(person(id=1, name='Amy')) -> <Person 1, 'Amy'>`
+- If you want to customize this and go back into Person class an type below.
+
+```python
+# db
+def __repr__(self):
+    return f'<Person {self.id}, {self.name}>'
+```
+
+- Then, go terminal, and import again, type print again. It now shows up with our edited string. `<Person ID: 1, name: Amy>`
+
+#### Create redocds in python's interactive mode
+
+- There's another way of inserting redords into database, rather than using `INSERT INTO` SQL commands. It's `db.session.add()`
+
+```bash
+$ pythoon3
+>>> from app import db, Person
+>>> person = Person(name='Max')
+>>> db.session.add(person)
+>>> db.session.commit()
+```
+
+- `db.session.add(person)` will queue up a `INSERT INTO persons (name) VALUES ('Max');` statement in a **transaction** that is managed by `db.session`.
+- By `db.session.commit()`, person record will now exist in `persons` table.
+
+### 15. SQLAlchemy Data Types
+
+![data-types](https://video.udacity-data.com/topher/2019/August/5d5a43a0_screen-shot-2019-08-18-at-11.36.57-pm/screen-shot-2019-08-18-at-11.36.57-pm.png)
+
+- There is a one-to-one parity between a SQLAlchemy datatype, and the data type that would be understandable in the semantics of the particular database system that you're linking your SQLAlchemy engine to.
+- Calling `db.String()` with no max number of characters passed into it, is the same as declaring a column with data type `VARCHAR`.
+
+### 16. SQLAlchemy Constraints
+
+#### Takeaways
+
+- Column constraints ensure data integrity across database, allowing for database accuracy and consistency.
+- Constraints are conditions on your column, that provide checks on the data's validity.
+    - It doesn't allow data that violates constraints to be inserted into the database.
+- In SQLAlchemy, constraints are set in `db.Column()` after setting the data type.
+    - `nullable=False` is equivalent to `NOT NULL` in SQL
+    - `unique=True` is equivalent to `UNIQUE` in SQL
+
+```python
+# example
+class User(db.Model):
+    name = db.Column(db.String(), nullable=False, unique=True)
+```
+
+#### Implementing a check constraint
+
+```python
+class Product(db.Model):
+    price = db.Column(db.Float, db.CheckConstraint('price > 0'))
+```
+
+### 17. Recap
+
+- SQLAlchemy layers of abstraction
+
+![image1](https://video.udacity-data.com/topher/2019/August/5d5a4854_sqlalchemy-layers/sqlalchemy-layers.png)
+
+![image2](https://video.udacity-data.com/topher/2019/August/5d5a48b0_screen-shot-2019-08-18-at-11.58.46-pm/screen-shot-2019-08-18-at-11.58.46-pm.png)
+
+- Classes vs Tables
+
+![image3](https://video.udacity-data.com/topher/2019/August/5d5a48fb_screen-shot-2019-08-18-at-11.59.53-pm/screen-shot-2019-08-18-at-11.59.53-pm.png)
+
+- db
+
+![image4](https://video.udacity-data.com/topher/2019/August/5d5a4906_screen-shot-2019-08-19-at-12.00.00-am/screen-shot-2019-08-19-at-12.00.00-am.png)
