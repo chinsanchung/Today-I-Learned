@@ -4,21 +4,6 @@
 
 #### 배워야 하는 이유
 
-```python
-import time
-
-n = int(input('Number: ))
-haystack = [k for k in range(n)]
-
-print('Searching')
-
-ts = time.time()
-maximum = max(haystack)
-elapsed = time.time() - ts
-
-print('Maximum element = %d, Elapsed time = %.2f' & (maximum, elapsed))
-```
-
 - 자료구조: 데이터를 활용해 특정 연산을 할 수 있는 구조.
 - 알고리즘: 어떤 문제를 해결하기 위한 절차, 방법, 명령어의 집합입니다. 프로그래밍적으로는 "주어진 문제의 해결을 위한 자료구조와 연산 방법에 대한 선택"
     - 해결하고자 하는 문제에 따라 최적의 해법은 다릅니다. 올바른 선택을 위해선 자료구조를 이해해야 합니다.
