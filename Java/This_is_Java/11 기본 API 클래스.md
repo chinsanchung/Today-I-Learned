@@ -557,3 +557,145 @@ public class ToStringExample {
     }
 }
 ```
+
+## System 클래스
+
+### 프로그램 종료 (exit())
+
+System 클래스의 exit() 는 현재 실행하고 있는 프로세스를 강제로 종료한다. 정상 종료일 경우 매개값을 0으로, 비정상 종료일 때는 0 이외의 값을 준다. 특정 값으로 종료하려면 자바의 보안 관리자를 직접 설정해서 종료 상태값을 확인해야 한다.
+System.exit() 를 실행하면 checkExit() 메소드가 자동 호출되는데, 이 메소드에서 종료 상태값을 조사해서 특정 값이 입력되지 않으면 SecurityException 을 발생시켜 System.exit() 를 호출한 곳에서 예외 처리를 하도록 해준다.
+
+```java
+public class ExitExample {
+    public static void main(String[] args) {
+        System.setSecurityManager(new SecurityManager() {
+            @Override
+            public void checkExit(int status) {
+                if (status != 5) { throw new SecurityException(); }
+            }
+        });
+
+        for (int i = 0; i < 10; i++) {
+            System.out.println(i);
+            try {
+                // JVM 종료 요청
+                System.exit(i);
+            } catch (SecurityException e) {}
+        }
+    }
+}
+```
+
+### 가비지 컬렉터 실행 (gc())
+
+JVM 은 메모리가 부족할 때 또는 CPU 가 한가할 때 가비지 컬렉터를 실행시켜 사용하지 않는 객체를 자동으로 제거한다. System.gc(); 메소드를 실행하면 빠른 시간 내로 실행하도록 요청을 할 수 있다.(곧바로 가비지 컬렉터를 띄우진 않는다.)
+
+```java
+public class GcExample {
+    public static void main(String[] args) {
+        Employee emp;
+
+        emp = new Employee(1);
+        emp = null;
+        emp = new Emplyee(2);
+        emp = new Employee(3);
+        // new Employee(1), new Emplyee(2) 은 쓰레기가 됐다.
+        System.out.print("emp 가 최종적으로 참조하는 번호: " + emp.eno); // 3
+        System.gc(); // 가비지 컬렉터의 실행을 요청함
+    }
+}
+
+class Employee {
+    public int eno;
+    public Employee(int eno) {
+        this.eno = eno;
+        System.out.println(eno + "가 메모리에 생성됨");
+    }
+    public void finalize() {
+        System.out.println(eno + "가 메모리에서 제거됨");
+    }
+}
+```
+
+### 현재 시각 읽기 (currentTimeMilis(), nanoTime())
+
+currentTimeMillis(), nanoTime() 메소드는 컴퓨터의 시계로부터 현재 시간을 읽어서 밀리세컨드 단위와 나노세컨드 단위의 long 값을 리턴한다. 주로 프로그램의 실행 소요 시간을 측정하는 데 사용한다.
+
+### 시스템 프로퍼티 읽기 (getProperty())
+
+시스템 프로퍼티는 JVM 이 시작할 때 자동으로 설정되는 시스템의 속성값이다. 시스템 프로퍼티는 키와 값으로 구성되어 있다. System.getProperty("키 이름") 으로 불러올 수 있다. 아래는 키와 그에 따른 설명을 나열한 것이다.
+
+- java.version : 자바의 버전
+- java.home : 사용하는 JRE 의 파일 경로
+- os.name : Operating System name
+- file.separator : File separator ("/" on UNIX)
+- user.name : 사용자의 이름
+- user.home : 사용자의 홈 디렉토리
+- user.dir : 사용자가 현재 작업 중인 디렉토리 경로
+
+### 환경 변수 읽기 (getenv())
+
+환경 변수는 운영체제에서 이름(Name) 과 값(Value)으로 관리되는 문자열 정보로, 자바에서는 System.getenv() 메소드로 환경 변수의 값을 가져온다. 매개값으로 환경 변수의 이름을 입력한다.
+
+## Class 클래스
+
+### Class 객체 얻기 (getClass(), forName())
+
+프로그램에서 Class 객체를 얻으려면 Object 클래스의 getClass() 메소드를 이용하면 된다. Object 는 최상위 클래스이므로 모든 클래스에서 obj.getClass() 으로 메소드를 호출할 수 있다. 다만 이 메소드는 해당 클래스로 객체를 생성했을 때만 사용할 수 있다.
+객체를 생성하지 않고 정적 메소드 forName() 으로 직접 Class 객체를 얻을 수 있다. 클래스 전체 이름(패키지가 포함된 이름)을 매개값으로 Class 객체를 리턴한다.
+
+```java
+public class ClassExample {
+    public static void main(String[] args) {
+        Car car = new Car();
+        Class clazz1 = car.getClass();
+        System.out.println(class1.getName()); // sec06.exam01_class.Car
+        System.out.println(class1.getSimpleName()); // Car
+        System.out.println(class1.getPackage().getName()); // sec06.exam01_class
+
+        try {
+            Class clazz2 = Class.forName("sec06.exam01_class.Car");
+            System.out.println(clazz2.getName()); // sec06.exam01_class.Car
+            System.out.println(clazz2.getSimpleName()); // Car
+            System.out.println(clazz2.getPackage().getName()); // sec06.exam01_class
+        } catch (ClassNotFoundException e) { e.printStackTrace(); }
+    }
+}
+```
+
+### 리플렉션 (getDeclaredContructors(), getDeclaredFields(), getDeclaredMethods())
+
+Class 객체를 이용하면 클래스의 생성자, 필드, 메소드의 정보를 각각 getDeclaredContructors(), getDeclaredFields(), getDeclaredMethods() 메소드를 이용해 알아낼 수 있다.
+이 세 메소드는 각각 Constructor 배열, Field 배열, Method 배열을 리턴한다.
+getDeclaredFields(), getDeclaredMethods() 는 클래스에 선언된 멤버만 가져오고 상속된 멤버는 가져오지 않는다. 만약 상속된 멤버도 얻으려면 getFields(), getMethods() 를 이용해야 한다. (단 public 멤버만 가져온다.)
+
+```java
+Class clazz = Class.forName("sec06.exam01_class.Car");
+
+Field[] fields = clazz.getDeclaredFields();
+for (Field field : fields) {
+    // 필드 타입, 필드 이름
+    System.out.println(field.getType().getSimpleName() + ", " + field.getName());
+}
+
+// 메소드 이름과 매개변수를 출력
+Method[] methods = clazz.getDeclaredMethods();
+for (Method method : methods) {
+    System.out.println(method.getName());
+    Class[] parameters = method.getParameterTypes();
+    printParameters(parameters); // 매개변수 정보를 출력
+}
+
+
+private static void printParameters(Class[] parameters) {
+    for (int i = 0; i < parameters.length; i++) {
+        System.out.print(parameters[i].getName());
+    }
+}
+```
+
+### 동적 객체 생성 (newInstance())
+
+Class 객체로 new 연산자가 없어도 동적으로 객체를 생성할 수 있다. 이 방법은 코드 작성 시가 아닌, 런타임 시에 클래스 이름을 결정하는 경우에 유용하다.
+Class.forName() 메소드로 Class 객체를 얻은 후 newInstance() 메소드를 호출하면 Object 타입의 객체를 얻을 수 있다. 이 객체는 기본 생성자를 호출하며, 만약 매개변수가 있는 생성자를 호출하려면 리플렉션으로 생성자 객체를 얻어 newInstance() 메소드를 호출하면 된다.
+newInstance() 은 InstantiationException 예외(해당 클래스가 추상 클래스이거나 인터페이스일 경우), IllegalAccessException 예외(클래스나 생성자가 접근 제한자 떄문에 접근할 수 없을 때)가 있기 떄문에 예외 처리 코드가 필요하다.
